@@ -19,6 +19,14 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>spring-repo</id>
+			<url>https://repo.spring.io/libs-milestone/</url>
+		</repository>
+	</repositories>
+
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -42,7 +50,19 @@
 		<dependency>
 			<groupId>org.pytorch</groupId>
 			<artifactId>pytorch_java_only</artifactId>
-			<version>1.4.0</version>
+			<version>1.5.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.jflac/jflac-codec -->
+		<dependency>
+			<groupId>org.jflac</groupId>
+			<artifactId>jflac-codec</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-math3</artifactId>
+			<version>3.6.1</version>
 		</dependency>
 	</dependencies>
 
