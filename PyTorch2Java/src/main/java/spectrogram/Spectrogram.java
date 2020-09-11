@@ -5,7 +5,7 @@ import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
 import org.apache.commons.math3.transform.TransformType;
 
-import wavFiles.WavFileData;
+import wavFiles.AudioData;
 
 
 /**
@@ -19,7 +19,7 @@ public class Spectrogram {
 	/**
 	 * The wave to calculate a spectrogram for. 
 	 */
-	private WavFileData wave;
+	private AudioData wave;
 
 	/**
 	 * The FFT length in samples. 
@@ -64,7 +64,7 @@ public class Spectrogram {
 	/**
 	 * The sample rate in samples per second.
 	 */
-	private int sR; 
+	private float sR; 
 
 	/**
 	 * Create the spectrogram from a clip of sound data 
@@ -72,7 +72,7 @@ public class Spectrogram {
 	 * @param fftLength - the FFT length in samples
 	 * @param fftHop - the spectrogram hop size to use in samples. 
 	 */
-	public Spectrogram(WavFileData wave, int fftLength, int fftHop) {
+	public Spectrogram(AudioData wave, int fftLength, int fftHop) {
 		this.sR=wave.getSampleRate(); 
 		this.fftSampleSize=fftLength;
 		this.overlapFactor=fftHop; 
@@ -98,7 +98,7 @@ public class Spectrogram {
 	 * object and so is recalculated every time this function is called. 
 	 * @return the absolute spectrogram
 	 */
-	public double[][] getAbsoluteSpectrogram() {
+	private double[][] getAbsoluteSpectrogram() {
 		return buildAbsoluteSpectram(complexSpectrogram); 
 	}
 
@@ -106,7 +106,7 @@ public class Spectrogram {
 	/**
 	 * Construct the spectrogram form the raw wave data. 
 	 */
-	private void buildSpectrogram(WavFileData wave) {
+	private void buildSpectrogram(AudioData wave) {
 
 		int[] amplitudes = wave.getSampleAmplitudes();
 		int numSamples = amplitudes.length;
@@ -385,8 +385,17 @@ public class Spectrogram {
 	 * Get the sample rate in samples per second. 
 	 * @return the sample rate. 
 	 */
-	public int getSampleRate() {
+	public float getSampleRate() {
 		return this.sR;
+	}
+
+
+	/**
+	 * Get the spectrgram array as a doubles. Note that this includes any transfroms the spectrgram has undergone. 
+	 * @return the spectrgram array 
+	 */
+	public double[][] getSpectrogramArray() {
+		return this.specData;
 	}
 
 
