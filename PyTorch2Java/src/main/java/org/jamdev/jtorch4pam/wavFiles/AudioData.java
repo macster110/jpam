@@ -1,7 +1,10 @@
 package org.jamdev.jtorch4pam.wavFiles;
 
+import java.util.Arrays;
+
 /**
- * Holds wav file data
+ * Holds .wav file data. 
+ * 
  * @author Jamie Macaulay
  *
  */
@@ -13,12 +16,12 @@ public class AudioData {
 	public WavInterpolator wavInterpolator; 
 
 	/**
-	 * Pre emphasis filter. 
+	 * Pre-emphasis filter. 
 	 */
 	public PreEmphasisFilter preEmphasisFilter; 
 
 	/**
-	 * Samples in u
+	 * Samples in amplitude units u. 
 	 */
 	public int[] samples;
 
@@ -32,6 +35,11 @@ public class AudioData {
 	 */
 	public double bitRate = 16; 
 
+	/**
+	 * Create an AudioData object. 
+	 * @param samples - the samples in amplitude units u. 
+	 * @param sampleRate - the sample rate in samples per second. 
+	 */
 	public AudioData(int[] samples, float sampleRate){
 		this.samples=samples; 
 		this.sampleRate = sampleRate;
@@ -77,6 +85,17 @@ public class AudioData {
 		return wavArray; 
 	}
 
+	/**
+	 * Trim the audio data between two sample indexes. 
+	 * @param sampleStart - the sample start. 
+	 * @param samplEnd - the sample end. 
+	 * @return AudioData object with trimmed data. 
+	 */
+	public AudioData trim(int sampleStart, int samplEnd) {
+		return new AudioData(Arrays.copyOfRange(samples, sampleStart, samplEnd), sampleRate); 
+	}
+
+
 
 	/**
 	 * Interpolate the audio data (e..g up sample or down sample)
@@ -98,7 +117,7 @@ public class AudioData {
 	}
 
 	/**
-	 * Pre emphasise the audio data so that lower frequencies are attenuated
+	 * Pre-emphasise the audio data so that lower frequencies are attenuated
 	 * @param factor - the pre-emphasis factor
 	 * @return AudioData object with pre emphasised data. 
 	 */

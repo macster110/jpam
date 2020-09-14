@@ -63,7 +63,25 @@ public class DLParams {
 	/**
 	 * Maximum value to clamp spectrogram to after normalisation. 
 	 */
-	public double clampMax = 1; 
+	public double clampMax = 1;
+
+	/**
+	 * The minimum frequency to interpolate the spectrogram image from.
+	 */
+	public double fmax = 10000; 
+	
+	/**
+	 * The maximum frequency to interpolate the spectrogram image from.
+	 */
+	public double fmin = 50000;
+
+	/**
+	 * The number of vertical bins to interpolate the spectrogram image to. 
+	 */
+	public int n_freq_bins = 256; 
+	
+	
+
 
 
 }
