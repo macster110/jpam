@@ -1,4 +1,4 @@
-package wavFiles;
+package org.jamdev.jtorch4pam.wavFiles;
 
 /**
  * Filter for emphasising low frequencies.

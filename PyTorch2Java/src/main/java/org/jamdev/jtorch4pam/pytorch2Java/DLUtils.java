@@ -1,4 +1,4 @@
-package pytorch2Java;
+package org.jamdev.jtorch4pam.pytorch2Java;
 
 import java.util.Arrays;
 import java.util.LinkedList;

@@ -1,4 +1,4 @@
-package DeepLearningBats.PyTorch2Java;
+package org.jamdev.jtorch4pam.DeepLearningBats;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,14 +9,13 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import org.jamdev.jtorch4pam.pytorch2Java.DLUtils;
+import org.jamdev.jtorch4pam.spectrogram.Spectrogram;
+import org.jamdev.jtorch4pam.wavFiles.AudioData;
+import org.jamdev.jtorch4pam.wavFiles.WavFile;
 import org.pytorch.IValue;
 import org.pytorch.Module;
 import org.pytorch.Tensor;
-
-import pytorch2Java.DLUtils;
-import spectrogram.Spectrogram;
-import wavFiles.WavFile;
-import wavFiles.AudioData;
 /**
  * Run a bat deep learning algorithm. 
  *
@@ -108,7 +107,7 @@ public class BatDL {
 		//wav file 
 		try {
 			AudioData soundData = loadWavFile(wavFilePath);
-			soundData = soundData.interpolate(dlParams.sR).preEmphasis(dlParams.); 
+			soundData = soundData.interpolate(dlParams.sR).preEmphasis(dlParams.preemphases); 
 			
 			System.out.println( "Open wav file: No. samples:"+ soundData.samples.length + " sample rate: " + soundData.sampleRate);
 

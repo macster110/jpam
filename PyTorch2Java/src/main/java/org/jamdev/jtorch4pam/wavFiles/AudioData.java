@@ -1,4 +1,4 @@
-package wavFiles;
+package org.jamdev.jtorch4pam.wavFiles;
 
 /**
  * Holds wav file data

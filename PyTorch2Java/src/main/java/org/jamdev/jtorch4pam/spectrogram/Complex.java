@@ -1,4 +1,4 @@
-package spectrogram;
+package org.jamdev.jtorch4pam.spectrogram;
 
 /*	PAMGUARD - Passive Acoustic Monitoring GUARDianship.
  * To assist in the Detection Classification and Localisation 

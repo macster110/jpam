@@ -1,4 +1,4 @@
-package DeepLearningBats.PyTorch2Java;
+package org.jamdev.jtorch4pam.DeepLearningBats;
 
 /**
  * Parameters for running the deep learning algorithm

@@ -1,4 +1,4 @@
-package wavFiles;
+package org.jamdev.jtorch4pam.wavFiles;
 
 import java.util.Arrays;
 

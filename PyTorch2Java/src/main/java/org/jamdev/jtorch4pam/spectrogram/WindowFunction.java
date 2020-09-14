@@ -1,4 +1,4 @@
-package spectrogram;
+package org.jamdev.jtorch4pam.spectrogram;
 
 /*-
  *  * Copyright 2016 Skymind, Inc.

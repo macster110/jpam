@@ -1,4 +1,4 @@
-package spectrogram;
+package org.jamdev.jtorch4pam.spectrogram;
 
 import java.io.Serializable;
 import java.util.Arrays;

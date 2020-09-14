@@ -1,4 +1,4 @@
-package spectrogram;
+package org.jamdev.jtorch4pam.spectrogram;
 
 import org.apache.commons.math3.complex.Complex;
 
