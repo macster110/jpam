@@ -10,7 +10,8 @@ package org.jamdev.jtorch4pam.DeepLearningBats;
  *
  */
 public class DLParams {
-//	
+
+	//settingss for bats used by christian
 //	17:22:24|D|dataOpts: {
 //    "samplingrate": 256000,
 //    "preemphases": 0.98,
@@ -48,12 +49,12 @@ public class DLParams {
 	/**
 	 * The minimum dB level for normalising the dB spectral amplitudes. 
 	 */
-	public double min_level_dB = 100; 
+	public double min_level_dB = -100; 
 	
 	/**
 	 * The reference dB level for normalising the dB spectral amplitudes. 
 	 */
-	public double ref_level_dB = 30;
+	public double ref_level_dB = 0;
 
 	/**
 	 * Minimum value to clamp spectrogram to after normalisation. 
@@ -68,20 +69,22 @@ public class DLParams {
 	/**
 	 * The minimum frequency to interpolate the spectrogram image from.
 	 */
-	public double fmax = 10000; 
+	public double fmax = 100000; 
 	
 	/**
 	 * The maximum frequency to interpolate the spectrogram image from.
 	 */
-	public double fmin = 50000;
+	public double fmin = 40000;
 
 	/**
 	 * The number of vertical bins to interpolate the spectrogram image to. 
 	 */
 	public int n_freq_bins = 256; 
 	
+	/**
+	 * The type of frequency compression ot nuse. 
+	 */
+	public String freq_compression =  "linear"; 
 	
-
-
-
+	
 }

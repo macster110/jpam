@@ -61,10 +61,10 @@ public class DLMatFile {
 	 * @return the matrix object. 
 	 */
 	public static Matrix array2Matrix(double[][] arrayD) {
-		Matrix matrix = Mat5.newMatrix(arrayD.length, arrayD[0].length);
+		Matrix matrix = Mat5.newMatrix(arrayD[0].length, arrayD.length);
 		for (int i=0; i<arrayD.length; i++) {
-			for (int j=0; j<arrayD.length; j++) {
-				matrix.setDouble(i, j, arrayD[i][j]);
+			for (int j=0; j<arrayD[0].length; j++) {
+				matrix.setDouble(j,i, arrayD[i][j]);
 			}
 		}
 		

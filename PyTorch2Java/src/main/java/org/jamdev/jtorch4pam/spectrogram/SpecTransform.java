@@ -102,7 +102,7 @@ public class SpecTransform {
 
 		for (int i = 0; i < array.length; i++) {
 			for (int j = 0; j < array[i].length; j++) {
-				normalizeSpec[i][j] = (array[i][j] - ref_level_dB- min_leveldB) / -min_leveldB; 
+				normalizeSpec[i][j] = ((array[i][j] - ref_level_dB- min_leveldB) / -min_leveldB)-1; 
 			}
 		}
 		return normalizeSpec; 
@@ -150,11 +150,13 @@ public class SpecTransform {
 		int fftlen = array[0].length; 
 
 		//find the minimum bin
-		int minIndex = (int) Math.max(0, fftlen*(fMin/sR/2)); 
-		int maxIndex = (int) Math.max(fftlen-1, fftlen*(fMax/sR/2)); 
+		int minIndex = (int) Math.max(0, fftlen*(fMin/(sR/2))); 
+		int maxIndex = (int) Math.min(fftlen-1, fftlen*(fMax/(sR/2))); 
 
 		double[][] specInterp = new double[array.length][]; 
 		double[] fftSliceInterp; 
+		
+		System.out.println("Min index: " +  minIndex + " max index: " + maxIndex + " FFT len: " + fftlen +  " f min Hz: " + fMin + " f max Hz: " + fMax); 
 
 		for (int i = 0; i < array.length; i++) 	{		
 			fftSliceInterp = Arrays.copyOfRange(array[i], minIndex, maxIndex);

@@ -114,7 +114,9 @@ public class BatDL {
 		try {
 			//Open wav files. 
 			AudioData soundData = loadWavFile(wavFilePath);
+			
 			soundData = soundData.interpolate(dlParams.sR).preEmphasis(dlParams.preemphases); 
+			soundData = soundData.trim(2*1280, 3*1280); 
 
 			System.out.println( "Open wav file: No. samples:"+ soundData.samples.length + " sample rate: " + soundData.sampleRate);
 
@@ -130,6 +132,8 @@ public class BatDL {
 			
 			//export to a file for checking
 			DLMatFile.exportSpecSurface(spectransform, new File(outputMatfile)); 
+			//export to a file for checking
+			DLMatFile.exportSpecArray(spectrogram.getAbsoluteSpectrogram(), spectrogram.getSampleRate(), new File(outputMatfile)); 
 
 			//now must flatten the spectrogram and create a tensor.			
 			float[] specgramFlat = DLUtils.flattenDoubleArrayF(DLUtils.toFloatArray(spectransform.getTransformedData())); 
@@ -139,7 +143,7 @@ public class BatDL {
 			long[] arrayShaleL = new long[arrayShape.length]; 
 			for (int i=0; i<arrayShaleL.length; i++) {
 				arrayShaleL[i] = arrayShape[i]; 
-				System.out.println(arrayShaleL[i]); 
+//				System.out.println(arrayShaleL[i]); 
 			}
 			
 			//create the shape for the tensor.
