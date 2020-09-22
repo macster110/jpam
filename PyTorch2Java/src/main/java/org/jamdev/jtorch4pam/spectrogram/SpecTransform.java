@@ -102,7 +102,7 @@ public class SpecTransform {
 
 		for (int i = 0; i < array.length; i++) {
 			for (int j = 0; j < array[i].length; j++) {
-				normalizeSpec[i][j] = ((array[i][j] - ref_level_dB- min_leveldB) / -min_leveldB)-1; 
+				normalizeSpec[i][j] = 2*(((array[i][j] - ref_level_dB- min_leveldB) / -min_leveldB)-1); 
 			}
 		}
 		return normalizeSpec; 

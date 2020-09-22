@@ -4,6 +4,7 @@ import java.io.File;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Random;
 
 import javax.sound.sampled.AudioFormat;
@@ -12,7 +13,6 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.jamdev.jtorch4pam.spectrogram.SpecTransform;
 import org.jamdev.jtorch4pam.spectrogram.Spectrogram;
-import org.jamdev.jtorch4pam.utils.DLMatFile;
 import org.jamdev.jtorch4pam.utils.DLUtils;
 import org.jamdev.jtorch4pam.wavFiles.AudioData;
 import org.jamdev.jtorch4pam.wavFiles.WavFile;
@@ -107,8 +107,8 @@ public class BatDL {
 		//Path to the model
 		String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000.pk";
 		
-		//output file path to test what the java spectrgram transforms look like. 
-		String outputMatfile = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/javaspec.mat"; 
+//		//output file path to test what the java spectrgram transforms look like. 
+//		String outputMatfile = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/javaspec.mat"; 
 
 		//wav file 
 		try {
@@ -130,10 +130,10 @@ public class BatDL {
 					.normalise(dlParams.min_level_dB, dlParams.ref_level_dB)
 					.clamp(dlParams.clampMin, dlParams.clampMax);
 			
-			//export to a file for checking
-			DLMatFile.exportSpecSurface(spectransform, new File(outputMatfile)); 
-			//export to a file for checking
-			DLMatFile.exportSpecArray(spectrogram.getAbsoluteSpectrogram(), spectrogram.getSampleRate(), new File(outputMatfile)); 
+//			//export to a file for checking
+//			DLMatFile.exportSpecSurface(spectransform, new File(outputMatfile)); 
+//			//export to a file for checking
+//			DLMatFile.exportSpecArray(spectrogram.getAbsoluteSpectrogram(), spectrogram.getSampleRate(), new File(outputMatfile)); 
 
 			//now must flatten the spectrogram and create a tensor.			
 			float[] specgramFlat = DLUtils.flattenDoubleArrayF(DLUtils.toFloatArray(spectransform.getTransformedData())); 
@@ -153,23 +153,33 @@ public class BatDL {
 			
 			//create the tensor 
 			Tensor data = Tensor.fromBlob(specgramFlat, shape); 
+			
+		    System.out.println("Input shape: " + Arrays.toString(data.shape()));
+		    System.out.println("Input data [0]: " +data.getDataAsFloatArray()[0]);
 
 			//load the model. 
 			Module mod = Module.load(modelPath);
+			
+//			HashMap<String, IValue> hashMap = new HashMap<String, IValue>();
+//			hashMap.put("datpts", null); 
+//			mod.forward(IValue.dictStringKeyFrom(hashMap)); 
+//			IValue resultS = mod.forward(IValue.dictStringKeyFrom(new HashMap<String, IValue>()));
 
 			//run the model on the acoustic data. 
 			IValue result = mod.forward(IValue.from(data));
-
+			
 			//convert the output to a tensor
 			Tensor output = result.toTensor();
+			
 			
 		    System.out.println("Output shape: " + Arrays.toString(output.shape()));
 		    System.out.println("Output data: " + Arrays.toString(output.getDataAsFloatArray()));
 			
 			//grab the results. 
-		    double[] prob = new double[(int) output.shape()[0]]; 
+		    double[] prob = new double[(int) output.shape()[1]]; 
 		    
-		    for (int j=0; j<output.shape()[0]; j++) {
+		    
+		    for (int j=0; j<output.shape()[1]; j++) {
 		    	//python code for this. 
 //		    	prob = torch.nn.functional.softmax(out).numpy()[n, 1]
 //	                    pred = int(prob >= ARGS.threshold)		    	
@@ -183,6 +193,8 @@ public class BatDL {
 			e.printStackTrace();
 			return;
 		}
+		
+		
 	}
 
 

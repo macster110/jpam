@@ -5,15 +5,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>DeepLearningBats</groupId>
-	<artifactId>PyTorch2Java</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<groupId>org.jamdev</groupId>
+	<artifactId>jtorch4pam</artifactId>
+	<version>0.0.63</version>
 	<packaging>jar</packaging>
 
 
-	<name>PyTorch2Java</name>
-	<!-- FIXME change it to the project's website -->
-	<url>http://www.example.com</url>
+	<name>jamdev</name>
+	<url>https://github.com/macster110/JTorch4PAM</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -49,7 +48,7 @@
 		<dependency>
 			<groupId>org.pytorch</groupId>
 			<artifactId>pytorch_java_only</artifactId>
-			<version>1.5.0</version>
+			<version>1.6.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.jflac/jflac-codec -->
 		<dependency>
@@ -75,8 +74,35 @@
 			<artifactId>mfl-core</artifactId>
 			<version>0.5.6</version>
 		</dependency>
-	</dependencies>
+		<!-- Deep Java Library -->
+		<dependency>
+			<groupId>ai.djl</groupId>
+			<artifactId>api</artifactId>
+			<version>0.7.0</version>
+		</dependency>
 
+		<dependency>
+			<groupId>ai.djl.pytorch</groupId>
+			<artifactId>pytorch-model-zoo</artifactId>
+			<version>0.7.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ai.djl.pytorch</groupId>
+			<artifactId>pytorch-native-cpu</artifactId>
+			<classifier>osx-x86_64</classifier>
+			<version>1.6.0</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>ai.djl.pytorch</groupId>
+			<artifactId>pytorch-native-auto</artifactId>
+			<version>1.6.0</version>
+			<scope>runtime</scope>
+		</dependency>
+
+	</dependencies>
 
 	<build>
 		<plugins>
@@ -88,9 +114,50 @@
 					<release>14</release>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.4.2</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.2</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.1.2</version>
+			</plugin>
 		</plugins>
-		<!-- <finalName>dl4j-quickstart</finalName> -->
 	</build>
 
+	<licenses>
+		<license>
+			<name>GPL-3.0</name>
+			<url>https://opensource.org/licenses/GPL-3.0</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<scm>
+		<url>https://github.com/macster110/JTorch4PAM.git</url>
+	</scm>
+	<developers>
+		<developer>
+			<id>macster110</id>
+			<name>Jamie Macaulay</name>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+	</developers>
+	<description>Deep learning tools for passive acoustic monitoring</description>
+
+	<distributionManagement>
+		<repository>
+			<id>bintray-macster110-jtorch4pam</id>
+			<name>macster110-jtorch4pam</name>
+			<url>https://api.bintray.com/maven/macster110/jtorch4pam/dl4pam/;publish=1</url>
+		</repository>
+	</distributionManagement>
 
 </project>
