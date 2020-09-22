@@ -1,4 +1,4 @@
-# pytorch2java
+# JTorch4PAM
 
 ## Overview
 
