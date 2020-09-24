@@ -159,6 +159,7 @@ public class BatDL {
 
 			//load the model. 
 			Module mod = Module.load(modelPath);
+		
 			
 //			HashMap<String, IValue> hashMap = new HashMap<String, IValue>();
 //			hashMap.put("datpts", null); 
@@ -167,6 +168,7 @@ public class BatDL {
 
 			//run the model on the acoustic data. 
 			IValue result = mod.forward(IValue.from(data));
+			
 			
 			//convert the output to a tensor
 			Tensor output = result.toTensor();
