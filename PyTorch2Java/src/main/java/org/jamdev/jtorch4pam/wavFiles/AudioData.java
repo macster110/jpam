@@ -46,6 +46,21 @@ public class AudioData {
 		preEmphasisFilter = new PreEmphasisFilter(); 
 		wavInterpolator= new WavInterpolator(); 
 	}
+	
+	/**
+	 * Create an AudioData object.
+	 * @param samples - the samples in amplitude units u. 
+	 * @param sampleRate - the sample rate in samples per second. 
+	 */
+	public AudioData(double[] wavArray, float sampleRate){
+		int[] samples = new int[wavArray.length]; 
+		for (int i=0; i<wavArray.length; i++) {
+			wavArray[i] = samples[i]/bitRate; 
+		}
+		this.sampleRate = sampleRate;
+		preEmphasisFilter = new PreEmphasisFilter(); 
+		wavInterpolator= new WavInterpolator(); 
+	}
 
 	/**
 	 * Get the sample rate in samples per second. 

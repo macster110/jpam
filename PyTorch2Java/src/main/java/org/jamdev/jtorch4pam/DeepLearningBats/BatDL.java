@@ -4,7 +4,6 @@ import java.io.File;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Random;
 
 import javax.sound.sampled.AudioFormat;
@@ -23,6 +22,7 @@ import org.pytorch.Tensor;
 /**
  * 
  * Run a bat deep learning algorithm. 
+ * <p> Note that this requires that the jvm points to the PyTorch library. 
  *
  */
 public class BatDL {
@@ -160,7 +160,7 @@ public class BatDL {
 			//load the model. 
 			Module mod = Module.load(modelPath);
 		
-			
+			IValue getClassesOutput =mod.runMethod("get_classes"); 
 //			HashMap<String, IValue> hashMap = new HashMap<String, IValue>();
 //			hashMap.put("datpts", null); 
 //			mod.forward(IValue.dictStringKeyFrom(hashMap)); 
