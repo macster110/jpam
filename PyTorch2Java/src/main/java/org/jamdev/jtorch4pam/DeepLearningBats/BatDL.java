@@ -66,7 +66,7 @@ public class BatDL {
 	}
 	
 	/**
-	 * Make a dummy spectrgram for testing. Filled with random values.  
+	 * Make a dummy spectrogram for testing. Filled with random values.  
 	 * @return a dummy spectrogram with random values. 
 	 */
 	private static float[][] makeDummySpectrogram(){
@@ -89,7 +89,6 @@ public class BatDL {
 				}
 			}
 		}
-		
 		return specDummy; 
 	}
 
@@ -102,11 +101,17 @@ public class BatDL {
 //		String wavFilePath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/example_wav/SKOVSOE_20200817_011402.wav"; 
 
 		//High...ish SNR bat click
-		String wavFilePath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/training_clips__Troldekær_deployment_3/DUB_20200623_000152_885.wav";
-			
+//		String wavFilePath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/training_clips__Troldekær_deployment_3/DUB_20200623_000152_885.wav";
+//		String wavFilePath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/training_clips/noise/NOISE_20180816_205841_000.wav";
+//		String wavFilePath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/training_clips__Troldekær_deployment_3/DUB_20200623_003257_654.wav";
+//		int[] samplesChunk = new int[] {1536, 2810}; // the sample chunk to use. 
+//		int[] samplesChunk = new int[] {1024, 2298}; // the sample chunk to use. 
+		String wavFilePath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/example_wav/call_393_2019_S4U05619MOL2-20180917-051012_2525_2534.wav";
+		int[] samplesChunk = new int[] {0, 1274}; // the sample chunk to use. 
+
 		//Path to the model
-		String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000.pk";
-		
+//		String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_dummy/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000.pk";
+		String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JAMIE.pk"; 
 //		//output file path to test what the java spectrgram transforms look like. 
 //		String outputMatfile = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/javaspec.mat"; 
 
@@ -116,7 +121,7 @@ public class BatDL {
 			AudioData soundData = loadWavFile(wavFilePath);
 			
 			soundData = soundData.interpolate(dlParams.sR).preEmphasis(dlParams.preemphases); 
-			soundData = soundData.trim(2*1280, 3*1280); 
+			soundData = soundData.trim(samplesChunk[0], samplesChunk[1]); 
 
 			System.out.println( "Open wav file: No. samples:"+ soundData.samples.length + " sample rate: " + soundData.sampleRate);
 
@@ -160,7 +165,7 @@ public class BatDL {
 			//load the model. 
 			Module mod = Module.load(modelPath);
 		
-			IValue getClassesOutput =mod.runMethod("get_classes"); 
+//			IValue getClassesOutput =mod.runMethod("get_classes"); 
 //			HashMap<String, IValue> hashMap = new HashMap<String, IValue>();
 //			hashMap.put("datpts", null); 
 //			mod.forward(IValue.dictStringKeyFrom(hashMap)); 
@@ -195,7 +200,6 @@ public class BatDL {
 			e.printStackTrace();
 			return;
 		}
-		
 		
 	}
 

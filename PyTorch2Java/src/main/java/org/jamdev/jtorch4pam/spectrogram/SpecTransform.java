@@ -102,7 +102,8 @@ public class SpecTransform {
 
 		for (int i = 0; i < array.length; i++) {
 			for (int j = 0; j < array[i].length; j++) {
-				normalizeSpec[i][j] = 2*(((array[i][j] - ref_level_dB- min_leveldB) / -min_leveldB)-1); 
+				//have to add a compensation factor here because of the the difference in fft calc
+				normalizeSpec[i][j] = 2*(((array[i][j] - ref_level_dB - min_leveldB) / -min_leveldB))-1.1407; 
 			}
 		}
 		return normalizeSpec; 

@@ -119,16 +119,17 @@ public class AudioData {
 	 */
 	public AudioData interpolate(float interpSr) {
 		double[] wavArray = getScaledSampleAmpliudes(); 
-		wavInterpolator.interpolate(wavArray, this.sampleRate, interpSr);
+		
+		double[] intperarr = wavInterpolator.interpolate(wavArray, this.sampleRate, interpSr);
 
-		int[] samplesDecimated = new int[wavArray.length]; 
+		int[] samplesDecimated = new int[intperarr.length]; 
 		
 		double bitSize = Math.pow(2, bitRate); 
-		for (int i=0; i<wavArray.length; i++) {
-			samplesDecimated[i]=(int) (bitSize*wavArray[i]);
+		for (int i=0; i<intperarr.length; i++) {
+			samplesDecimated[i]=(int) (bitSize*intperarr[i]);
 		}
 
-		return new AudioData(samplesDecimated, sampleRate); 
+		return new AudioData(samplesDecimated, interpSr); 
 	}
 
 	/**

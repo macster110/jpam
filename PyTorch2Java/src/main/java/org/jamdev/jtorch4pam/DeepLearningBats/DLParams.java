@@ -36,7 +36,8 @@ public class DLParams {
 	public int hop_length = 8; 
 	
 	/**
-	 * The sample rate to interpolate or decimate to in samples per second
+	 * The sample rate to interpolate or decimate to in samples per second. i.e. this is the sample rate of the 
+	 * training data. 
 	 */
 	public float sR = 256000; 
 	

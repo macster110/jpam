@@ -103,7 +103,7 @@ public class Spectrogram {
 	 */
 	private void buildSpectrogram(AudioData wave) {
 
-		int[] amplitudes = wave.getSampleAmplitudes();
+		double[] amplitudes = wave.getScaledSampleAmpliudes();
 		int pointer = 0;
 
 		// overlapping
@@ -115,9 +115,9 @@ public class Spectrogram {
 		 * deal all the all the cases where the fft hop and length are not direct divisors of the samples etc. 
 		 */
 
-		int numHops = (int) Math.floor((amplitudes.length-fftSampleSize)/fftHop); 
+		int numHops = (int) Math.ceil((amplitudes.length-fftSampleSize)/fftHop); 
 		int numOverlappedSamples = (int) (fftSampleSize*numHops)+fftSampleSize;
-		int[] overlapAmp = new int[numOverlappedSamples];
+		double[] overlapAmp = new double[numOverlappedSamples];
 
 		//temp
 		int numSamples = numHops*fftHop+fftSampleSize;
