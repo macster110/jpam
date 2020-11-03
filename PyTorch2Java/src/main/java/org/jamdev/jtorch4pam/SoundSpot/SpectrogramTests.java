@@ -1,4 +1,4 @@
-package org.jamdev.jtorch4pam.DeepLearningBats;
+package org.jamdev.jtorch4pam.SoundSpot;
 
 import java.io.IOException;
 
@@ -43,7 +43,7 @@ public class SpectrogramTests {
 		//wav file 
 		try {
 			//Open wav files. 
-			AudioData soundData = BatDL.loadWavFile(wavFilePath);
+			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
 			System.out.println( "Open sound file: No. samples: "+ soundData.samples.length + " sample rate: " + soundData.sampleRate);
 
 

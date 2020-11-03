@@ -1,4 +1,4 @@
-package org.jamdev.jtorch4pam.DeepLearningBats;
+package org.jamdev.jtorch4pam.SoundSpot;
 
 import java.io.File;
 
@@ -27,44 +27,7 @@ import org.pytorch.Tensor;
  */
 public class BatDL {
 
-	/*
-	 * Load a wav file. 
-	 */
-	public static AudioData loadWavFile(String path) throws IOException, UnsupportedAudioFileException {
-		// reads the first 44 bytes for header
-		WavFile wavFile = new  WavFile(new File(path));
-		AudioFormat format = wavFile.getAudioFileFormat().getFormat(); 
 
-		int channels = format.getChannels(); 
-
-		// load data
-		AudioInputStream inputStream  = wavFile.getAudioInputStream(); 
-
-		//first downsample
-		//now downsample the data if need bed 
-		byte[] data;
-
-		data = new byte[inputStream.available()];
-		inputStream.read(data);	  
-		//		}
-
-		if (channels==1) {
-			//no need to do anything else. 
-
-		}
-		else {
-			//extract single channel data 
-			data = WavFile.getSingleChannelByte(format, data,  0); 
-		}
-
-		int[] samples = WavFile.getSampleAmplitudes(format, data);
-
-		int sampleRate = (int) format.getSampleRate();
-
-		return new AudioData(samples, sampleRate); 
-
-	}
-	
 	/**
 	 * Make a dummy spectrogram for testing. Filled with random values.  
 	 * @return a dummy spectrogram with random values. 
@@ -118,7 +81,7 @@ public class BatDL {
 		//wav file 
 		try {
 			//Open wav files. 
-			AudioData soundData = loadWavFile(wavFilePath);
+			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
 			
 			soundData = soundData.interpolate(dlParams.sR).preEmphasis(dlParams.preemphases); 
 			soundData = soundData.trim(samplesChunk[0], samplesChunk[1]); 

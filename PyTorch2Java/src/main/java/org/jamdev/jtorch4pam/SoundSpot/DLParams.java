@@ -1,4 +1,4 @@
-package org.jamdev.jtorch4pam.DeepLearningBats;
+package org.jamdev.jtorch4pam.SoundSpot;
 
 /**
  * Parameters for running the deep learning algorithm

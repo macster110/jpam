@@ -1,8 +1,17 @@
 package org.jamdev.jtorch4pam.utils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
+import org.jamdev.jtorch4pam.wavFiles.AudioData;
+import org.jamdev.jtorch4pam.wavFiles.WavFile;
 
 /**
  * Contains useful functions. 
@@ -273,6 +282,45 @@ public class DLUtils {
 	public static double softmax(double input, double[] neuronValues) {
 	    double total = Arrays.stream(neuronValues).map(Math::exp).sum();
 	    return Math.exp(input) / total;
+	}
+	
+	
+	/*
+	 * Load a wav file. 
+	 */
+	public static AudioData loadWavFile(String path) throws IOException, UnsupportedAudioFileException {
+		// reads the first 44 bytes for header
+		WavFile wavFile = new  WavFile(new File(path));
+		AudioFormat format = wavFile.getAudioFileFormat().getFormat(); 
+
+		int channels = format.getChannels(); 
+
+		// load data
+		AudioInputStream inputStream  = wavFile.getAudioInputStream(); 
+
+		//first downsample
+		//now downsample the data if need bed 
+		byte[] data;
+
+		data = new byte[inputStream.available()];
+		inputStream.read(data);	  
+		//		}
+
+		if (channels==1) {
+			//no need to do anything else. 
+
+		}
+		else {
+			//extract single channel data 
+			data = WavFile.getSingleChannelByte(format, data,  0); 
+		}
+
+		int[] samples = WavFile.getSampleAmplitudes(format, data);
+
+		int sampleRate = (int) format.getSampleRate();
+
+		return new AudioData(samples, sampleRate); 
+
 	}
 
 }

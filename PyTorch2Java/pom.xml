@@ -7,7 +7,7 @@
 
 	<groupId>org.jamdev</groupId>
 	<artifactId>jtorch4pam</artifactId>
-	<version>0.0.63</version>
+	<version>0.0.64</version>
 	<packaging>jar</packaging>
 
 
@@ -152,12 +152,12 @@
 	</developers>
 	<description>Deep learning tools for passive acoustic monitoring</description>
 
-	<!--<distributionManagement>
+	<distributionManagement>
 		<repository>
 			<id>bintray-macster110-jtorch4pam</id>
 			<name>macster110-jtorch4pam</name>
 			<url>https://api.bintray.com/maven/macster110/jtorch4pam/dl4pam/;publish=1</url>
 		</repository>
-	</distributionManagement>-->
+	</distributionManagement>
 
 </project>

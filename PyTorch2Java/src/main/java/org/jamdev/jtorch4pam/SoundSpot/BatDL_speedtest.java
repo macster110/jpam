@@ -1,4 +1,4 @@
-package org.jamdev.jtorch4pam.DeepLearningBats;
+package org.jamdev.jtorch4pam.SoundSpot;
 
 import java.util.Arrays;
 
@@ -34,7 +34,7 @@ public class BatDL_speedtest {
 		//wav file 
 		try {
 			//Open wav files. 
-			AudioData soundData = BatDL.loadWavFile(wavFilePath);
+			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
 
 			soundData = soundData.interpolate(dlParams.sR).preEmphasis(dlParams.preemphases); 
 			soundData = soundData.trim(2*1280, 3*1280); 
