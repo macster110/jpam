@@ -9,31 +9,6 @@ import org.jamdev.jtorch4pam.wavFiles.AudioData;
  */
 public class WaveTransform implements DLTransform {
 
-	/**
-	 * Type of waveform transform that are available. 
-	 *  {@link #PREEMPHSIS}
-	 *  {@link #DECIMATE}
-	 *  {@link #TRIM}
-	 *  
-	 * @author Jamie Macaulay
-	 *
-	 */
-	public enum WaveTransformType {
-		/**
-		 * Basic filter which reduces lower frequencies.
-		 */
-		PREEMPHSIS, 
-		
-		/**
-		 * Decimates the signal to a high or lower amplitude including anti-aliasing filters. 
-		 */
-		DECIMATE, 
-		
-		/**
-		 * Trims the acoustic data to new length.
-		 */
-		TRIM
-	}	
 
 	/**
 	 * The audio data class. This contains audio data, 
@@ -43,7 +18,7 @@ public class WaveTransform implements DLTransform {
 	/**
 	 * The waveform transform type flag
 	 */
-	private WaveTransformType flag;
+	private DLTransformType flag;
 	
 	/**
 	 * The parameters. 
@@ -66,7 +41,7 @@ public class WaveTransform implements DLTransform {
 	 * @param flag - the type fflag for the transform
 	 * @param params - the parameters associated with thetransform type. 
 	 */
-	public  WaveTransform(AudioData audioData, WaveTransformType flag, Number... params) {
+	public  WaveTransform(AudioData audioData, DLTransformType flag, Number... params) {
 		this.flag=flag; 
 		this.params = params;
 		this.soundData=audioData; 
@@ -87,7 +62,7 @@ public class WaveTransform implements DLTransform {
 	 * @param flag - the type fflag for the transform
 	 * @param params - the parameters associated with thetransform type. 
 	 */
-	public  WaveTransform(WaveTransformType flag, Number... params) {
+	public  WaveTransform(DLTransformType flag, Number... params) {
 		this.flag=flag; 
 		this.params = params;
 	}
@@ -100,10 +75,10 @@ public class WaveTransform implements DLTransform {
 			soundData = waveTransform.getWaveData().interpolate(params[0].floatValue()); 
 			break;
 		case PREEMPHSIS:
-			soundData = waveTransform.getWaveData().interpolate(params[0].floatValue()); 
+			soundData = waveTransform.getWaveData().preEmphasis(params[0].floatValue()); 
 			break;
 		case TRIM:
-			soundData = waveTransform.getWaveData().interpolate(params[0].floatValue()); 
+			soundData = waveTransform.getWaveData().trim(params[0].intValue(), params[1].intValue()); 
 			break;
 		default:
 			break;
@@ -122,6 +97,11 @@ public class WaveTransform implements DLTransform {
 	 */
 	public AudioData setWaveData() {
 		return soundData; 
+	}
+
+	@Override
+	public DLTransformType getDLTransformType() {
+		return flag;
 	}
 
 }

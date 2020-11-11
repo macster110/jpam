@@ -1,7 +1,5 @@
 package org.jamdev.jtorch4pam.SoundSpot;
 
-import java.util.Arrays;
-
 import org.jamdev.jtorch4pam.spectrogram.SpecTransform;
 import org.jamdev.jtorch4pam.spectrogram.Spectrogram;
 import org.jamdev.jtorch4pam.utils.DLUtils;

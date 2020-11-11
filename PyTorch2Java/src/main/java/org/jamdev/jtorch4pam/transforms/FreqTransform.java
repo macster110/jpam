@@ -13,43 +13,7 @@ import org.jamdev.jtorch4pam.spectrogram.Spectrogram;
  */
 public class FreqTransform implements DLTransform {
 
-	/**
-	 * Type of frequency transform that are available. 
-	 * {@link #SPECTROGRAM}
-	 * {@link #SPECCROPINTERP}
-	 * {@link #SPECNORMALISE}
-	 * {@link #SPEC2DB}
-	 * 
-	 * @author Jamie Macaulay
-	 *
-	 */
-	public enum FreqTransformType {
-		/**
-		 * Converts a waveform to a spectrogram
-		 */
-		SPECTROGRAM, 
-
-		/**
-		 * Crops a spectrogram image between two frequency values and interpolates the image to be
-		 * a specified pixel size. 
-		 */
-		SPECCROPINTERP, 
-
-		/**
-		 * Normalises the spectrogram
-		 */
-		SPECNORMALISE, 
-
-		/**
-		 * Converts a spectrogram from linear to log10 units. 
-		 */
-		SPEC2DB,
-		
-		/**
-		 * Clamps the spectrogram between two values.
-		 */
-		SPECCLAMP
-	}	
+	
 
 	/**
 	 * The spec transform which holds the transformed data. 
@@ -59,7 +23,7 @@ public class FreqTransform implements DLTransform {
 	/**
 	 * The frequency transform type flag
 	 */
-	private FreqTransformType flag;
+	private DLTransformType flag;
 
 	/**
 	 * The parameters. 
@@ -85,7 +49,7 @@ public class FreqTransform implements DLTransform {
 	 * @param flag - the type flag for the transform
 	 * @param params - the parameters associated with the transform type. 
 	 */
-	public FreqTransform(Spectrogram spectrogram, FreqTransformType flag, Number... params) {
+	public FreqTransform(Spectrogram spectrogram, DLTransformType flag, Number... params) {
 		this.flag = flag; 
 		this.params = params; 
 		this.specTransfrom = new SpecTransform(spectrogram); 
@@ -109,7 +73,7 @@ public class FreqTransform implements DLTransform {
 	 * @param flag - the type flag for the transform
 	 * @param params - the parameters associated with thetransform type. 
 	 */
-	public FreqTransform(FreqTransformType flag, Number... params) {
+	public FreqTransform(DLTransformType flag, Number... params) {
 		this.flag = flag; 
 		this.params = params; 
 	}
@@ -132,6 +96,9 @@ public class FreqTransform implements DLTransform {
 			Spectrogram spectrogram = new Spectrogram(((WaveTransform) transform).getWaveData(), (int) params[0], (int) params[1]); 
 			specTransfrom = new SpecTransform(spectrogram); 
 			break;
+		case SPECCLAMP:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().clamp(params[0].doubleValue(),  params[1].doubleValue()); 
+			break;
 		default:
 			break;
 		}
@@ -145,6 +112,12 @@ public class FreqTransform implements DLTransform {
 	 */
 	public SpecTransform getSpecTransfrom() {
 		return specTransfrom;
+	}
+
+
+	@Override
+	public DLTransformType getDLTransformType() {
+		return flag;
 	}
 
 
