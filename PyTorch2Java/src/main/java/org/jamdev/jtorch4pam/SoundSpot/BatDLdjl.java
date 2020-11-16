@@ -1,15 +1,9 @@
 package org.jamdev.jtorch4pam.SoundSpot;
 
-import java.util.Arrays;
-import java.util.Random;
-
 import org.jamdev.jtorch4pam.spectrogram.SpecTransform;
 import org.jamdev.jtorch4pam.spectrogram.Spectrogram;
 import org.jamdev.jtorch4pam.utils.DLUtils;
 import org.jamdev.jtorch4pam.wavFiles.AudioData;
-import org.pytorch.IValue;
-import org.pytorch.Module;
-import org.pytorch.Tensor;
 
 /**
  * 
@@ -17,9 +11,7 @@ import org.pytorch.Tensor;
  * <p> Note that this requires that the jvm points to the PyTorch library. 
  *
  */
-public class BatDL {
-
-
+public class BatDLdjl {
 
 	public static void main( String[] args ) {
 		
@@ -64,69 +56,25 @@ public class BatDL {
 					.normalise(dlParams.min_level_dB, dlParams.ref_level_dB)
 					.clamp(dlParams.clampMin, dlParams.clampMax);
 			
-//			//export to a file for checking
-//			DLMatFile.exportSpecSurface(spectransform, new File(outputMatfile)); 
-//			//export to a file for checking
-//			DLMatFile.exportSpecArray(spectrogram.getAbsoluteSpectrogram(), spectrogram.getSampleRate(), new File(outputMatfile)); 
 
-			//load the model. 
-			Module mod = Module.load(modelPath);
-			
-		    long time1 = System.currentTimeMillis();
 
-			//now must flatten the spectrogram and create a tensor.			
-			float[] specgramFlat = DLUtils.flattenDoubleArrayF(DLUtils.toFloatArray(spectransform.getTransformedData())); 
-			int[] arrayShape = 	DLUtils.arrayShape(spectransform.getTransformedData());
+			SoundSpotModel soundSpotModel = new SoundSpotModel(modelPath); 
 			
-			//convert the array shape to a long instead of int. 
-			long[] arrayShaleL = new long[arrayShape.length]; 
-			for (int i=0; i<arrayShaleL.length; i++) {
-				arrayShaleL[i] = arrayShape[i]; 
-//				System.out.println(arrayShaleL[i]); 
+			float[] output = null; 
+			for (int i=0; i<10; i++) {
+				long time1 = System.currentTimeMillis();
+				output = soundSpotModel.runModel(DLUtils.toFloatArray(spectransform.getTransformedData())); 
+				long time2 = System.currentTimeMillis();
+				System.out.println("Time to run model: " + (time2-time1) + " ms"); 
 			}
-			
-			//create the shape for the tensor.
-			long[] shape = {1L, 1L, arrayShaleL[0], arrayShaleL[1]}; 
-			
-//			DLUtils.printArray(specGram); 
-			
-			//create the tensor 
-			Tensor data = Tensor.fromBlob(specgramFlat, shape);
-			
-		    System.out.println("Input shape: " + Arrays.toString(data.shape()));
-		    System.out.println("Input data [0]: " +data.getDataAsFloatArray()[0]);
-
-				
-//			IValue getClassesOutput =mod.runMethod("get_classes"); 
-//			HashMap<String, IValue> hashMap = new HashMap<String, IValue>();
-//			hashMap.put("datpts", null); 
-//			mod.forward(IValue.dictStringKeyFrom(hashMap)); 
-//			IValue resultS = mod.forward(IValue.dictStringKeyFrom(new HashMap<String, IValue>()));
-
-			//run the model on the acoustic data. 
-			IValue result = mod.forward(IValue.from(data));
-			
-			
-			//convert the output to a tensor
-			Tensor output = result.toTensor();
-			
-			
-		    System.out.println("Output shape: " + Arrays.toString(output.shape()));
-		    System.out.println("Output data: " + Arrays.toString(output.getDataAsFloatArray()));
-			
-			//grab the results. 
-		    double[] prob = new double[(int) output.shape()[1]]; 
 		    
-		    long time2 = System.currentTimeMillis();
-		    System.out.println("Time to run model: " + (time2-time1) + " ms"); 
-
-		    
-		    for (int j=0; j<output.shape()[1]; j++) {
+			double[] prob = new double[output.length]; 
+		    for (int j=0; j<output.length; j++) {
 		    	//python code for this. 
 //		    	prob = torch.nn.functional.softmax(out).numpy()[n, 1]
 //	                    pred = int(prob >= ARGS.threshold)		    	
 		    	//softmax function
-		    	prob[j] = DLUtils.softmax(output.getDataAsFloatArray()[j], output.getDataAsFloatArray()); 
+		    	prob[j] = DLUtils.softmax(output[j], output); 
 		    	System.out.println("The probability is: " + prob[j]); 
 		    }
 

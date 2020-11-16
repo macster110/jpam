@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -20,6 +21,37 @@ import org.jamdev.jtorch4pam.wavFiles.WavFile;
  *
  */
 public class DLUtils {
+
+
+	/**
+	 * Make a dummy spectrogram for testing. Filled with random values.  
+	 * @param len - the length of the spectrogram in bins. 
+	 * @param height - the height of the spectrgram in bins. 
+	 * @return a dummy spectrogram with random values. 
+	 */
+	public static float[][] makeDummySpectrogram(int len, int len2){
+
+		//		int len = 256; 
+		//		int len2 = 128; 
+
+		float[][] specDummy = new float[len][len2]; 
+
+		Random rand = new Random(); 
+		for (int i=0; i<len; i++){
+			for (int j=0; j<len2; j++) {
+				specDummy[i][j] = 2F*(rand.nextFloat()-0.5F);
+
+				if (specDummy[i][j]>1) {
+					specDummy[i][j]=1F;
+				}
+				if (specDummy[i][j]<0) {
+					specDummy[i][j]=0F;
+				}
+			}
+		}
+		return specDummy; 
+	}
+
 
 	/** 
 	 * Convert an arbitrary-dimensional rectangular double array to flat vector.<br>
@@ -240,8 +272,8 @@ public class DLUtils {
 	}
 
 	/**
-	 * Print a 2D double array
-	 * @param array - the array 
+	 * Print all elements in a 2D double[][] array. 
+	 * @param array - the array to print. 
 	 */
 	public static void printArray(double[][] array) {
 		for (int j=0; j<array.length; j++) {
@@ -254,8 +286,8 @@ public class DLUtils {
 	}
 
 	/**
-	 * Print a 2D int array
-	 * @param array - the array 
+	 * Print all elements in a 2D int[][] array. 
+	 * @param array - the array to print. 
 	 */
 	public static void printArray(int[][] array) {
 		for (int j=0; j<array.length; j++) {
@@ -268,6 +300,18 @@ public class DLUtils {
 	}
 	
 	/**
+	 * Print all elements float[] array. 
+	 * @param results - the array to print
+	 */
+	public static void printArray(float[] array) {
+		for (int j=0; j<array.length; j++) {
+			System.out.print(array[j]+ " : ");
+		}
+		System.out.println("");
+	}
+
+
+	/**
 	 * Softmax function for float values. 
 	 * @param input - the input value. 
 	 * @param neuronValuesF - the input vector.
@@ -275,16 +319,16 @@ public class DLUtils {
 	 */
 	public static double softmax(float input, float[] neuronValuesF) {
 		double[] neuronValues = DLUtils.toDoubleArray(neuronValuesF); 
-	    double total = Arrays.stream(neuronValues).map(Math::exp).sum();
-	    return Math.exp(input) / total;
+		double total = Arrays.stream(neuronValues).map(Math::exp).sum();
+		return Math.exp(input) / total;
 	}
 
 	public static double softmax(double input, double[] neuronValues) {
-	    double total = Arrays.stream(neuronValues).map(Math::exp).sum();
-	    return Math.exp(input) / total;
+		double total = Arrays.stream(neuronValues).map(Math::exp).sum();
+		return Math.exp(input) / total;
 	}
-	
-	
+
+
 	/*
 	 * Load a wav file. 
 	 */

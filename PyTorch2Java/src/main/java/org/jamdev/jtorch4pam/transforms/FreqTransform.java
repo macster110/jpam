@@ -11,24 +11,26 @@ import org.jamdev.jtorch4pam.spectrogram.Spectrogram;
  * @author Jamie Macaulay
  *
  */
-public class FreqTransform implements DLTransform {
+public class FreqTransform extends SimpleTransform {
 
-	
 
 	/**
-	 * The spec transform which holds the transformed data. 
+	 * The spectrogram transform which holds the transformed data. 
 	 */
-	SpecTransform specTransfrom;
+	private SpecTransform specTransfrom;
 
+	
 	/**
 	 * The frequency transform type flag
 	 */
 	private DLTransformType flag;
 
+	
 	/**
 	 * The parameters. 
 	 */
 	private Number[] params;
+	
 	
 	/**
 	 * Create a frequency transform.
@@ -42,7 +44,6 @@ public class FreqTransform implements DLTransform {
 	 *<li>SPEC2DB: -no params</li>
 	 *<li>SPECNORMALISE: the minimum dB level, the reference dB value to normalise to</li>
 	 *<li>SPECCLAMP: the minimum value, the maximum value </li>
-
 	 *</ul>
 	 * 
 	 * @param SPECTROGRAM - the initial spectrogram to transform. 

@@ -23,6 +23,10 @@
 			<id>spring-repo</id>
 			<url>https://repo.spring.io/libs-milestone/</url>
 		</repository>
+		<repository>
+			<id>djl.ai</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -74,33 +78,55 @@
 			<artifactId>mfl-core</artifactId>
 			<version>0.5.6</version>
 		</dependency>
+
 		<!-- Deep Java Library -->
 		<dependency>
 			<groupId>ai.djl</groupId>
 			<artifactId>api</artifactId>
-			<version>0.7.0</version>
+			<version>0.8.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>ai.djl.pytorch</groupId>
 			<artifactId>pytorch-model-zoo</artifactId>
-			<version>0.7.0</version>
+			<version>0.8.0-SNAPSHOT</version>
 		</dependency>
+
+		<!-- <dependency> <groupId>ai.djl.pytorch</groupId> <artifactId>pytorch-native-cpu</artifactId> 
+			<classifier>osx-x86_64</classifier> <version>1.6.0</version> <scope>runtime</scope> 
+			</dependency> -->
+
 
 		<dependency>
 			<groupId>ai.djl.pytorch</groupId>
-			<artifactId>pytorch-native-cpu</artifactId>
-			<classifier>osx-x86_64</classifier>
-			<version>1.6.0</version>
+			<artifactId>pytorch-engine</artifactId>
+			<version>0.8.0-SNAPSHOT</version>
 			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>ai.djl.pytorch</groupId>
 			<artifactId>pytorch-native-auto</artifactId>
-			<version>1.6.0</version>
+			<version>1.7.0-SNAPSHOT</version>
 			<scope>runtime</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.13.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.13.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+			<version>2.13.3</version>
+		</dependency>
+
 
 	</dependencies>
 
@@ -111,7 +137,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.0</version>
 				<configuration>
-					<release>14</release>
+					<release>11</release>
 				</configuration>
 			</plugin>
 			<plugin>

@@ -7,7 +7,7 @@ import org.jamdev.jtorch4pam.wavFiles.AudioData;
  * @author Jamie Macaulay 
  *
  */
-public class WaveTransform implements DLTransform {
+public class WaveTransform extends SimpleTransform {
 
 
 	/**
@@ -38,7 +38,7 @@ public class WaveTransform implements DLTransform {
 	 *<li>TRIM: - the start sample, the end sample</li>
 	 *</ul>
 	 * 
-	 * @param flag - the type fflag for the transform
+	 * @param flag - the type flag for the transform
 	 * @param params - the parameters associated with thetransform type. 
 	 */
 	public  WaveTransform(AudioData audioData, DLTransformType flag, Number... params) {
@@ -62,7 +62,7 @@ public class WaveTransform implements DLTransform {
 	 * @param flag - the type fflag for the transform
 	 * @param params - the parameters associated with thetransform type. 
 	 */
-	public  WaveTransform(DLTransformType flag, Number... params) {
+	public WaveTransform(DLTransformType flag, Number... params) {
 		this.flag=flag; 
 		this.params = params;
 	}
