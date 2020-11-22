@@ -1,7 +1,6 @@
 package org.jamdev.jtorch4pam.SoundSpot;
 
 import java.util.Arrays;
-import java.util.Random;
 
 import org.jamdev.jtorch4pam.spectrogram.SpecTransform;
 import org.jamdev.jtorch4pam.spectrogram.Spectrogram;
@@ -13,7 +12,7 @@ import org.pytorch.Tensor;
 
 /**
  * 
- * Run a bat deep learning algorithm. 
+ * Run a bat deep learning algorithm based on official PyTorch java bindings library. 
  * <p> Note that this requires that the jvm points to the PyTorch library. 
  *
  */
@@ -24,7 +23,7 @@ public class BatDL {
 	public static void main( String[] args ) {
 		
 		//create the DL params. 
-		DLParams dlParams = new DLParams();
+		SoundSpotParams dlParams = new SoundSpotParams();
 		
 		//Path to the wav file 
 //		String wavFilePath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/example_wav/SKOVSOE_20200817_011402.wav"; 

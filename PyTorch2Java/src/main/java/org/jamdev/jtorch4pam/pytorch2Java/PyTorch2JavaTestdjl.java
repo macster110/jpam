@@ -3,6 +3,8 @@ package org.jamdev.jtorch4pam.pytorch2Java;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jamdev.jtorch4pam.utils.DLUtils;
 
@@ -28,7 +30,7 @@ import ai.djl.translate.TranslatorContext;
 public class PyTorch2JavaTestdjl {
 
 	public static void main(String[] args) {
-		
+
 		//seems like i have to stick with version 1.6 just now as 1.7 throws an exception
 
 		String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JAMIE.pk"; 
@@ -39,10 +41,14 @@ public class PyTorch2JavaTestdjl {
 		//		Model model = dlEngine.newModel(modelPath, Device.defaultDevice()); 
 
 		Path modelDir = Paths.get("/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/");
-		Model model = Model.newInstance("BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JAMIE.pk");
-		
+		String modelName= "BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JAMIE.pk";
+		Model model = Model.newInstance(modelName);
+
+		Map<String, String> hashMap = new HashMap<String, String>();
+		hashMap.put("extraFiles" , "dataOpts");
+
 		try {
-			model.load(modelDir);
+			model.load(modelDir, modelName, hashMap);
 		} catch (MalformedModelException | IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -50,8 +56,8 @@ public class PyTorch2JavaTestdjl {
 
 		Block block = model.getBlock(); 
 
-		System.out.println("Model: " + model.getDataType() +  "Block: "+ block +  " " + block.describeInput());
-		
+		System.out.println("Model properties " + model.getProperty("dataOpts"));
+
 		//create some dummy data 
 		float[][] specTest = DLUtils.makeDummySpectrogram(256, 128); 
 
@@ -97,7 +103,7 @@ public class PyTorch2JavaTestdjl {
 				return Batchifier.STACK;
 			}
 		};
-		
+
 
 
 		//predictor for the model

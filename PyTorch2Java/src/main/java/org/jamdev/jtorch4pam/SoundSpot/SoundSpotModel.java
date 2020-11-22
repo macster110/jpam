@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 
 import org.jamdev.jtorch4pam.utils.DLUtils;
 
@@ -36,6 +37,16 @@ public class SoundSpotModel {
 	 * The predictor for the model. 
 	 */
 	Predictor<float[][], float[]> predictor; 
+	
+	/**
+	 * Paramter string associated with the model. 
+	 */
+	public String params;
+
+	/**
+	 * A hash map for extra files options. 
+	 */
+	private HashMap<String, String> hashMap; 
 
 
 	public SoundSpotModel(String modelPath) throws MalformedModelException, IOException{
@@ -45,15 +56,37 @@ public class SoundSpotModel {
 		//String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JAMIE.pk"; 
 	
 		Path modelDir = Paths.get(file.getAbsoluteFile().getParent()); //the directory of the file (in case the file is local this should also return absolute directory)
-		model = Model.newInstance(file.getName()); //the name of the file
-		
-		model.load(modelDir);
-		
+		String modelName = file.getName(); 
+				
 		SpectrogramTranslator translator = new SpectrogramTranslator(); 
+		
+		model = Model.newInstance(modelName);
+
+		// create map to extract metadata from sound spot model. 
+		hashMap = new HashMap<String, String>();
+		hashMap.put("extraFiles" , "dataOpts");
+
+		model.load(modelDir, modelName, hashMap);
 		
 		//predictor for the model
 		predictor = model.newPredictor(translator);
 
+	}
+	
+	/**
+	 * get the extra file information from the SoundSpot model. 
+	 * @return the extra file information. 
+	 */
+	public HashMap<String, String>  getExtraFiles() {
+		return hashMap; 
+	}
+	
+	/**
+	 * Get the sound spot parameters from the extra files information. 
+	 * @return the sound spot parameters string. 
+	 */
+	public String getRawParamsString() {
+		 return model.getProperty("dataOpts"); 
 	}
 	
 	/**

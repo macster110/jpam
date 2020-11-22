@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import org.jamdev.jtorch4pam.SoundSpot.DLParams;
+import org.jamdev.jtorch4pam.SoundSpot.SoundSpotParams;
 import org.jamdev.jtorch4pam.transforms.DLTransform.DLTransformType;
 import org.jamdev.jtorch4pam.utils.DLMatFile;
 import org.jamdev.jtorch4pam.utils.DLUtils;
@@ -34,7 +34,7 @@ public class DLTransformTest {
 
 		
 		//create the DL params. 
-		DLParams dlParams = new DLParams();
+		SoundSpotParams dlParams = new SoundSpotParams();
 		
 		AudioData soundData = null; 
 		//Open wav files. 

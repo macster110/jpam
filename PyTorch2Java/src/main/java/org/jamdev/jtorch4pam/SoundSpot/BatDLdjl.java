@@ -14,9 +14,7 @@ import org.jamdev.jtorch4pam.wavFiles.AudioData;
 public class BatDLdjl {
 
 	public static void main( String[] args ) {
-		
-		//create the DL params. 
-		DLParams dlParams = new DLParams();
+	
 		
 		//Path to the wav file 
 //		String wavFilePath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/example_wav/SKOVSOE_20200817_011402.wav"; 
@@ -38,6 +36,13 @@ public class BatDLdjl {
 
 		//wav file 
 		try {
+			
+			//first open the model and get the correct parameters. 
+			SoundSpotModel soundSpotModel = new SoundSpotModel(modelPath); 
+			
+			//create the DL params. 
+			SoundSpotParams dlParams = new SoundSpotParams(soundSpotModel.getRawParamsString());
+			
 			//Open wav files. 
 			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
 			
@@ -56,9 +61,6 @@ public class BatDLdjl {
 					.normalise(dlParams.min_level_dB, dlParams.ref_level_dB)
 					.clamp(dlParams.clampMin, dlParams.clampMax);
 			
-
-
-			SoundSpotModel soundSpotModel = new SoundSpotModel(modelPath); 
 			
 			float[] output = null; 
 			for (int i=0; i<10; i++) {

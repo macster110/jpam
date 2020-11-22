@@ -15,7 +15,7 @@ public class BatDL_speedtest {
 	public static void main( String[] args ) {
 
 		//create the DL params. 
-		DLParams dlParams = new DLParams();
+		SoundSpotParams dlParams = new SoundSpotParams();
 
 		//Path to the wav file 
 		//		String wavFilePath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/example_wav/SKOVSOE_20200817_011402.wav"; 
