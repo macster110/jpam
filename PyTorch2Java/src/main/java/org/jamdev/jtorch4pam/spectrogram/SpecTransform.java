@@ -54,7 +54,7 @@ public class SpecTransform {
 	 * @param fMin - the minimum frequency (Hz)
 	 * @param fMin - the minimum frequency (Hz)
 	 * @param freqBins - the number of frequency bins to interpolate to. This is the number of bins between fMin and fMax 
-	 * @return the inteprolated Spectrgram object. 
+	 * @return the interpolated spectrogram object. 
 	 */
 	public SpecTransform interpolate(double fMin, double fMax, int freqBins) {
 		if (this.specData==null) this.specData = spectrgram.getAbsoluteSpectrogram(); 
@@ -158,7 +158,7 @@ public class SpecTransform {
 		double[][] specInterp = new double[array.length][]; 
 		double[] fftSliceInterp; 
 		
-		System.out.println("Min index: " +  minIndex + " max index: " + maxIndex + " FFT len: " + fftlen +  " f min Hz: " + fMin + " f max Hz: " + fMax); 
+		//System.out.println("Min index: " +  minIndex + " max index: " + maxIndex + " FFT len: " + fftlen +  " f min Hz: " + fMin + " f max Hz: " + fMax); 
 
 		for (int i = 0; i < array.length; i++) 	{		
 			fftSliceInterp = Arrays.copyOfRange(array[i], minIndex, maxIndex);

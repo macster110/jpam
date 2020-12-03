@@ -1,7 +1,13 @@
 package org.jamdev.jtorch4pam.SoundSpot;
 
+import java.util.ArrayList;
+
 import org.jamdev.jtorch4pam.spectrogram.SpecTransform;
 import org.jamdev.jtorch4pam.spectrogram.Spectrogram;
+import org.jamdev.jtorch4pam.transforms.DLTransform;
+import org.jamdev.jtorch4pam.transforms.DLTransformsFactory;
+import org.jamdev.jtorch4pam.transforms.FreqTransform;
+import org.jamdev.jtorch4pam.transforms.WaveTransform;
 import org.jamdev.jtorch4pam.utils.DLUtils;
 import org.jamdev.jtorch4pam.wavFiles.AudioData;
 
@@ -30,42 +36,40 @@ public class BatDLdjl {
 
 		//Path to the model
 //		String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_dummy/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000.pk";
-		String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JAMIE.pk"; 
-//		//output file path to test what the java spectrgram transforms look like. 
-//		String outputMatfile = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/javaspec.mat"; 
+//		String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JAMIE.pk"; 
+		String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JIT.pk";
+
 
 		//wav file 
-		try {
-			
+		try {			
 			//first open the model and get the correct parameters. 
 			SoundSpotModel soundSpotModel = new SoundSpotModel(modelPath); 
 			
 			//create the DL params. 
-			SoundSpotParams dlParams = new SoundSpotParams(soundSpotModel.getRawParamsString());
+			SoundSpotParams dlParams = new SoundSpotParams(soundSpotModel.getTransformsString());
 			
 			//Open wav files. 
 			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
-			
-			soundData = soundData.interpolate(dlParams.sR).preEmphasis(dlParams.preemphases); 
 			soundData = soundData.trim(samplesChunk[0], samplesChunk[1]); 
 
-			System.out.println( "Open wav file: No. samples:"+ soundData.samples.length + " sample rate: " + soundData.sampleRate);
-
-			//make a spectrogram 
-			Spectrogram spectrogram = new Spectrogram(soundData, dlParams.n_fft, dlParams.hop_length); 
+			//generate the transforms. 
+			ArrayList<DLTransform> transforms =	DLTransformsFactory.makeDLTransforms(dlParams.dlTransforms); 
 			
-			//apply transforms to the spectrogram 
-			SpecTransform spectransform = new SpecTransform(spectrogram)
-					.interpolate(dlParams.fmin, dlParams.fmax, dlParams.n_freq_bins)
-					.dBSpec()
-					.normalise(dlParams.min_level_dB, dlParams.ref_level_dB)
-					.clamp(dlParams.clampMin, dlParams.clampMax);
+			
+			((WaveTransform) transforms.get(0)).setWaveData(soundData); 
+
+			DLTransform transform = transforms.get(0); 
+			for (int i=0; i<transforms.size(); i++) {
+				transform = transforms.get(i).transformData(transform); 
+			}
 			
 			
 			float[] output = null; 
+			float[][] data;
 			for (int i=0; i<10; i++) {
 				long time1 = System.currentTimeMillis();
-				output = soundSpotModel.runModel(DLUtils.toFloatArray(spectransform.getTransformedData())); 
+				data = DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData()); 
+				output = soundSpotModel.runModel(data); 
 				long time2 = System.currentTimeMillis();
 				System.out.println("Time to run model: " + (time2-time1) + " ms"); 
 			}

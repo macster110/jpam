@@ -27,5 +27,7 @@ public abstract class SimpleTransform implements DLTransform {
 	public void setParams(Number[] params) {
 		this.params = params;
 	}
+	
+	
 
 }

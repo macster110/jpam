@@ -40,27 +40,20 @@ public class DLTransformTest {
 		//Open wav files. 
 		try {
 			soundData = DLUtils.loadWavFile(wavFilePath);
+			soundData = soundData.trim(samplesChunk[0], samplesChunk[1]); 
 		} catch (IOException | UnsupportedAudioFileException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		ArrayList<DLTransform> transforms = new ArrayList<DLTransform>(); 
+		//generate the transforms. 
+		ArrayList<DLTransform> transforms =	DLTransformsFactory.makeDLTransforms(dlParams.dlTransforms); 
 		
-		//waveform transforms. 
-		transforms.add(new WaveTransform(soundData, DLTransformType.DECIMATE, dlParams.sR)); 
-		transforms.add(new WaveTransform(soundData, DLTransformType.PREEMPHSIS, dlParams.preemphases)); 
-		transforms.add(new WaveTransform(soundData, DLTransformType.TRIM, samplesChunk[0], samplesChunk[1])); 
-		//frequency transforms. 
-		transforms.add(new FreqTransform(DLTransformType.SPECTROGRAM, dlParams.n_fft, dlParams.hop_length)); 
-		transforms.add(new FreqTransform(DLTransformType.SPECCROPINTERP, dlParams.fmin, dlParams.fmax, dlParams.n_freq_bins)); 
-		transforms.add(new FreqTransform(DLTransformType.SPEC2DB)); 
-		transforms.add(new FreqTransform(DLTransformType.SPECNORMALISE, dlParams.min_level_dB, dlParams.ref_level_dB)); 
-		transforms.add(new FreqTransform(DLTransformType.SPECCLAMP, dlParams.clampMin, dlParams.clampMax)); 
+		
+		((WaveTransform) transforms.get(0)).setWaveData(soundData); 
 
-		
 		DLTransform transform = transforms.get(0); 
-		for (int i=1; i<transforms.size(); i++) {
+		for (int i=0; i<transforms.size(); i++) {
 			transform = transforms.get(i).transformData(transform); 
 		}
 		
@@ -75,11 +68,9 @@ public class DLTransformTest {
 				.addArray("SpecDLTransform", matrixSpec); 
 		
 		
-
 		try {
 			Mat5.writeToFile(matFile, outputMatfile);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

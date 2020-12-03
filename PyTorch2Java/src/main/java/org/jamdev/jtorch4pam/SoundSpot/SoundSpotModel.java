@@ -61,16 +61,17 @@ public class SoundSpotModel {
 		SpectrogramTranslator translator = new SpectrogramTranslator(); 
 		
 		model = Model.newInstance(modelName);
-
+		
 		// create map to extract metadata from sound spot model. 
 		hashMap = new HashMap<String, String>();
-		hashMap.put("extraFiles" , "dataOpts");
-
-		model.load(modelDir, modelName, hashMap);
+		hashMap.put("extraFiles" , "dataOpts,transforms"); //add other bits and pieces as a list of strings. 
 		
+				
+		model.load(modelDir, modelName, hashMap);
+				
 		//predictor for the model
 		predictor = model.newPredictor(translator);
-
+				
 	}
 	
 	/**
@@ -85,9 +86,20 @@ public class SoundSpotModel {
 	 * Get the sound spot parameters from the extra files information. 
 	 * @return the sound spot parameters string. 
 	 */
+	@Deprecated 
 	public String getRawParamsString() {
 		 return model.getProperty("dataOpts"); 
 	}
+	
+	
+	/**
+	 * Get the transforms the model uses. 
+	 * @return the sound spot parameters string. 
+	 */
+	public String getTransformsString() {
+		 return model.getProperty("transforms"); 
+	}
+	
 	
 	/**
 	 * Run the model.
@@ -97,7 +109,7 @@ public class SoundSpotModel {
 	public float[] runModel(float[][] specImage) {
 		try {
 			float[] results  = predictor.predict(specImage);
-			DLUtils.printArray(results);
+			//DLUtils.printArray(results);
 			return results; 
 		} catch (TranslateException e) {
 			System.out.println("Error on model: "); 
@@ -118,6 +130,7 @@ public class SoundSpotModel {
 		
 		@Override
 		public NDList processInput(TranslatorContext ctx, float[][] data) {
+			//System.out.println("Hello: 1 " ); 
 			NDManager manager = ctx.getNDManager();
 
 			Shape shape = new Shape(1L, data.length, data[0].length); 
@@ -126,12 +139,14 @@ public class SoundSpotModel {
 
 			NDArray array = manager.create(specgramFlat, shape); 
 
+			//System.out.println("Hello: 1a " ); 
+
 			return new NDList (array);
 		}
 
 		@Override
 		public float[] processOutput(TranslatorContext ctx, NDList list) {
-			System.out.println("Hello: 2 " + list); 
+			//System.out.println("Hello: 2 " + list); 
 
 			NDArray temp_arr = list.get(0);
 

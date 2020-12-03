@@ -24,12 +24,6 @@ public class FreqTransform extends SimpleTransform {
 	 * The frequency transform type flag
 	 */
 	private DLTransformType flag;
-
-	
-	/**
-	 * The parameters. 
-	 */
-	private Number[] params;
 	
 	
 	/**

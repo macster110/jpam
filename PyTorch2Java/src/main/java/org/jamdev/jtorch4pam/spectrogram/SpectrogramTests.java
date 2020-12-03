@@ -2,6 +2,7 @@ package org.jamdev.jtorch4pam.spectrogram;
 
 import java.io.IOException;
 
+import org.jamdev.jtorch4pam.SoundSpot.LegacySoundSpotParams;
 import org.jamdev.jtorch4pam.SoundSpot.SoundSpotParams;
 import org.jamdev.jtorch4pam.utils.DLMatFile;
 import org.jamdev.jtorch4pam.utils.DLUtils;
@@ -17,7 +18,7 @@ public class SpectrogramTests {
 	public static void main( String[] args ) {
 
 		//create the DL params. 
-		SoundSpotParams dlParams = new SoundSpotParams();
+		LegacySoundSpotParams dlParams = new LegacySoundSpotParams();
 		
 
 		//Path to the wav file 

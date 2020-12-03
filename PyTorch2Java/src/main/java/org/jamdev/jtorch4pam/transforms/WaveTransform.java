@@ -3,7 +3,8 @@ package org.jamdev.jtorch4pam.transforms;
 import org.jamdev.jtorch4pam.wavFiles.AudioData;
 
 /**
- * A transform of the waveform. 
+ * A transform of the waveform. Performs time domain transforms. 
+ * 
  * @author Jamie Macaulay 
  *
  */
@@ -19,11 +20,6 @@ public class WaveTransform extends SimpleTransform {
 	 * The waveform transform type flag
 	 */
 	private DLTransformType flag;
-	
-	/**
-	 * The parameters. 
-	 */
-	private Number[] params;
 	
 	
 	/**
@@ -67,6 +63,7 @@ public class WaveTransform extends SimpleTransform {
 		this.params = params;
 	}
 
+
 	@Override
 	public DLTransform transformData(DLTransform transfrom) {
 		WaveTransform waveTransform = (WaveTransform) transfrom; 
@@ -95,8 +92,8 @@ public class WaveTransform extends SimpleTransform {
 	 * Set the audioData.
 	 * @return the audiodata. 
 	 */
-	public AudioData setWaveData() {
-		return soundData; 
+	public void setWaveData(AudioData soundData) {
+		this.soundData=soundData; 
 	}
 
 	@Override

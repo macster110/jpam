@@ -1,9 +1,14 @@
 package org.jamdev.jtorch4pam.SoundSpot;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.jamdev.jtorch4pam.spectrogram.SpecTransform;
 import org.jamdev.jtorch4pam.spectrogram.Spectrogram;
+import org.jamdev.jtorch4pam.transforms.DLTransform;
+import org.jamdev.jtorch4pam.transforms.DLTransformsFactory;
+import org.jamdev.jtorch4pam.transforms.FreqTransform;
+import org.jamdev.jtorch4pam.transforms.WaveTransform;
 import org.jamdev.jtorch4pam.utils.DLUtils;
 import org.jamdev.jtorch4pam.wavFiles.AudioData;
 import org.pytorch.IValue;
@@ -13,10 +18,14 @@ import org.pytorch.Tensor;
 /**
  * 
  * Run a bat deep learning algorithm based on official PyTorch java bindings library. 
- * <p> Note that this requires that the jvm points to the PyTorch library. 
+ * <p> 
+ * Note that this requires that the jvm points to the PyTorch library. e.g. 
+ * -Djava.library.path=/Users/au671271/libtorch/lib
+ * <p>
+ *  It also does not currently support the ExtraFiles object being loaded from the model.
  *
  */
-public class BatDL {
+public class BatDLpytorch {
 
 
 
@@ -48,20 +57,18 @@ public class BatDL {
 			//Open wav files. 
 			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
 			
-			soundData = soundData.interpolate(dlParams.sR).preEmphasis(dlParams.preemphases); 
-			soundData = soundData.trim(samplesChunk[0], samplesChunk[1]); 
-
-			System.out.println( "Open wav file: No. samples:"+ soundData.samples.length + " sample rate: " + soundData.sampleRate);
-
-			//make a spectrogram 
-			Spectrogram spectrogram = new Spectrogram(soundData, dlParams.n_fft, dlParams.hop_length); 
+			//generate the transforms. 
+			ArrayList<DLTransform> transforms =	DLTransformsFactory.makeDLTransforms(dlParams.dlTransforms); 
 			
-			//apply transforms to the spectrogram 
-			SpecTransform spectransform = new SpecTransform(spectrogram)
-					.interpolate(dlParams.fmin, dlParams.fmax, dlParams.n_freq_bins)
-					.dBSpec()
-					.normalise(dlParams.min_level_dB, dlParams.ref_level_dB)
-					.clamp(dlParams.clampMin, dlParams.clampMax);
+			
+			((WaveTransform) transforms.get(0)).setWaveData(soundData); 
+
+			DLTransform transform = transforms.get(0); 
+			for (int i=0; i<transforms.size(); i++) {
+				transform = transforms.get(i).transformData(transform); 
+			}
+			
+			SpecTransform spectransform = ((FreqTransform) transform).getSpecTransfrom(); 
 			
 //			//export to a file for checking
 //			DLMatFile.exportSpecSurface(spectransform, new File(outputMatfile)); 
