@@ -55,7 +55,7 @@ public class AudioData {
 	public AudioData(double[] wavArray, float sampleRate){
 		int[] samples = new int[wavArray.length]; 
 		for (int i=0; i<wavArray.length; i++) {
-			samples[i] = (int) (wavArray[i]*bitRate); 
+			samples[i] = (int) (wavArray[i]*Math.pow(2, bitRate)); 
 		}
 		this.samples = samples; 
 		this.sampleRate = sampleRate;

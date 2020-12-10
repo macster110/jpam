@@ -209,6 +209,14 @@ public class SpecTransform {
 		return this.spectrgram;
 	}
 
+	/**
+	 * Manually set the transfromed data. 
+	 * @param absoluteSpectrogram - the data to set. 
+	 */
+	public void setTransformedData(double[][] absoluteSpectrogram) {
+		this.specData=absoluteSpectrogram; 
+	}
+
 
 
 

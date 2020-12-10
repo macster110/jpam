@@ -12,6 +12,47 @@ import org.jamdev.jtorch4pam.transforms.DLTransform.DLTransformType;
  */
 public class DLTransformsFactory {
 
+	/**
+	 * Generate a default DLTransfrom object from a DLtransforms type. 
+	 * @param dlTransformType - the transform type
+	 * @param sR- tghe sample rate in samples per seconds.
+	 */
+	public static DLTransform makeDLTransform(DLTransformType dlTransformType, float sR) {
+
+		DLTransform dlTransform; 
+
+		switch (dlTransformType) {
+		case DECIMATE:
+			dlTransform = new WaveTransform(DLTransformType.DECIMATE, new Number[] {sR}); 
+			break;
+		case PREEMPHSIS:
+			dlTransform = new WaveTransform(DLTransformType.PREEMPHSIS, new Number[] {0.98}); 
+			break;
+		case SPEC2DB:
+			dlTransform = new FreqTransform(DLTransformType.SPEC2DB, null); 
+			break;
+		case SPECCLAMP:
+			dlTransform = new FreqTransform(DLTransformType.SPECCLAMP, new Number[] {0.0, 1.0}); 
+			break;
+		case SPECCROPINTERP:
+			dlTransform = new FreqTransform(DLTransformType.SPECCROPINTERP, new Number[] {0.0, (double) sR/2 , 256}); 
+			break;
+		case SPECNORMALISE:
+			dlTransform = new FreqTransform(DLTransformType.SPECNORMALISE, new Number[] {-100.0, 0.0}); 
+			break;
+		case SPECTROGRAM:
+			dlTransform = new FreqTransform(DLTransformType.SPECTROGRAM, new Number[] {1024, 8}); 
+			break;
+		case TRIM:
+			dlTransform = new WaveTransform(DLTransformType.TRIM, new Number[] {0, 2048}); 
+			break;
+		default:
+			dlTransform=null; 
+			break;
+		}
+		return dlTransform;
+	}
+
 
 	/**
 	 * Generate a DLTransfrom object from DL transfrom parameters. 
@@ -53,14 +94,14 @@ public class DLTransformsFactory {
 		}
 		return dlTransform;
 	}
-	
+
 	/**
-	 * Generate a list of transfrom objects from an array  of transform params. 
-	 * @param dlTransfromParams - the DL transfrom params. 
+	 * Generate a list of transform objects from an array  of transform parameters. 
+	 * @param dlTransfromParams - the DL transform parameters. 
 	 * @return - list of corresponding transform objects 
 	 */
 	public static ArrayList<DLTransform> makeDLTransforms(ArrayList<DLTransfromParams> dlTransfromParams) {
-		 ArrayList<DLTransform>  transforms = new  ArrayList<DLTransform>(); 
+		ArrayList<DLTransform>  transforms = new  ArrayList<DLTransform>(); 
 		for (int i=0; i<dlTransfromParams.size(); i++) {
 			transforms.add(makeDLTransform(dlTransfromParams.get(i))); 
 		}

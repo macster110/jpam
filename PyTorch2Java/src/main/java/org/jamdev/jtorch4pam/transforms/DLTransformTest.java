@@ -17,6 +17,7 @@ import us.hebi.matlab.mat.types.Matrix;
 
 /**
  * Test the DLtransform idea. 
+ * 
  * @author Jamie Macaulay 
  *
  */
@@ -57,8 +58,8 @@ public class DLTransformTest {
 			transform = transforms.get(i).transformData(transform); 
 		}
 		
-		
-		System.out.println("Transfrom: " + ((FreqTransform) transform).getSpecTransfrom()); 
+		FreqTransform dlTransform =  ((FreqTransform) transform); 
+		System.out.println("Transfrom: Freq limits: " + dlTransform.getFreqlims()[0] + " to " + dlTransform.getFreqlims()[1] + "Hz"); 
 		//now the last transform contains the data we need. 
 		
 		Matrix matrixSpec=  DLMatFile.array2Matrix(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
@@ -73,7 +74,6 @@ public class DLTransformTest {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 
 		
 	}

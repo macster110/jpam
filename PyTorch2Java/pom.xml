@@ -7,7 +7,7 @@
 
 	<groupId>org.jamdev</groupId>
 	<artifactId>jtorch4pam</artifactId>
-	<version>0.0.7</version>
+	<version>0.0.78</version>
 	<packaging>jar</packaging>
 
 
@@ -142,7 +142,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.0</version>
 				<configuration>
-					<release>14</release>
+					<release>8</release>
 				</configuration>
 			</plugin>
 			<plugin>

@@ -1,10 +1,12 @@
-package org.jamdev.jtorch4pam.SoundSpot;
+package soundspot;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import org.jamdev.jtorch4pam.SoundSpot.SoundSpotModel;
+import org.jamdev.jtorch4pam.SoundSpot.SoundSpotParams;
 import org.jamdev.jtorch4pam.transforms.DLTransform;
 import org.jamdev.jtorch4pam.transforms.DLTransformsFactory;
 import org.jamdev.jtorch4pam.transforms.FreqTransform;

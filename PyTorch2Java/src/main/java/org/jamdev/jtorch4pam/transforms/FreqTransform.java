@@ -25,6 +25,11 @@ public class FreqTransform extends SimpleTransform {
 	 */
 	private DLTransformType flag;
 	
+	/**
+	 * The minimum and maximum frequency of the transform. 
+	 */
+	private double[] freqlims = new double[2]; 
+	
 	
 	/**
 	 * Create a frequency transform.
@@ -79,20 +84,31 @@ public class FreqTransform extends SimpleTransform {
 		switch (flag) {
 		case SPECCROPINTERP:
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().interpolate(params[0].doubleValue(),  params[1].doubleValue(), params[2].intValue()); 
+			//frquency limits change for this transform.  
+			freqlims[0] = params[0].doubleValue(); 
+			freqlims[1] = params[1].doubleValue(); 
+
 			break;
 		case SPEC2DB:
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().dBSpec();
+			freqlims = ((FreqTransform) transform).freqlims; 
 			break; 
 		case SPECNORMALISE:
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().normalise(params[0].doubleValue(),  params[1].doubleValue()); 
+			freqlims = ((FreqTransform) transform).freqlims; 
 			break;
 		case SPECTROGRAM:
 			//make a spectrogram 
 			Spectrogram spectrogram = new Spectrogram(((WaveTransform) transform).getWaveData(), (int) params[0], (int) params[1]); 
 			specTransfrom = new SpecTransform(spectrogram); 
+			specTransfrom.setTransformedData(this.specTransfrom.getSpectrgram().getAbsoluteSpectrogram()); 
+			//initialise freq
+			freqlims[0] = 0.0; 
+			freqlims[1] = ((WaveTransform) transform).getWaveData().getSampleRate()/2.0; 
 			break;
 		case SPECCLAMP:
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().clamp(params[0].doubleValue(),  params[1].doubleValue()); 
+			freqlims = ((FreqTransform) transform).freqlims; 
 			break;
 		default:
 			break;
@@ -100,6 +116,25 @@ public class FreqTransform extends SimpleTransform {
 
 		return this;
 	}
+
+	/**
+	 * Get the minimum and maximum frequency limits in Hz. This defines the minimum and maximum frequency of the 
+	 * double[][] transformed data. 
+	 * @return - the minimum and maximum frequency limits in Hz. 
+	 */
+	public double[] getFreqlims() {
+		return freqlims;
+	}
+
+	/**
+	 * Set the minimum and maximum frequency limits in Hz. This defines the minimum and maximum frequency of the 
+	 * double[][] transformed data. 
+	 *@param freqlims - the minimum and maximum frequency limits in Hz. 
+	 */
+	public void setFreqlims(double[] freqlims) {
+		this.freqlims = freqlims;
+	}
+
 
 	/**
 	 * Get the spectrogram transform. This holds the transformed spectrogram data 
