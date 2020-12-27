@@ -1,10 +1,13 @@
-package org.jamdev.jtorch4pam.SoundSpot;
+package org.jamdev.jtorch4pam.genericmodel;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import org.jamdev.jtorch4pam.SoundSpot.SoundSpotClassifier;
+import org.jamdev.jtorch4pam.SoundSpot.SoundSpotModel;
+import org.jamdev.jtorch4pam.SoundSpot.SoundSpotParams;
 import org.jamdev.jtorch4pam.transforms.DLTransform;
 import org.jamdev.jtorch4pam.transforms.DLTransformsFactory;
 import org.jamdev.jtorch4pam.transforms.FreqTransform;
@@ -13,50 +16,29 @@ import org.jamdev.jtorch4pam.utils.DLUtils;
 import org.jamdev.jtorch4pam.wavFiles.AudioData;
 
 /**
- * Run a sound spot model. 
- * <p>
- * SoundSpot is a model trained using the AnimalSpot framework 
- * https://github.com/ChristianBergler/ORCA-SPOT
- * 
- * The model accepts a time/frequency image and contains metadata which
- * indicates how to convert raw sound data into the correct type of 
- * time/frequency image. 
- * 
+ * Create the generic classifier. 
  * 
  * @author Jamie Macaulay
  *
  */
-public class SoundSpotClassifier {
-
-	/**
-	 * The current sound spot model. 
-	 */
-	private SoundSpotModel soundSpotModel;
-
-
-	/**
-	 * Paramters for the SoundSpot model. 
-	 */
-	private SoundSpotParams soundSpotParams;
-
-
-	/**
-	 * Run the Sounds
-	 */
-	public SoundSpotClassifier() {
-
-	}
+public class GenericClassifier {
+	
 	
 	/**
-	 * Constructor for the SoundSpotClassifier. 
-	 * @param modelPath - path to a SoundSpot model. 
+	 * The generic model. 
 	 */
-	public SoundSpotClassifier(String modelPath) {
-		loadModel(modelPath); 
+	private GenericModel genericModel;
+	
+	
+	/**
+	 * The generic model parameters. 
+	 */
+	private GenericModelParams genericModelParams;
+	
+	public GenericClassifier(String modelPath) {
+		loadModel( modelPath);
 	}
-
-
-
+	
 	/**
 	 * Load a sound spot model. This loads the model into memory
 	 * and extracts the metadata from the model creating a SoundSpotParams class. 
@@ -66,9 +48,9 @@ public class SoundSpotClassifier {
 	public boolean loadModel(String modelPath) {
 		//first open the model and get the correct parameters. 
 		try {
-			soundSpotModel = new SoundSpotModel(modelPath);
-			//create the DL params. 
-			soundSpotParams = new SoundSpotParams(soundSpotModel.getTransformsString());
+			genericModel = new GenericModel(modelPath);
+			//create the DL parameters. 
+			genericModelParams = new GenericModelParams();
 			return true; 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -93,7 +75,7 @@ public class SoundSpotClassifier {
 			AudioData soundData = new AudioData(rawWaveData, sR); 
 
 			//generate the transforms. 
-			ArrayList<DLTransform> transforms =	DLTransformsFactory.makeDLTransforms(soundSpotParams.dlTransforms); 
+			ArrayList<DLTransform> transforms =	DLTransformsFactory.makeDLTransforms(genericModelParams.dlTransforms); 
 
 
 			((WaveTransform) transforms.get(0)).setWaveData(soundData); 
@@ -109,7 +91,7 @@ public class SoundSpotClassifier {
 			for (int i=0; i<10; i++) {
 				//long time1 = System.currentTimeMillis();
 				data = DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData()); 
-				output = soundSpotModel.runModel(data); 
+				output = genericModel.runModel(data); 
 				//long time2 = System.currentTimeMillis();
 				//System.out.println("Time to run model: " + (time2-time1) + " ms"); 
 			}
@@ -132,22 +114,6 @@ public class SoundSpotClassifier {
 		}
 	}
 	
-	/**
-	 * Get the sound spot model. 
-	 * @return the sound spot model. 
-	 */
-	public SoundSpotModel getSoundSpotModel() {
-		return soundSpotModel;
-	}
-
-
-	/**
-	 * Get the sound spot parameters class. 
-	 * @return the sound spot paramaters class. 
-	 */
-	public SoundSpotParams getSoundSpotParams() {
-		return soundSpotParams;
-	}
 
 	
 	/**
@@ -156,9 +122,11 @@ public class SoundSpotClassifier {
 	 */
 	public static void main(String[] args) {
 		
+		// let's test on some right whale data. 
+		
 		String wavFilePath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/example_wav/call_393_2019_S4U05619MOL2-20180917-051012_2525_2534.wav";
 		int[] samplesChunk = new int[] {0, 1274}; // the sample chunk to use. 
-		String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JIT.pk";
+		String modelPath = "/Users/au671271/Google Drive/PAMGuard_dev/Deep_Learning/Right_whales_DG/model_lenet_dropout_input_conv_all.hdf5"; 
 	
 		//Open wav files. 
 		try {
@@ -167,9 +135,9 @@ public class SoundSpotClassifier {
 			soundData = DLUtils.loadWavFile(wavFilePath);
 			soundData = soundData.trim(samplesChunk[0], samplesChunk[1]); 
 			
-			SoundSpotClassifier soundSpotClassifier = new SoundSpotClassifier(modelPath); 
+			GenericClassifier genericClassifier = new GenericClassifier(modelPath); 
 
-			double[] result = soundSpotClassifier.runModel(soundData.getScaledSampleAmpliudes(), soundData.sampleRate); 
+			double[] result = genericClassifier.runModel(soundData.getScaledSampleAmpliudes(), soundData.sampleRate); 
 			
 		    for (int j=0; j<result.length; j++) {
 		    	System.out.println("The probability of class " + j + " is "  + result[j]); 

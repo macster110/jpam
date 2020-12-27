@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.jamdev.jtorch4pam.SoundSpot.SoundSpotParams;
-import org.jamdev.jtorch4pam.transforms.DLTransform.DLTransformType;
 import org.jamdev.jtorch4pam.utils.DLMatFile;
 import org.jamdev.jtorch4pam.utils.DLUtils;
 import org.jamdev.jtorch4pam.wavFiles.AudioData;

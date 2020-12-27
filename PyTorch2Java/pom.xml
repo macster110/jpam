@@ -8,7 +8,7 @@
 	<groupId>org.jamdev</groupId>
 	<artifactId>jtorch4pam</artifactId>
 	<version>0.0.78</version>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 
 
 	<name>org.jamdev</name>
@@ -83,24 +83,23 @@
 		<dependency>
 			<groupId>ai.djl</groupId>
 			<artifactId>api</artifactId>
-			<version>0.9.0-SNAPSHOT</version>
+			<version>0.9.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>ai.djl.pytorch</groupId>
 			<artifactId>pytorch-model-zoo</artifactId>
-			<version>0.9.0-SNAPSHOT</version>
+			<version>0.9.0</version>
 		</dependency>
 
 		<!-- <dependency> <groupId>ai.djl.pytorch</groupId> <artifactId>pytorch-native-cpu</artifactId> 
 			<classifier>osx-x86_64</classifier> <version>1.6.0</version> <scope>runtime</scope> 
 			</dependency> -->
 
-
 		<dependency>
 			<groupId>ai.djl.pytorch</groupId>
 			<artifactId>pytorch-engine</artifactId>
-			<version>0.9.0-SNAPSHOT</version>
+			<version>0.9.0</version>
 			<scope>runtime</scope>
 		</dependency>
 
@@ -110,6 +109,38 @@
 			<version>1.7.0</version>
 			<scope>runtime</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>ai.djl.tensorflow</groupId>
+			<artifactId>tensorflow-engine</artifactId>
+			<version>0.9.0</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/ai.djl.tensorflow/tensorflow-native-auto -->
+		<dependency>
+			<groupId>ai.djl.tensorflow</groupId>
+			<artifactId>tensorflow-native-auto</artifactId>
+			<version>2.3.1</version>
+			<scope>runtime</scope>
+		</dependency>
+
+
+		<dependency>
+			<groupId>ai.djl.tensorflow</groupId>
+			<artifactId>tensorflow-model-zoo</artifactId>
+			<version>0.9.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.bytedeco</groupId>
+			<artifactId>javacv-platform</artifactId>
+			<version>1.5.4</version>
+		</dependency>
+
+
+		<!-- <dependency> <groupId>com.google.protobuf</groupId> <artifactId>protobuf-java</artifactId> 
+			<version>3.8.0</version> </dependency> -->
 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -142,7 +173,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.0</version>
 				<configuration>
-					<release>8</release>
+					<release>14</release>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -171,18 +202,18 @@
 					</execution>
 				</executions>
 			</plugin>
-<!-- 			<plugin> -->
-<!-- 				<artifactId>maven-javadoc-plugin</artifactId> -->
-<!-- 				<executions> -->
-<!-- 					<execution> -->
-<!-- 						<id>attach-javadocs</id> -->
-<!-- 						<phase>package</phase> -->
-<!-- 						<goals> -->
-<!-- 							<goal>jar</goal> -->
-<!-- 						</goals> -->
-<!-- 					</execution> -->
-<!-- 				</executions> -->
-<!-- 			</plugin> -->
+			<!-- <plugin> -->
+			<!-- <artifactId>maven-javadoc-plugin</artifactId> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <id>attach-javadocs</id> -->
+			<!-- <phase>package</phase> -->
+			<!-- <goals> -->
+			<!-- <goal>jar</goal> -->
+			<!-- </goals> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- </plugin> -->
 		</plugins>
 	</build>
 
@@ -215,4 +246,7 @@
 		</repository>
 	</distributionManagement>
 
+	<modules>
+		<module>pamutilsfx</module>
+	</modules>
 </project>

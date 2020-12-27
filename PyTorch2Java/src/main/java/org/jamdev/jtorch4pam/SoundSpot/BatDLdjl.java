@@ -1,9 +1,7 @@
-package soundspot;
+package org.jamdev.jtorch4pam.SoundSpot;
 
 import java.util.ArrayList;
 
-import org.jamdev.jtorch4pam.SoundSpot.SoundSpotModel;
-import org.jamdev.jtorch4pam.SoundSpot.SoundSpotParams;
 import org.jamdev.jtorch4pam.spectrogram.SpecTransform;
 import org.jamdev.jtorch4pam.spectrogram.Spectrogram;
 import org.jamdev.jtorch4pam.transforms.DLTransform;
