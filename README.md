@@ -1,4 +1,4 @@
-# JTorch4PAM
+# JPAM
 
 ## Overview
 
