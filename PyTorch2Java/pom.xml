@@ -4,7 +4,7 @@
 
 	<groupId>org.jamdev</groupId>
 	<artifactId>jpam</artifactId>
-	<version>0.0.78</version>
+	<version>0.0.80</version>
 	<packaging>pom</packaging>
 
 	<name>org.jamdev</name>
@@ -153,13 +153,13 @@
 
 	<licenses>
 		<license>
-			<name>GPL-3.0</name>
-			<url>https://opensource.org/licenses/GPL-3.0</url>
+			<name>Apache-2.0</name>
+			<url>https://opensource.org/licenses/apache-2.0</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
 	<scm>
-		<url>https://github.com/macster110/JTorch4PAM.git</url>
+		<url>https://github.com/macster110/jpam.git</url>
 	</scm>
 	<developers>
 		<developer>
@@ -174,17 +174,17 @@
 
 	<distributionManagement>
 		<repository>
-			<id>bintray-macster110-jtorch4pam</id>
-			<name>macster110-jtorch4pam</name>
-			<url>https://api.bintray.com/maven/macster110/jtorch4pam/dl4pam/;publish=1</url>
+			<id>bintray-macster110-jpam</id>
+			<name>macster110-jpam</name>
+			<url>https://api.bintray.com/maven/macster110/jpam/jdl4pam/;publish=1</url>
 		</repository>
 	</distributionManagement>
 
    <modules>
-		<module>pamutilsfx</module>
-		<module>jbinaries</module>
 		<module>jpamutils</module>
    	    <module>jdl4pam</module>
-   </modules>
+    <module>jpamutilsfx</module>
+    <module>jpambinaries</module>
+  </modules>
 	
 </project>

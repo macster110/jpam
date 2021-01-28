@@ -20,6 +20,7 @@ public class Spectrogram {
 	 */
 	private AudioData wave;
 
+
 	/**
 	 * The FFT length in samples. 
 	 */
@@ -300,6 +301,24 @@ public class Spectrogram {
 	public float getSampleRate() {
 		return this.sR;
 	}
+	
+	/**
+	 * Get the FFT length in samples. 
+	 * @return the FFT length in samples
+	 */
+	public int getFFTLength() {
+		return fftSampleSize;
+	}
+
+	
+	/**
+	 * Get the FFT hop in samples.  
+	 * @return the FFT hop in samples. 
+	 */
+	public int getFftHop() {
+		return fftHop;
+	}
+
 
 
 }

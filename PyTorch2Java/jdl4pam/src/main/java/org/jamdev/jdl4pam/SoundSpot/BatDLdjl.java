@@ -44,6 +44,7 @@ public class BatDLdjl {
 			//first open the model and get the correct parameters. 
 			SoundSpotModel soundSpotModel = new SoundSpotModel(modelPath); 
 			
+			
 			//create the DL params. 
 			SoundSpotParams dlParams = new SoundSpotParams(soundSpotModel.getTransformsString());
 			

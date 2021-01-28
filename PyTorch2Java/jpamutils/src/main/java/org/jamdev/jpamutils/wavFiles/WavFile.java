@@ -144,12 +144,17 @@ public class WavFile extends AudioFileReader
 	public AudioFileFormat getAudioFileFormat(InputStream in)
 			throws UnsupportedAudioFileException, IOException
 	{
+		
+
 		DataInputStream din;
+		
 
 		if (in instanceof DataInputStream)
 			din = (DataInputStream) in;
 		else
 			din = new DataInputStream(in);
+		
+		System.out.println("Bytes avalaible header start: " + din.available()); 
 
 		if (din.readInt() != 0x52494646) // "RIFF"
 			throw new UnsupportedAudioFileException("Invalid WAV chunk header.");
@@ -197,6 +202,8 @@ public class WavFile extends AudioFileReader
 				din.skip(chunkLength);
 			}
 		}
+
+		System.out.println("Bytes avalaible header end: " + din.available()); 
 
 		AudioFormat.Encoding encoding;
 
@@ -339,7 +346,7 @@ public class WavFile extends AudioFileReader
 
 
 	/**
-	 *  Get a multi channel .wav file and resturn the byte stream for just one of the channels.
+	 *  Get a multi channel .wav file and return the byte stream for just one of the channels.
 	 * @param wavHeader - the wave file header 
 	 * @param bytes - the multi-channel byte array 
 	 * @param channel - the channel to extract. This should never be higher than the total number of channels. 

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.jamdev.jdl4pam.genericmodel.GenericModelParams;
 import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 import org.jamdev.jdl4pam.transforms.DLTransfromParams;
 import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
@@ -20,7 +21,7 @@ import org.json.JSONObject;
  * @author Jamne Macaulay 
  *
  */
-public class SoundSpotParams {
+public class SoundSpotParams extends GenericModelParams {
 
 	//settingss for bats used by christian
 	//	17:22:24|D|dataOpts: {
@@ -42,19 +43,6 @@ public class SoundSpotParams {
 	 */
 	public double seglen = 11.0; //milliseconds  
 
-	/**
-	 * A list of transforms for the data. Each chunk of raw sound data has a series of transforms applied. 
-	 * These are encoded in the model and then used to generate a list of DLTransfrom objects which transform 
-	 * raw sound data. For example, data might be decimated, converted to spectrogram, interpolated and normalised 
-	 * before being sent for classification. 
-	 * 
-	 */
-	public ArrayList<DLTransfromParams> dlTransforms; 
-	/**
-	 * The class names. 
-	 */
-	public String[] classNames = new String[]{"Bat", "Noise"};  
-
 
 	/**
 	 * Create a default set of Sound Spot params. 
@@ -73,8 +61,8 @@ public class SoundSpotParams {
 	}
 
 	/**
-	 * Get the paramters from a JSOn string if the transfrom type is known.   
-	 * @param dlTransformType - the transfrom type.
+	 * Get the parameters from a JSOn string if the transform type is known.   
+	 * @param dlTransformType - the transform type.
 	 * @param jsonObjectParams - JSON object containing the parameters.  
 	 * @return
 	 */	
