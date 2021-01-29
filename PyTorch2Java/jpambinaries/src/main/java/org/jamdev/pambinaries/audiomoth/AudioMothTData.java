@@ -23,7 +23,7 @@ public class AudioMothTData {
 	public float sR; 
 	
 	/**
-	 * The datetime of the start of the chunk in Java millis. 
+	 * The date-time of the start of the chunk in Java millis. 
 	 */
 	public long timeMillis; 
 	
@@ -31,7 +31,7 @@ public class AudioMothTData {
 	 * Constructor for the AudioMothTData. Stores a single chunk of triggered data. 	
 	 */
 	public AudioMothTData() {
-		
+		//must manually add the fields after calling this constructor. 
 	}
 	
 	
@@ -43,7 +43,10 @@ public class AudioMothTData {
 	 * @param sR - the sample rate. 
 	 */
 	public AudioMothTData(long sampleStart, long timeMillis, short[] wave, float sR){
-		
+		this.sampleStart=sampleStart;
+		this.timeMillis=timeMillis;
+		this.wave=wave; 
+		this.sR=sR; 
 	}
 	
 }

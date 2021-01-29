@@ -154,7 +154,7 @@ public class WavFile extends AudioFileReader
 		else
 			din = new DataInputStream(in);
 		
-		System.out.println("Bytes avalaible header start: " + din.available()); 
+		//System.out.println("Bytes avalaible header start: " + din.available()); 
 
 		if (din.readInt() != 0x52494646) // "RIFF"
 			throw new UnsupportedAudioFileException("Invalid WAV chunk header.");
@@ -203,7 +203,7 @@ public class WavFile extends AudioFileReader
 			}
 		}
 
-		System.out.println("Bytes avalaible header end: " + din.available()); 
+		//System.out.println("Bytes avalaible header end: " + din.available()); 
 
 		AudioFormat.Encoding encoding;
 

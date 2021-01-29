@@ -100,6 +100,21 @@ public class DLMatFile {
 		return matrix;
 	}
 	
+
+	/**
+	 * Get a Matrix object from a short[] array. 
+	 * @param specData - the short array to convert. 
+	 * @return the matrix object. 
+	 */
+	public static Matrix array2Matrix(short[] samplesChunk) {
+		Matrix matrix = Mat5.newMatrix(samplesChunk.length, 1);
+		for (int i=0; i<samplesChunk.length; i++) {
+				matrix.setInt(i,0, samplesChunk[i]);
+		}
+		
+		return matrix;
+	}
+	
 	/**
 	 * Get a Matrix object from a int[][] array. 
 	 * @param specData - the int[][] array to convert. 
