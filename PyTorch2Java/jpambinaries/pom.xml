@@ -11,7 +11,7 @@
 
 	<groupId>org.jamdev</groupId>
 	<artifactId>jpambinaries</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 
 	<name>jpambinaries</name>
 	<!-- FIXME change it to the project's website -->
@@ -66,7 +66,7 @@
 		<repository>
 			<id>bintray-macster110-jpam</id>
 			<name>macster110-jpam</name>
-			<url>https://api.bintray.com/maven/macster110/jpam/jpamutils/;publish=1</url>
+			<url>https://api.bintray.com/maven/macster110/jpam/jpambinaries/;publish=1</url>
 		</repository>
 	</distributionManagement>
 

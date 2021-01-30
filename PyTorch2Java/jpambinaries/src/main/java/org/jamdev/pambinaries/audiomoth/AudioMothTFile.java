@@ -325,9 +325,10 @@ public class AudioMothTFile {
 
 	public static void main(String[] args) {
 		
-		//test the algorithm on a file 
+		//test the algorithm on a file and export as MATLAB structure. 
 		
 		String file = "/Users/au671271/Google Drive/SoundSort_dev/audiomoth/20200530_210400T.WAV";
+		String exportToFile = "/Users/au671271/Google Drive/Programming/MATLAB/Instruments/audiomoth/audiomothchunk.mat"; 
 
 		try {
 			ArrayList<AudioMothTData> triggerChunks = AudioMothTFile.loadTFile(new File(file));
@@ -344,7 +345,6 @@ public class AudioMothTFile {
 			}
 			
 			MatFile matFile = write2MAT(triggerChunks); 
-			String exportToFile = "/Users/au671271/Google Drive/Programming/MATLAB/Instruments/audiomoth/audiomothchunk.mat"; 
 			
 			// Serialize to disk using default configurations
 			Mat5.writeToFile(matFile,exportToFile);
