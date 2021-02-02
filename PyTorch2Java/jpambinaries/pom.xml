@@ -11,7 +11,7 @@
 
 	<groupId>org.jamdev</groupId>
 	<artifactId>jpambinaries</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 
 	<name>jpambinaries</name>
 	<!-- FIXME change it to the project's website -->
@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>org.jamdev</groupId>
 			<artifactId>jpamutils</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.3</version>
 		</dependency>
 
 	</dependencies>

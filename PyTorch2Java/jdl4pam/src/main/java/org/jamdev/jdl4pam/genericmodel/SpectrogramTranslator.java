@@ -17,10 +17,10 @@ import ai.djl.translate.TranslatorContext;
  * @author Jamie Macaulay 
  *
  */
-public class SpectrogramTranslator implements Translator<double[][], float[]> {    
+public class SpectrogramTranslator implements Translator<float[][], float[]> {    
 
 	@Override
-	public NDList processInput(TranslatorContext ctx, double[][] data) {
+	public NDList processInput(TranslatorContext ctx, float[][] data) {
 		//System.out.println("Hello: 1 " ); 
 		NDManager manager = ctx.getNDManager();
 
@@ -28,7 +28,7 @@ public class SpectrogramTranslator implements Translator<double[][], float[]> {
 		
 		System.out.println("NDArray shape: " + shape); 
 
-		double[] specgramFlat = DLUtils.flattenDoubleArray(data); 
+		float[] specgramFlat = DLUtils.flattenDoubleArrayF(data); 
 
 		NDArray array = manager.create(specgramFlat, shape); 
 //		NDArray array = manager.create(data); 

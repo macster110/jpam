@@ -170,7 +170,7 @@ public class GenericClassifier {
 
 			SpectrogramTranslator translator = new SpectrogramTranslator(); 
 			//predictor for the model
-			Predictor<double[][], float[]> predictor = model.newPredictor(translator);
+			Predictor<float[][], float[]> predictor = model.newPredictor(translator);
 			
 			
 			///load the wave data. 
@@ -202,12 +202,12 @@ public class GenericClassifier {
 			
 						
 			float[] output = null; 
-			double[][] data;
+			float[][] data;
 			for (int i=0; i<1; i++) {
 				long time1 = System.currentTimeMillis();
 //				data = DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
 //				System.out.println("Data input size: " + data.length + "   " + data[0].length);
-				data = DLUtils.makeDummySpectrogramd(40, 40); 
+				data = DLUtils.makeDummySpectrogram(40, 40); 
 				output =  predictor.predict(data); 
 				long time2 = System.currentTimeMillis();
 				System.out.println("Time to run model: " + (time2-time1) + " ms"); 

@@ -176,13 +176,13 @@
 		<repository>
 			<id>bintray-macster110-jpam</id>
 			<name>macster110-jpam</name>
-			<url>https://api.bintray.com/maven/macster110/jpam/jdl4pam/;publish=1</url>
+			<url>https://api.bintray.com/maven/macster110/jpam/;publish=1</url>
 		</repository>
 	</distributionManagement>
 
    <modules>
-		<module>jpamutils</module>
-   	    <module>jdl4pam</module>
+	<module>jpamutils</module>
+   	<module>jdl4pam</module>
     <module>jpamutilsfx</module>
     <module>jpambinaries</module>
   </modules>
