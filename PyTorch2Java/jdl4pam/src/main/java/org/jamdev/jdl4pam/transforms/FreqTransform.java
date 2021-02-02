@@ -97,6 +97,10 @@ public class FreqTransform extends SimpleTransform {
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().normalise(params[0].doubleValue(),  params[1].doubleValue()); 
 			freqlims = ((FreqTransform) transform).freqlims; 
 			break;
+		case SPECNORMALISEROWSUM:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().normaliseRowSum(); 
+			freqlims = ((FreqTransform) transform).freqlims; 
+			break;
 		case SPECTROGRAM:
 			//make a spectrogram 
 			Spectrogram spectrogram = new Spectrogram(((WaveTransform) transform).getWaveData(), (int) params[0], (int) params[1]); 

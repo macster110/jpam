@@ -13,7 +13,7 @@ public interface DLTransform {
 	 * {@link #DECIMATE} {@link #TRIM}
 	 * 
 	 * Type of frequency transform that are available. {@link #SPECTROGRAM}
-	 * {@link #SPECCROPINTERP} {@link #SPECNORMALISE} {@link #SPEC2DB}
+	 * {@link #SPECCROPINTERP} {@link #SPECNORMALISE} {@link #SPECNORMALISEROWSUM} {@link #SPEC2DB}
 	 * 
 	 * @author Jamie Macaulay
 	 *
@@ -69,6 +69,12 @@ public interface DLTransform {
 		 * Normalises the spectrogram
 		 */
 		SPECNORMALISE("Normalise Spectrogram"),
+		
+		/**
+		 * Normalises the spectrogram by summing squared rows and dividing by the square root of the sum. 
+		 * There are no associated parameters. 
+		 */
+		SPECNORMALISEROWSUM("Normalise Spectrogram Sum"),
 
 		/**
 		 * Converts a spectrogram from linear to log10 units. No associated parameters.

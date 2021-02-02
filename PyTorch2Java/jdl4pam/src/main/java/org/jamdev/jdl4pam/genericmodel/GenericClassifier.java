@@ -7,13 +7,17 @@ import java.util.ArrayList;
 
 import org.jamdev.jdl4pam.transforms.DLTransform;
 import org.jamdev.jdl4pam.transforms.DLTransformsFactory;
+import org.jamdev.jdl4pam.transforms.DLTransfromParams;
 import org.jamdev.jdl4pam.transforms.FreqTransform;
+import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
 import org.jamdev.jdl4pam.transforms.WaveTransform;
+import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 import org.jamdev.jdl4pam.utils.DLUtils;
 import org.jamdev.jpamutils.wavFiles.AudioData;
 
 import ai.djl.Model;
 import ai.djl.engine.Engine;
+import ai.djl.inference.Predictor;
 
 /**
  * Create the generic classifier. 
@@ -142,7 +146,7 @@ public class GenericClassifier {
 		// let's test on some right whale data. 
 		
 		String wavFilePath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/example_wav/call_393_2019_S4U05619MOL2-20180917-051012_2525_2534.wav";
-		int[] samplesChunk = new int[] {0, 1274}; // the sample chunk to use. 
+		int[] samplesChunk = new int[] {0, 4000}; // the sample chunk to use. 
 		
 		
 //		String modelPath = "/Users/au671271/Google Drive/PAMGuard_dev/Deep_Learning/Right_whales_DG/model_lenet_dropout_input_conv_all.hdf5"; 
@@ -161,9 +165,53 @@ public class GenericClassifier {
 
 			model.load(modelDir, "saved_model.pb");
 			
-			System.out.println(model.describeInput().values()); 
+			System.out.println("Input: " + model.describeInput().values()); 
+			System.out.println("Output: " + model.describeOutput().values()); 
+
+			SpectrogramTranslator translator = new SpectrogramTranslator(); 
+			//predictor for the model
+			Predictor<double[][], float[]> predictor = model.newPredictor(translator);
 			
 			
+			///load the wave data. 
+			//Open wav files. 
+			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
+			soundData = soundData.trim(samplesChunk[0], samplesChunk[1]); 
+			
+					
+			//create the transforms. 
+			ArrayList<DLTransfromParams> dlTransformParamsArr = new ArrayList<DLTransfromParams>();
+
+			//waveform transforms. 
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.DECIMATE, soundData.getSampleRate())); 
+//			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.PREEMPHSIS, preemphases)); 
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAM, 256, 100)); 
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECNORMALISEROWSUM)); 
+
+			//generate the transforms. 
+			ArrayList<DLTransform> transforms =	DLTransformsFactory.makeDLTransforms(dlTransformParamsArr); 
+			
+			
+			((WaveTransform) transforms.get(0)).setWaveData(soundData); 
+			
+			//run the tansforms. 
+			DLTransform transform = transforms.get(0); 
+			for (int i=0; i<transforms.size(); i++) {
+				transform = transforms.get(i).transformData(transform); 
+			}
+			
+						
+			float[] output = null; 
+			double[][] data;
+			for (int i=0; i<1; i++) {
+				long time1 = System.currentTimeMillis();
+//				data = DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
+//				System.out.println("Data input size: " + data.length + "   " + data[0].length);
+				data = DLUtils.makeDummySpectrogramd(40, 40); 
+				output =  predictor.predict(data); 
+				long time2 = System.currentTimeMillis();
+				System.out.println("Time to run model: " + (time2-time1) + " ms"); 
+			}
 			
 //			Criteria criteria = Criteria.builder().
 //					 optModelUrls(modelPath).build();

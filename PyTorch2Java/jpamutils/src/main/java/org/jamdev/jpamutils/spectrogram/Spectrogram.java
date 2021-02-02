@@ -315,7 +315,7 @@ public class Spectrogram {
 	 * Get the FFT hop in samples.  
 	 * @return the FFT hop in samples. 
 	 */
-	public int getFftHop() {
+	public int getFFTHop() {
 		return fftHop;
 	}
 

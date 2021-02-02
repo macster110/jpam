@@ -40,6 +40,9 @@ public class DLTransformsFactory {
 		case SPECNORMALISE:
 			dlTransform = new FreqTransform(DLTransformType.SPECNORMALISE, new Number[] {-100.0, 0.0}); 
 			break;
+		case SPECNORMALISEROWSUM:
+			dlTransform = new FreqTransform(DLTransformType.SPECNORMALISEROWSUM, null); 
+			break;
 		case SPECTROGRAM:
 			dlTransform = new FreqTransform(DLTransformType.SPECTROGRAM, new Number[] {1024, 8}); 
 			break;
@@ -81,6 +84,9 @@ public class DLTransformsFactory {
 			break;
 		case SPECNORMALISE:
 			dlTransform = new FreqTransform(DLTransformType.SPECNORMALISE, ((SimpleTransformParams) dlTransfromParams).params); 
+			break;
+		case SPECNORMALISEROWSUM:
+			dlTransform = new FreqTransform(DLTransformType.SPECNORMALISEROWSUM, ((SimpleTransformParams) dlTransfromParams).params); 
 			break;
 		case SPECTROGRAM:
 			dlTransform = new FreqTransform(DLTransformType.SPECTROGRAM, ((SimpleTransformParams) dlTransfromParams).params); 

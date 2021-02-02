@@ -52,6 +52,36 @@ public class DLUtils {
 		}
 		return specDummy; 
 	}
+	
+	
+	/**
+	 * Make a dummy spectrogram for testing. Filled with random values.  
+	 * @param len - the length of the spectrogram in bins. 
+	 * @param height - the height of the spectrgram in bins. 
+	 * @return a dummy spectrogram with random values. 
+	 */
+	public static double[][] makeDummySpectrogramd(int len, int len2){
+
+		//		int len = 256; 
+		//		int len2 = 128; 
+
+		double[][] specDummy = new double[len][len2]; 
+
+		Random rand = new Random(); 
+		for (int i=0; i<len; i++){
+			for (int j=0; j<len2; j++) {
+				specDummy[i][j] = 2F*(rand.nextFloat()-0.5F);
+
+				if (specDummy[i][j]>1) {
+					specDummy[i][j]=1F;
+				}
+				if (specDummy[i][j]<0) {
+					specDummy[i][j]=0F;
+				}
+			}
+		}
+		return specDummy; 
+	}
 
 
 	/** 
@@ -367,5 +397,7 @@ public class DLUtils {
 		return new AudioData(samples, sampleRate); 
 
 	}
+
+
 
 }

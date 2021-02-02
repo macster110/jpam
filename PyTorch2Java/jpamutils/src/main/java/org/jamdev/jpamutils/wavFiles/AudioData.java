@@ -48,6 +48,15 @@ public class AudioData {
 	}
 	
 	/**
+	 * Create an AudioData object. 
+	 * @param samples - the samples in amplitude units u. 
+	 * @param sampleRate - the sample rate in samples per second. 
+	 */
+	public AudioData(short[] samples, float sampleRate){
+		this(short2Int(samples), sampleRate); 
+	}
+	
+	/**
 	 * Create an AudioData object.
 	 * @param samples - the samples in linear amplitude units  - 1 to 1
 	 * @param sampleRate - the sample rate in samples per second. 
@@ -142,5 +151,17 @@ public class AudioData {
 		return new AudioData(preEmphasisFilter.preEmphasis(this.samples, factor) , sampleRate); 
 	}
 
+	/**
+	 * Convert a short[] array to int[]. 
+	 * @param samples - the short samples
+	 * @return the integer array containing the same data. 
+	 */
+	public static int[] short2Int(short[] samples) {
+		int[] arr = new int[samples.length]; 
+		for (int i=0; i<samples.length; i++) {
+			arr[i]=samples[i]; 
+		}
+		return arr;
+	}
 
 }

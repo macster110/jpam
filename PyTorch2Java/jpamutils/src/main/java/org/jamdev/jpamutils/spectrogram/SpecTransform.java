@@ -2,6 +2,8 @@ package org.jamdev.jpamutils.spectrogram;
 
 import java.util.Arrays;
 
+import org.jamdev.jpamutils.JArrayUtils;
+
 
 /**
  * Transforms spectrogram data.
@@ -46,6 +48,17 @@ public class SpecTransform {
 		this.specData = normalise(this.specData, min_leveldB, ref_level_dB); 
 		return this;
 	}
+	
+	/**
+	 * Normalise the current spectrogram by dividing by sum of the square of the sum of all rows. 
+	 * @return reference to the normalised spectrogram
+	 */
+	public SpecTransform normaliseRowSum() {
+		if (this.specData==null) this.specData = spectrgram.getAbsoluteSpectrogram(); 
+		this.specData = normaliseRowSum(this.specData); 
+		return this;
+	}
+
 
 	/**
 	 * Interpolate a spectrogram so that it has a specified number of frequency bins and sits 
@@ -108,6 +121,24 @@ public class SpecTransform {
 			}
 		}
 		return normalizeSpec; 
+	}
+	
+	
+	/**
+	 * Normalise a spectrogram by summing each row and squaring it then dividing the entire array by that value. 
+	 * @param array - the absolute spectrogram array. 
+	 * @return the normalised spectrogram. 
+	 */
+	public static double[][] normaliseRowSum(double[][] array) {
+		double tot = 0; 
+		for (int i = 0; i < array.length; i++) {
+			tot+=Math.pow(JArrayUtils.sum(array), 2); 
+		}
+		tot=Math.sqrt(tot); 
+		if (tot!=0) {
+			return JArrayUtils.divide(array, tot); 
+		}
+		return array; 
 	}
 
 
