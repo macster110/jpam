@@ -79,6 +79,13 @@ public class WavFile extends AudioFileReader
 	 * The audio format of the .wav file
 	 */
 	private AudioFileFormat audioFormat;
+	
+	/**
+	 * The length of the file in bytes. 
+	 */
+	private  int byteLength = -1;
+	
+
 
 	public WavFile(File file) throws UnsupportedAudioFileException, IOException {
 		this.file=file; 
@@ -204,6 +211,7 @@ public class WavFile extends AudioFileReader
 		}
 
 		//System.out.println("Bytes avalaible header end: " + din.available()); 
+		this.byteLength = din.available(); 
 
 		AudioFormat.Encoding encoding;
 
@@ -319,6 +327,9 @@ public class WavFile extends AudioFileReader
 	 */
 	public static byte[] trim(AudioFormat wavHeader, byte[] bytes, int maxSamples) {
 
+		//do nothing. 
+		if (maxSamples<=0) return bytes;
+		
 		int bytePerSample = wavHeader.getSampleSizeInBits() / 8; 
 		int numSamples = bytes.length / bytePerSample; 
 
@@ -383,7 +394,20 @@ public class WavFile extends AudioFileReader
 		return singleByteChan;		
 	}
 
+	/**
+	 * Get the file object for the .wav file. 
+	 * @return the file object. 
+	 */
 	public File getFile() {
 		return file;
 	}
+	
+	/**
+	 * Get the length of the file in bytes, 
+	 * @return the length of the file in bytes
+	 */
+	public int getByteLength() {
+		return byteLength;
+	}
+
 }

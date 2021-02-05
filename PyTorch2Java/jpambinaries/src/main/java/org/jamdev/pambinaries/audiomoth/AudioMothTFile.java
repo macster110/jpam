@@ -61,7 +61,7 @@ public class AudioMothTFile {
 	 * @throws IOException 
 	 * @throws ParseException 
 	 */
-	private static ArrayList<AudioMothTData> loadTFile(File file) throws UnsupportedAudioFileException, IOException, ParseException {
+	public static ArrayList<AudioMothTData> loadTFile(File file) throws UnsupportedAudioFileException, IOException, ParseException {
 
 		//create an array to hold all the trigger data. 
 		ArrayList<AudioMothTData> detections = new ArrayList<AudioMothTData>(); 
@@ -150,7 +150,7 @@ public class AudioMothTFile {
 			}
 			else {
 				//System.out.println("This is not an encoded block: " + sum); 
-				
+
 				//have to read as little endian samples
 				byte[] sampleByte = new byte[NUMBER_OF_BYTES_IN_SAMPLE]; 
 				for (int i =0; i<encodBlockRaw.length; i=i+2) {
@@ -159,7 +159,7 @@ public class AudioMothTFile {
 					}
 					encodBlock[i/2]= sampleByte(sampleByte); 
 				}
-				
+
 				triggerChunkBlocks.add(encodBlock); 
 				samplesWave+=encodBlock.length; 
 			}
@@ -176,7 +176,7 @@ public class AudioMothTFile {
 	 * @return a date number of the file start time in Java millis. 
 	 * @throws ParseException 
 	 */
-	private static Date readFileDateTime(File file) throws ParseException {
+	public static Date readFileDateTime(File file) throws ParseException {
 		//parse the date time from an audiomoth triiger file 
 
 		//		Example : 20200530_210400T.wav
@@ -218,7 +218,11 @@ public class AudioMothTFile {
 			}
 		}
 
-		long timeMillis = ((long)  (dateFileStart + 1000*(samplesStart/sR))); 
+		double addMillis = 1000*(samplesStart/sR); 
+
+		//System.out.println("addMillis: " + addMillis); 
+		long timeMillis = ((long)  (dateFileStart + addMillis)); 
+		
 
 		AudioMothTData detection = new AudioMothTData(samplesStart, timeMillis, wave, sR); 
 
@@ -232,9 +236,9 @@ public class AudioMothTFile {
 	public static MatFile write2MAT(ArrayList<AudioMothTData> triggerChunks) {
 
 		MatFile matFile = Mat5.newMatFile(); 
-		
+
 		Struct struct = Mat5.newStruct(new int[] {1, triggerChunks.size()}); 
-		
+
 		int n=0;
 		for (AudioMothTData triggerChunk: triggerChunks ) {
 			struct.set("startSample", n, Mat5.newScalar(triggerChunk.sampleStart)); 
@@ -243,29 +247,29 @@ public class AudioMothTFile {
 			struct.set("wave", n,	array2Matrix(triggerChunk.wave)); 
 			n++; 
 		}
-		
+
 		matFile.addArray("triggerchunks", struct); 
-		
+
 		return matFile; 
 
 	}
 
-//	/**
-//	 * Convert a chunk of AudioMoth trigger data into a MATLAB structure. 
-//	 * @param triggerChunk - the chunk matlab structure. 
-//	 */
-//	public static Struct audioMothTData2Struct(AudioMothTData triggerChunk) {
-//
-//		array2Matrix(triggerChunk.wave); 
-//		Struct struct = Mat5.newStruct();
-//		struct.set("startSample", Mat5.newScalar(triggerChunk.sampleStart)); 
-//		struct.set("date", Mat5.newScalar(triggerChunk.timeMillis)); 
-//		struct.set("sR", Mat5.newScalar(triggerChunk.sR)); 
-//		struct.set("wave", 	array2Matrix(triggerChunk.wave)); 
-//		
-//		return struct; 
-//
-//	}
+	//	/**
+	//	 * Convert a chunk of AudioMoth trigger data into a MATLAB structure. 
+	//	 * @param triggerChunk - the chunk matlab structure. 
+	//	 */
+	//	public static Struct audioMothTData2Struct(AudioMothTData triggerChunk) {
+	//
+	//		array2Matrix(triggerChunk.wave); 
+	//		Struct struct = Mat5.newStruct();
+	//		struct.set("startSample", Mat5.newScalar(triggerChunk.sampleStart)); 
+	//		struct.set("date", Mat5.newScalar(triggerChunk.timeMillis)); 
+	//		struct.set("sR", Mat5.newScalar(triggerChunk.sR)); 
+	//		struct.set("wave", 	array2Matrix(triggerChunk.wave)); 
+	//		
+	//		return struct; 
+	//
+	//	}
 
 
 	/**
@@ -307,7 +311,7 @@ public class AudioMothTFile {
 	public static short bytes2Short(byte firstByte, byte secondByte) {
 		return (short)(((firstByte & 0xFF) << 8) | (secondByte & 0xFF));
 	}
-	
+
 	/**
 	 * Read little endian wav file. 
 	 * @param data - the data
@@ -322,13 +326,40 @@ public class AudioMothTFile {
 		return amplitude; 
 	}
 
+	/**
+	 * Check whether a file is an AudioMoth trigger 
+	 * @param file - the file name. 
+	 * @return true if this is an AudioMoth trigger file.  
+	 */
+	public static boolean isAudioMothTFile(File file) {
+		//is the file in a format which is an AudioMoth T file.
+		String fileName = file.getName().substring(0, file.getName().length()-4); 
+
+		String fileString = file.getName().substring(file.getName().length()-3, file.getName().length()); 
+		
+//		System.out.println("fileName: " + fileName); 
+//		System.out.println("fileString: " + fileString); 
+		
+		//think this should probably cover everything. 
+		if (fileName.length()==16 && fileString.equals("WAV") && fileName.endsWith("T")) {
+			return true;
+		}
+
+		return false; 
+	}
+
 
 	public static void main(String[] args) {
-		
+
 		//test the algorithm on a file and export as MATLAB structure. 
-		
+
 		String file = "/Users/au671271/Google Drive/SoundSort_dev/audiomoth/20200530_210400T.WAV";
 		String exportToFile = "/Users/au671271/Google Drive/Programming/MATLAB/Instruments/audiomoth/audiomothchunk.mat"; 
+
+		boolean isFile = isAudioMothTFile(new File(file)); 
+//		boolean isFile = isAudioMothTFile(new File("/Users/au671271/Google Drive/SoundSort_dev/audiomoth/20200530_210400.WAV")); 
+
+		System.out.println("This is an AudioMoth file: " + isFile); 
 
 		try {
 			ArrayList<AudioMothTData> triggerChunks = AudioMothTFile.loadTFile(new File(file));
@@ -343,9 +374,9 @@ public class AudioMothTFile {
 				System.out.println("Wave len: " + triggerChunk.wave.length);
 				System.out.println("Max amp: " + max(triggerChunk.wave));
 			}
-			
+
 			MatFile matFile = write2MAT(triggerChunks); 
-			
+
 			// Serialize to disk using default configurations
 			Mat5.writeToFile(matFile,exportToFile);
 		} 

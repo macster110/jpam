@@ -29,21 +29,25 @@ public class ReadBufferExceptionTest {
 
 	public static void main(String[] args) {
 
-		String modelPath = "/Users/au671271/Desktop/model_lenet_dropout_input_conv_all/1/saved_model.pb";
+		String modelPath = "/Users/au671271/Desktop/model_lenet_dropout_input_conv_all/saved_model.pb";
 
 		try {
 
 			//load the Tensorflow model. 
 			File file = new File(modelPath); 
 
+			
+			Model model = Model.newInstance(modelPath, "TensorFlow"); 
+
 			Path modelDir = Paths.get(file.getAbsoluteFile().getParent()); //the directory of the file (in case the file is local this should also return absolute directory)
 
 			System.out.println(Engine.getAllEngines()); 
 
-			Model model = Model.newInstance(modelPath, "TensorFlow"); 
+			System.out.println("Engine name before model load: " + Engine.getInstance().getEngineName());
 
 			model.load(modelDir, "saved_model.pb");
 
+			System.out.println("Engine name after model load: " + Engine.getInstance().getEngineName());
 			System.out.println("Input: " + model.describeInput().values()); 
 			System.out.println("Output: " + model.describeOutput().values()); 
 
@@ -72,7 +76,7 @@ public class ReadBufferExceptionTest {
 
 				@Override
 				public float[]  processOutput(TranslatorContext ctx, NDList list) {
-					System.out.println("Hello: 2 " + list); 
+					System.out.println("Predict " + list); 
 
 					NDArray temp_arr = list.get(0);
 
@@ -93,6 +97,9 @@ public class ReadBufferExceptionTest {
 					return null;
 				}
 			};
+			
+            System.out.println("Engine name before prediciton: " + Engine.getInstance().getEngineName());
+            
 			Predictor<double[][], float[]> predictor = model.newPredictor(translator);
 			
 			
