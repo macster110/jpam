@@ -10,6 +10,5 @@ module jdl4pam {
 	requires java.desktop;
 	requires jpamutils;
 	requires org.json;
-	requires pytorch.java.only;
 	requires us.hebi.matlab.mat.mfl.core;
 }

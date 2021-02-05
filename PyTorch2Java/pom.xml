@@ -32,24 +32,27 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- 
 		<dependency>
 			<groupId>com.facebook.soloader</groupId>
 			<artifactId>nativeloader</artifactId>
 			<version>0.9.0</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.facebook.fbjni/fbjni-java-only -->
+		</dependency>-->
+		
+		<!-- https://mvnrepository.com/artifact/com.facebook.fbjni/fbjni-java-only
 		<dependency>
 			<groupId>com.facebook.fbjni</groupId>
 			<artifactId>fbjni-java-only</artifactId>
 			<version>0.0.4</version>
-		</dependency>
+		</dependency>-->
 
-		<!-- https://mvnrepository.com/artifact/org.pytorch/pytorch_java_only -->
+		<!-- https://mvnrepository.com/artifact/org.pytorch/pytorch_java_only 
 		<dependency>
 			<groupId>org.pytorch</groupId>
 			<artifactId>pytorch_java_only</artifactId>
 			<version>1.6.0</version>
-		</dependency>
+		</dependency>-->
 		<!-- https://mvnrepository.com/artifact/org.jflac/jflac-codec -->
 		<dependency>
 			<groupId>org.jflac</groupId>

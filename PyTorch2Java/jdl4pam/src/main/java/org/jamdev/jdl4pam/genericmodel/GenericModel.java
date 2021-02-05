@@ -57,8 +57,6 @@ public class GenericModel {
 
 		//predictor for the model
 		predictor = model.newPredictor(translator);
-		
-		
 
 	}
 
