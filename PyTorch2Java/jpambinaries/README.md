@@ -48,13 +48,15 @@ Code for imported binary files is avaialble in the PAMGuard repository however, 
 ## Maven
 JPAMBinaries is available from Bintray. The Maven dependendency is
 
+```
 <dependency>
   <groupId>org.jamdev</groupId>
   <artifactId>jpambinaries</artifactId>
   <version>0.0.2</version>
   <type>pom</type>
 </dependency>
+```
 
-make sure to also add the Bintray plugin. Instructions can be found on Bintray https://bintray.com/macster110/jpam/jpambinaries
+Make sure to also add the Bintray plugin. Instruction can be found on Bintray https://bintray.com/macster110/jpam/jpambinaries
 
 
