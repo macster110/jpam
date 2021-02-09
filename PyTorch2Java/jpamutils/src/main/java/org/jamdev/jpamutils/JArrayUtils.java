@@ -572,6 +572,21 @@ public class JArrayUtils {
 //		ArrayUtils.reverse(clone);
 //		return clone; 
 //	}
+	
+	/**
+	 * Square or raise the power all elements in an array 
+	 * @param  array - the array 
+	 * @param -exp - the exponent - set to 2 to take square of all elements. 
+	 * @return array with all elements raised to the power of exp. 
+	 */
+	public static double[] pow(double[] array, double exp) {
+		double[] arrExp = new double[array.length]; 
+		for (int i=0; i<arrExp.length; i++) {
+			arrExp[i]=Math.pow(array[i], exp); 
+		}
+		return arrExp;
+	}
+
 
 	/**
 	 * Sum the elements in an array 

@@ -105,10 +105,10 @@ public class SoundSpotClassifier {
 
 
 			float[] output = null; 
-			float[][] data;
+			float[][][] data;
 			for (int i=0; i<10; i++) {
 				//long time1 = System.currentTimeMillis();
-				data = DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData()); 
+				data = new float[][][] {DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData())}; 
 				output = soundSpotModel.runModel(data); 
 				//long time2 = System.currentTimeMillis();
 				//System.out.println("Time to run model: " + (time2-time1) + " ms"); 

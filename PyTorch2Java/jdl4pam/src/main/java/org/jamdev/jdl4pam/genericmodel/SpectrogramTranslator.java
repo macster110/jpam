@@ -1,5 +1,7 @@
 package org.jamdev.jdl4pam.genericmodel;
 
+import java.util.ArrayList;
+
 import org.jamdev.jdl4pam.utils.DLUtils;
 
 import ai.djl.ndarray.NDArray;
@@ -17,20 +19,21 @@ import ai.djl.translate.TranslatorContext;
  * @author Jamie Macaulay 
  *
  */
-public class SpectrogramTranslator implements Translator<float[][], float[]> {    
+public class SpectrogramTranslator implements Translator<float[][][], float[]> {    
 
 	@Override
-	public NDList processInput(TranslatorContext ctx, float[][] data) {
+	public NDList processInput(TranslatorContext ctx, float[][][] data) {
 		//System.out.println("Hello: 1 " ); 
 		NDManager manager = ctx.getNDManager();
 
-		Shape shape = new Shape(1L, data.length, data[0].length, 1L); 
+		Shape shape = new Shape(data.length, data[0].length, data[0][0].length, 1L); 
 		
 		System.out.println("NDArray shape: " + shape); 
 
 		float[] specgramFlat = DLUtils.flattenDoubleArrayF(data); 
-
+		
 		NDArray array = manager.create(specgramFlat, shape); 
+		
 //		NDArray array = manager.create(data); 
 
 		System.out.println("NDArray size: " + array.size()); 
@@ -40,7 +43,7 @@ public class SpectrogramTranslator implements Translator<float[][], float[]> {
 
 	@Override
 	public float[]  processOutput(TranslatorContext ctx, NDList list) {
-		System.out.println("Hello: 2 " + list); 
+		System.out.println("Output: " + list.size()); 
 
 		NDArray temp_arr = list.get(0);
 
@@ -51,6 +54,8 @@ public class SpectrogramTranslator implements Translator<float[][], float[]> {
 			results[i] = number[i].floatValue(); 
 		}
 
+		System.out.println("results: " + results.length); 
+
 		return results; 
 	}
 
@@ -58,7 +63,7 @@ public class SpectrogramTranslator implements Translator<float[][], float[]> {
 	public Batchifier getBatchifier() {
 		// The Batchifier describes how to combine a batch together
 		// Stacking, the most common batchifier, takes N [X1, X2, ...] arrays to a single [N, X1, X2, ...] array
-		return Batchifier.STACK;
+		return null;
 	}
 };
 

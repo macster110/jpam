@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
+import org.jamdev.jdl4pam.genericmodel.SpectrogramTranslator;
 import org.jamdev.jdl4pam.utils.DLUtils;
 
 import ai.djl.MalformedModelException;
@@ -36,7 +37,7 @@ public class SoundSpotModel {
 	/**
 	 * The predictor for the model. 
 	 */
-	Predictor<float[][], float[]> predictor; 
+	Predictor<float[][][], float[]> predictor; 
 	
 	/**
 	 * Paramter string associated with the model. 
@@ -106,7 +107,7 @@ public class SoundSpotModel {
 	 * @param specImage
 	 * @return
 	 */
-	public float[] runModel(float[][] specImage) {
+	public float[] runModel(float[][][] specImage) {
 		try {
 			float[] results  = predictor.predict(specImage);
 			//DLUtils.printArray(results);
@@ -126,14 +127,14 @@ public class SoundSpotModel {
 	 * @author Jamie Macaulay 
 	 *
 	 */
-	public class SpectrogramTranslator implements Translator<float[][], float[]> {    
+	public class SpectrogramTranslator implements Translator<float[][][], float[]> {    
 		
 		@Override
-		public NDList processInput(TranslatorContext ctx, float[][] data) {
+		public NDList processInput(TranslatorContext ctx, float[][][] data) {
 			//System.out.println("Hello: 1 " ); 
 			NDManager manager = ctx.getNDManager();
 
-			Shape shape = new Shape(1L, data.length, data[0].length); 
+			Shape shape = new Shape(data.length, 1L, data[0].length, data[0][0].length); 
 
 			float[] specgramFlat = DLUtils.flattenDoubleArrayF(data); 
 
@@ -146,7 +147,6 @@ public class SoundSpotModel {
 
 		@Override
 		public float[] processOutput(TranslatorContext ctx, NDList list) {
-			//System.out.println("Hello: 2 " + list); 
 
 			NDArray temp_arr = list.get(0);
 
@@ -157,6 +157,8 @@ public class SoundSpotModel {
 				results[i] = number[i].floatValue(); 
 			}
 
+			System.out.println("Number of results: " + results.length); 
+
 			return results; 
 		}
 
@@ -164,7 +166,7 @@ public class SoundSpotModel {
 		public Batchifier getBatchifier() {
 			// The Batchifier describes how to combine a batch together
 			// Stacking, the most common batchifier, takes N [X1, X2, ...] arrays to a single [N, X1, X2, ...] array
-			return Batchifier.STACK;
+			return null;
 		}
 	};
 }

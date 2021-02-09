@@ -32,45 +32,26 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
-		
-		<!-- 
-		<dependency>
-			<groupId>com.facebook.soloader</groupId>
-			<artifactId>nativeloader</artifactId>
-			<version>0.9.0</version>
-		</dependency>-->
-		
-		<!-- https://mvnrepository.com/artifact/com.facebook.fbjni/fbjni-java-only
-		<dependency>
-			<groupId>com.facebook.fbjni</groupId>
-			<artifactId>fbjni-java-only</artifactId>
-			<version>0.0.4</version>
-		</dependency>-->
 
-		<!-- https://mvnrepository.com/artifact/org.pytorch/pytorch_java_only 
-		<dependency>
-			<groupId>org.pytorch</groupId>
-			<artifactId>pytorch_java_only</artifactId>
-			<version>1.6.0</version>
-		</dependency>-->
+		<!-- <dependency> <groupId>com.facebook.soloader</groupId> <artifactId>nativeloader</artifactId> 
+			<version>0.9.0</version> </dependency> -->
+
+		<!-- https://mvnrepository.com/artifact/com.facebook.fbjni/fbjni-java-only 
+			<dependency> <groupId>com.facebook.fbjni</groupId> <artifactId>fbjni-java-only</artifactId> 
+			<version>0.0.4</version> </dependency> -->
+
+		<!-- https://mvnrepository.com/artifact/org.pytorch/pytorch_java_only <dependency> 
+			<groupId>org.pytorch</groupId> <artifactId>pytorch_java_only</artifactId> 
+			<version>1.6.0</version> </dependency> -->
 		<!-- https://mvnrepository.com/artifact/org.jflac/jflac-codec -->
-		<dependency>
+		
+		<!--  <dependency>
 			<groupId>org.jflac</groupId>
 			<artifactId>jflac-codec</artifactId>
 			<version>1.5.2</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-math3</artifactId>
-			<version>3.6.1</version>
-		</dependency>
-		<!-- filter library -->
-		<dependency>
-			<groupId>uk.me.berndporr</groupId>
-			<artifactId>iirj</artifactId>
-			<version>1.1</version>
-		</dependency>
+		</dependency> -->
+		
+		
 		<!-- MATLAB import and export library -->
 		<dependency>
 			<groupId>us.hebi.matlab.mat</groupId>
@@ -82,24 +63,24 @@
 		<!-- <dependency> <groupId>com.google.protobuf</groupId> <artifactId>protobuf-java</artifactId> 
 			<version>3.8.0</version> </dependency> -->
 
-
+		<!--  Simple JSON library -->
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20201115</version>
 		</dependency>
-		
-<!--  		<dependency>
-			<groupId>org.jamdev</groupId>
-			<artifactId>jpamutils</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+
+		<!--  <dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
 		</dependency> -->
-		
-<!--  		<dependency>
-			<groupId>org.jamdev</groupId>
-			<artifactId>jdl4pam</artifactId>
-  			<version>0.0.8-SNAPSHOT</version>
-		</dependency>  -->
+
+		<!-- <dependency> <groupId>org.jamdev</groupId> <artifactId>jpamutils</artifactId> 
+			<version>0.0.1-SNAPSHOT</version> </dependency> -->
+
+		<!-- <dependency> <groupId>org.jamdev</groupId> <artifactId>jdl4pam</artifactId> 
+			<version>0.0.8-SNAPSHOT</version> </dependency> -->
 
 	</dependencies>
 
@@ -183,11 +164,12 @@
 		</repository>
 	</distributionManagement>
 
-   <modules>
-	<module>jpamutils</module>
-   	<module>jdl4pam</module>
-    <module>jpamutilsfx</module>
-    <module>jpambinaries</module>
+	<modules>
+		<module>jpamutils</module>
+		<module>jdl4pam</module>
+		<module>jpamutilsfx</module>
+		<module>jpambinaries</module>
+   		<module>jpamtest</module>
   </modules>
-	
+
 </project>

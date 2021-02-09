@@ -132,7 +132,7 @@ public class SpecTransform {
 	public static double[][] normaliseRowSum(double[][] array) {
 		double tot = 0; 
 		for (int i = 0; i < array.length; i++) {
-			tot+=Math.pow(JArrayUtils.sum(array), 2); 
+			tot+=JArrayUtils.sum(JArrayUtils.pow(array[i], 2)); 
 		}
 		tot=Math.sqrt(tot); 
 		if (tot!=0) {
@@ -189,7 +189,7 @@ public class SpecTransform {
 		double[][] specInterp = new double[array.length][]; 
 		double[] fftSliceInterp; 
 		
-		//System.out.println("Min index: " +  minIndex + " max index: " + maxIndex + " FFT len: " + fftlen +  " f min Hz: " + fMin + " f max Hz: " + fMax); 
+		System.out.println("Min index: " +  minIndex + " max index: " + maxIndex + " FFT len: " + fftlen +  " f min Hz: " + fMin + " f max Hz: " + fMax + " sR: " + sR); 
 
 		for (int i = 0; i < array.length; i++) 	{		
 			fftSliceInterp = Arrays.copyOfRange(array[i], minIndex, maxIndex);

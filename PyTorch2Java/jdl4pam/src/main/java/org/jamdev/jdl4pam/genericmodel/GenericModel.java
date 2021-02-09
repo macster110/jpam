@@ -37,7 +37,7 @@ public class GenericModel {
 	/**
 	 * The predictor for the model. 
 	 */
-	Predictor<float[][], float[]> predictor; 
+	Predictor<float[][][], float[]> predictor; 
 
 
 	public GenericModel(String modelPath) throws MalformedModelException, IOException{
@@ -65,7 +65,7 @@ public class GenericModel {
 	 * @param specImage - the spectrogram image
 	 * @return the results 
 	 */
-	public float[] runModel(float[][] specImage) {
+	public float[] runModel(float[][][] specImage) {
 		try {
 			float[] results  = predictor.predict(specImage);
 			//DLUtils.printArray(results);

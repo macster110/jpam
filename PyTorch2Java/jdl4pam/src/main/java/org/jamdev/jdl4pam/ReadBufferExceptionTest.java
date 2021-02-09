@@ -1,4 +1,4 @@
-package org.jamdev.jdl4pam.genericmodel;
+package org.jamdev.jdl4pam;
 
 import java.io.File;
 import java.nio.file.Path;

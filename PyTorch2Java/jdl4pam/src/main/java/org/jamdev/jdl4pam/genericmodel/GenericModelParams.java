@@ -23,12 +23,11 @@ public class GenericModelParams {
 	 * 
 	 */
 	public ArrayList<DLTransfromParams> dlTransforms; 
+	
 	/**
 	 * The class names. 
 	 */
 	public String[] classNames = null;
-	
-	
 	
 	
 	public GenericModelParams() {

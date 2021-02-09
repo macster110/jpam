@@ -103,25 +103,31 @@ public class Spectrogram {
 	 * Construct the spectrogram form the raw wave data. 
 	 */
 	private void buildSpectrogram(AudioData wave) {
+		
 
 		double[] amplitudes = wave.getScaledSampleAmpliudes();
 		int pointer = 0;
 
+		//System.out.println("Build spectrogram: sR: " + wave.sampleRate + " FFTHop: " + this.fftHop + " for " + amplitudes.length + " samples") ;
+
 		// overlapping
 		
-		/**
+		/**f
 		 * This is a little complicated. The FFT hop is the number of samples the the window moves each iteration in
 		 * the spectrogram. the hop moves as long as the current window position + FFT length is no greater than the total number
 		 * of samples. once that limit is reached then the spectrogram stops calculating samples. Surprisingly complicate to 
 		 * deal all the all the cases where the fft hop and length are not direct divisors of the samples etc. 
 		 */
 
-		int numHops = (int) Math.ceil((amplitudes.length-fftSampleSize)/fftHop); 
+		int numHops = (int) Math.ceil((amplitudes.length-fftHop)/fftHop); 
 		int numOverlappedSamples = (int) (fftSampleSize*numHops)+fftSampleSize;
 		double[] overlapAmp = new double[numOverlappedSamples];
 
 		//temp
-		int numSamples = numHops*fftHop+fftSampleSize;
+		int numSamples = numHops*fftHop;
+		
+//		System.out.println("numSamples: " + numSamples); 
+
 
 		int nn =0; 
 		for (int i = 0; i < numSamples; i++) {
@@ -175,6 +181,10 @@ public class Spectrogram {
 		 */
 		numFrequencyUnit = complexSpectrogram[0].length()/2; 
 		frequencyBinSize = (double) wave.getSampleRate() / 2 / numFrequencyUnit; // frequency is half of
+		
+		
+		System.out.println("Build spectrogram: specData: " + complexSpectrogram.length);
+
 	}
 
 	/**
