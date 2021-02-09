@@ -5,7 +5,7 @@ JPAMBinaries is a Java library for extracting acoustic data from bespoke acousti
 
 ## Implemented file types
 ### AudioMoth
-AudioMoth trigger files are imported using the org.jamdev.pambinaries.audiomoth package. The ```AudioMothTFile.loadTFile``` function extracts the raw wave data from each trigger chunk alongside sample time, time stamps parsed from the file name and then packages each raw wave data chunk and metadata to an AudioMothTData object. The importer returns an array of AudioMothTData objects for every imported file.  Example code is shown below
+AudioMoth trigger files are imported using the org.jamdev.pambinaries.audiomoth package. The ```AudioMothTFile.loadTFile``` function extracts the raw wave data from each trigger chunk alongside sample time, time stamps parsed from the file name and then packages each raw wave data chunk and metadata to an AudioMothTData object. The importer returns an array of AudioMothTData objects for every imported file.  An example code is shown below
 
 ```
 String file = "audiomoth/20200530_210400T.WAV";
@@ -43,7 +43,7 @@ String exportToFile = "audiomothchunk.mat";
 
 
 ### PAMGuard binary files
-Code for imported binary files is avaialble in the PAMGuard repository however, these are tided to the PAMGuard API. The JPAMBinaries implementation provides a more functional programming library approach without the need to import the entire PAMGaurd API into porograms. 
+Code for imported binary files is available in the PAMGuard repository however, these are tied to the PAMGuard API. The JPAMBinaries implementation provides a more functional programming library approach without the need to import the entire PAMGaurd API into programs. 
 
 ## Maven
 JPAMBinaries is available from Bintray. The Maven dependendency is
@@ -52,7 +52,7 @@ JPAMBinaries is available from Bintray. The Maven dependendency is
 <dependency>
   <groupId>org.jamdev</groupId>
   <artifactId>jpambinaries</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
   <type>pom</type>
 </dependency>
 ```
