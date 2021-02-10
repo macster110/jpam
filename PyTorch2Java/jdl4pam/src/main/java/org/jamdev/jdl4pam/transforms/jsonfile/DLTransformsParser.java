@@ -21,7 +21,7 @@ import ai.djl.MalformedModelException;
 import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 
 /**
- * Write the transforms to a JSON file. Note that this is not the most elegent way of writing data files, however, 
+ * Write the transforms to a JSON file. Note that this is not the most elegant way of writing data files, however, 
  * i's how python exports maps which means that Python and Java can inter- chnage files. This 
  * @author Jamie Macaulay 
  *
