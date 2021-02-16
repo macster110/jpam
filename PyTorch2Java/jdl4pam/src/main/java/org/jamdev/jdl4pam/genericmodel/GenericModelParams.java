@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import org.jamdev.jdl4pam.transforms.DLTransfromParams;
 import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
+
+import ai.djl.ndarray.types.Shape;
+
 import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 
 
@@ -28,6 +31,16 @@ public class GenericModelParams {
 	 * The class names. 
 	 */
 	public String[] classNames = null;
+	
+	/**
+	 * The default shape of the input. 
+	 */
+	public Shape defaultInputShape = null;
+	
+	/**
+	 * The default shape of the output. 
+	 */
+	public Shape defaultOutputShape = null;
 	
 	
 	public GenericModelParams() {

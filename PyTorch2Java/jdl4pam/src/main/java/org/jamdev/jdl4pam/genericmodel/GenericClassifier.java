@@ -41,7 +41,12 @@ public class GenericClassifier {
 
 
 	public GenericClassifier(String modelPath) {
-		loadModel( modelPath);
+		loadModel(modelPath);
+		
+		genericModelParams.defaultInputShape = genericModel.getInputShape();
+				
+		genericModelParams.defaultInputShape = genericModel.getOutShape();
+
 	}
 
 	/**

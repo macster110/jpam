@@ -48,12 +48,13 @@ public class RightWhaleDL {
 		String modelPath = "/Users/au671271/Desktop/model_lenet_dropout_input_conv_all/saved_model.pb";
 		
 	
-		
-		
 		String outMatlabPath = "/Users/au671271/Google Drive/Programming/MATLAB/PAMGUARD/deep_learning/generic_classifier/rightwhaespec.mat";
 
 		float sr = 2000; 
-		int startchunk =  (int) (181.2*sr); 
+//		int startchunk =  (int) (181.2*sr); //right whale call
+		
+		int startchunk =  (int) (190.2*sr); 
+
 		int chunkSize = 4000; 
 		
 		try {
@@ -72,7 +73,7 @@ public class RightWhaleDL {
 			System.out.println("Input: " + model.describeInput().values()); 
 			System.out.println("Output: " + model.describeOutput().values()); 
 
-			SpectrogramTranslator translator = new SpectrogramTranslator(); 
+			SpectrogramTranslator translator = new SpectrogramTranslator( model.describeInput().get(0).getValue()); 
 			//predictor for the model
 			Predictor<float[][][], float[]> predictor = model.newPredictor(translator);
 
@@ -98,11 +99,9 @@ public class RightWhaleDL {
 			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECCROPINTERP, 47.0, 357.0, 40)); 
 			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECNORMALISEROWSUM)); 
 
-
 			//generate the transforms. 
 			ArrayList<DLTransform> transforms =	DLTransformsFactory.makeDLTransforms(dlTransformParamsArr); 
 			
-
 			((WaveTransform) transforms.get(0)).setWaveData(soundData); 
 
 			//run the tansforms. 
@@ -134,15 +133,20 @@ public class RightWhaleDL {
 				long time1 = System.currentTimeMillis();
 				//				data = DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
 				//				System.out.println("Data input size: " + data.length + "   " + data[0].length);
-				int nSpec = 400;
+				int nSpec = 1;
 				data = new float[nSpec][][]; 
 				for (int j=0; j<nSpec; j++) {
-					data[j]=  DLUtils.makeDummySpectrogram(40, 40); 
+					//data[j]=  DLUtils.makeDummySpectrogram(40, 40); 
+					data[j]=  dataF; 
 				}
 
 				output = predictor.predict(data); 
 				long time2 = System.currentTimeMillis();
 				System.out.println("Time to run model: " + (time2-time1) + " ms"); 
+
+				for (int j = 0; j<output.length; j++) {
+					System.out.println("Output: " + j + " : " + output[j]);
+				}
 			}
 
 			//			Criteria criteria = Criteria.builder().

@@ -35,7 +35,7 @@ public class DLTransformsParser {
 	 * @param dlTransforms - a list of transform paramters. 
 	 * @return the JSONObject for the transform paramters. 
 	 */
-	public static JSONObject writeJSONObject(ArrayList<DLTransfromParams> dlTransforms) {
+	public static JSONObject writeJSONObject(List<DLTransfromParams> dlTransforms) {
 
 		JSONObject object = new JSONObject();
 		for (int i=0; i<dlTransforms.size(); i++) {
@@ -51,7 +51,7 @@ public class DLTransformsParser {
 	 * @param dlTransforms - the transform paramters list
 	 * @return true of the file was written successfully. 
 	 */
-	public static boolean writeJSONFile(File file, ArrayList<DLTransfromParams> dlTransforms) {
+	public static boolean writeJSONFile(File file, List<DLTransfromParams> dlTransforms) {
 		JSONObject object = writeJSONObject(dlTransforms); 
 		
 		//System.out.println(object.get("amplitude_to_decibel").toString()); 

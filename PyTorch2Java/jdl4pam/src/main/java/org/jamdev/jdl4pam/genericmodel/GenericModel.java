@@ -4,20 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import org.jamdev.jdl4pam.utils.DLUtils;
-
+import org.apache.commons.io.FilenameUtils;
 import ai.djl.MalformedModelException;
 import ai.djl.Model;
+import ai.djl.engine.Engine;
 import ai.djl.inference.Predictor;
-import ai.djl.ndarray.NDArray;
-import ai.djl.ndarray.NDList;
-import ai.djl.ndarray.NDManager;
 import ai.djl.ndarray.types.Shape;
-import ai.djl.translate.Batchifier;
 import ai.djl.translate.TranslateException;
-import ai.djl.translate.Translator;
-import ai.djl.translate.TranslatorContext;
 
 
 /**
@@ -37,7 +30,20 @@ public class GenericModel {
 	/**
 	 * The predictor for the model. 
 	 */
-	Predictor<float[][][], float[]> predictor; 
+	Predictor<float[][][], float[]> predictor;
+	
+	/**
+	 * The input shape from the loaded model. 
+	 */
+	private Shape inputShape = null; 
+
+	/**
+	 * The output shape from the model. 
+	 */
+	private Shape outShape = null; 
+
+
+	private SpectrogramTranslator translator; 
 
 
 	public GenericModel(String modelPath) throws MalformedModelException, IOException{
@@ -49,16 +55,68 @@ public class GenericModel {
 		Path modelDir = Paths.get(file.getAbsoluteFile().getParent()); //the directory of the file (in case the file is local this should also return absolute directory)
 		String modelName = file.getName(); 
 
-		SpectrogramTranslator translator = new SpectrogramTranslator(); 
+		String extension = FilenameUtils.getExtension(file.getAbsolutePath());
 
-		model = Model.newInstance(modelName);
+		System.out.println("Generic Model: Available engines: " + Engine.getAllEngines()); 
+		
+	
+		Model model; 
+		switch  (extension) {
+		case "pb":
+			model = Model.newInstance(modelPath, "TensorFlow"); 
+			model.load(modelDir, "saved_model.pb");
+			break; 
+		case "py":
+			model = Model.newInstance(modelName);
+			model.load(modelDir, modelName);
+			break; 
+		default:
+			//will try to load a model automatically - problematic but let's see. 
+			model = Model.newInstance(modelPath); 
+			break;
+		}
 
-		model.load(modelDir, modelName);
+		if (model.describeInput()!=null) {
+			System.out.println("Generic Model: Input: " + model.describeInput().get(0).getValue()); 
+			inputShape =  model.describeInput().get(0).getValue();
+		}
+		if (model.describeOutput()!=null) {
+			System.out.println("Generic Model: Output: " + model.describeOutput().get(0).getValue()); 
+			outShape = model.describeOutput().get(0).getValue();
+		}
 
+		translator = new SpectrogramTranslator(inputShape); 
+		
 		//predictor for the model
 		predictor = model.newPredictor(translator);
 
 	}
+
+	/**
+	 * Get the model shape for the input. 
+	 * @return the input shape. 
+	 */
+	public Shape getInputShape() {
+		return inputShape;
+	}
+
+	/**
+	 * Set the input shape. 
+	 * @param inputShape - the input shape. 
+	 */
+	public void setInputShape(Shape inputShape) {
+		this.inputShape = inputShape;
+		translator.setShape(inputShape);
+	}
+
+	/**
+	 * Get the output shape. The shape is null if the model does not specify shape. 
+	 * @return the output shape. 
+	 */
+	public Shape getOutShape() {
+		return outShape;
+	}
+
 
 	/**
 	 * Run the model.
@@ -76,8 +134,8 @@ public class GenericModel {
 		}
 		return null;
 	}
-	
-	
+
+
 
 
 
