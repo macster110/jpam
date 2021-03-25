@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>jpamutils</artifactId>
-	<version>0.0.4</version>
+	<version>0.0.5</version>
 	<packaging>jar</packaging>
 
 	<name>jpamutils</name>
@@ -70,13 +70,13 @@
 	</developers>
 	<description>Signal processing tools for passive acoustic monitoring</description>
 
-	<distributionManagement>
+	<!--<distributionManagement>
 		<repository>
 			<id>bintray-macster110-jpam</id>
 			<name>macster110-jpam</name>
 			<url>https://api.bintray.com/maven/macster110/jpam/jpamutils/;publish=1</url>
 		</repository>
-	</distributionManagement>
+	</distributionManagement>-->
 
 	<build>
 	</build>

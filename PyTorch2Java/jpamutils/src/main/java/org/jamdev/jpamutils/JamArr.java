@@ -9,8 +9,8 @@ import java.util.TreeMap;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 
-public class JArrayUtils {
-	
+public class JamArr {
+
 
 	/**
 	 * Calculate the mean of one dimension within a list of points. <i>e.g.</i> the points might be a list of [x y z] co-ordinates in 
@@ -269,6 +269,196 @@ public class JArrayUtils {
 		return sum/data.length;
 	}
 
+
+	/**
+	 * Calculate the mean over all elements of a double[][] array. 
+	 * @param data - 2D array of double
+	 * @return the mean over all elements. 
+	 */
+	public static double mean(double[][] data) {
+		return mean(data, -1)[0];
+	}
+
+	/**
+	 * Calculate the mean of all rows or columns in a double[][] array.
+	 * 
+	 * @param data - 2D array of double - must not be a ragged array.
+	 * @param dim  - which dimensions to average over. -1 averages across all
+	 *             elements in the array. 0 averages rows and 1 averages columns.
+	 * @return the mean values, a single value or the mean of all rows/columns
+	 */
+	public static double[] mean(double[][] data, int dim) {
+		double[]  mean; 
+		if (dim==0) {
+			mean = new double[data.length]; 
+			for (int i=0; i<data.length; i++) {
+				mean[i] = mean(data[i]); 
+			}
+		}
+		else if (dim==1) {
+
+			mean = new double[data[0].length]; 
+
+			double[] meanTemp; 
+			for (int i=0; i<data[0].length; i++) {
+				meanTemp = new double[data.length]; 
+				for (int j=0; j<data.length; j++) {
+					meanTemp[i] = data[j][i]; 
+				}
+				mean[i] = mean(meanTemp);
+			}
+		}
+		else {
+			double sum = 0.0;
+			int count=0; 
+			//average over whole array. 
+			for (int i=0; i<data.length; i++) {
+				for (int j=0; j<data[i].length; j++) {
+					sum += data[i][j];
+					count++; 
+				}
+			}
+			mean = new double[1]; 
+			mean[0]= sum/count; 
+		}
+
+		return mean;
+	}
+
+	/**
+	 * Calculate the median of a double[][] array. Flattens the array and then takes the median 
+	 * value of all elements. 
+	 * 
+	 * @param data - 2D array of double;
+	 * @return the median value of all elements in the array, 
+	 */
+	public static double median(double[][] data) {
+		return median(data, -1)[0]; 
+	}
+
+
+	/**
+	 * Calculate the median of all rows or columns in a double[][] array.
+	 * 
+	 * @param data - 2D array of double - must not be a ragged array.
+	 * @param dim  - which dimensions to average over. -1 calculates the median for
+	 *             a flattened version of all elements in the array. 0 calculates
+	 *             the median of rows and 1 calculates the median of columns.
+	 * @return the mean values, a single value or the mean of all rows/columns
+	 */
+	public static double[] median(double[][] data, int dim) {
+		double[]  median; 
+		if (dim==0) {
+			median = new double[data.length]; 
+			for (int i=0; i<data.length; i++) {
+				median[i] = median(data[i]); 
+			}
+		}
+		else if (dim==1) {
+
+			median = new double[data[0].length]; 
+
+			double[] medianTemp; 
+			for (int i=0; i<data[0].length; i++) {
+				medianTemp = new double[data.length]; 
+				for (int j=0; j<data.length; j++) {
+					medianTemp[i] = data[j][i]; 
+				}
+				median[i] = median(medianTemp);
+			}
+		}
+		else {
+			//calculate median form flattened array 
+			int count=0; 
+			//average over whole array. 
+			for (int i=0; i<data.length; i++) {
+				count = count + data[i].length; 
+			}
+
+			double[] flatarray = new double[count]; 
+
+			count =0; 
+
+			for (int i=0; i<data.length; i++) {
+				for (int j=0; j<data[i].length; j++) {
+					flatarray[count]= data[i][j];
+					count++; 
+				}
+			}
+
+			median = new double[1]; 
+			median[0]= median(flatarray); 
+		}
+
+		return median; 	
+	}
+
+	/**
+	 * Calculate the standard deviation of an array, The standard deviaiton is computed for the flattened array. 
+	 * @param data - the input array. 
+	 * @return - the standard deviation. 
+	 */
+	public static double std(double[][] data) {
+		return std(data, -1)[0]; 
+	}
+
+
+	/**
+	 * Calculate the standard deviation of all rows or columns in a double[][] array.
+	 * 
+	 * @param data - 2D array of double - must not be a ragged array.
+	 * @param dim  - which dimensions to average over. -1 calculates the standard deviation for
+	 *             a flattened array. 0 calculates
+	 *             the standard deviation of rows and 1 calculates the standard deviation of columns.
+	 * @return the mean values, a single value or the mean of all rows/columns
+	 */
+	public static double[] std(double[][] data, int dim) {
+		double[]  std; 
+		if (dim==0) {
+			std = new double[data.length]; 
+			for (int i=0; i<data.length; i++) {
+				std[i] = std(data[i]); 
+			}
+		}
+		else if (dim==1) {
+
+			std = new double[data[0].length]; 
+
+			double[] stdTemp; 
+			for (int i=0; i<data[0].length; i++) {
+				stdTemp = new double[data.length]; 
+				for (int j=0; j<data.length; j++) {
+					stdTemp[i] = data[j][i]; 
+				}
+				std[i] = std(stdTemp);
+			}
+		}
+		else {
+			//calculate median form flattened array 
+			int count=0; 
+			//average over whole array. 
+			for (int i=0; i<data.length; i++) {
+				count = count + data[i].length; 
+			}
+
+			double[] flatarray = new double[count]; 
+
+			count =0; 
+
+			for (int i=0; i<data.length; i++) {
+				for (int j=0; j<data[i].length; j++) {
+					flatarray[count]= data[i][j];
+					count++; 
+				}
+			}
+
+			std = new double[1]; 
+			std[0]= std(flatarray); 
+		}
+
+		return std; 	
+	}
+
 	/**
 	 * Calculate the variance for a double[] array
 	 * @param data array of doubles
@@ -293,20 +483,20 @@ public class JArrayUtils {
 		return Math.sqrt(varience(data));
 	}
 
-	/**
-	 * Get the standard deviation for a 2D double array
-	 * @param data - a 2D array of doubles
-	 * @return std for each COLUMN
-	 */
-	public static double[] std(double[][] data){
-		if (data.length<1) return null;
-		double[] stdResults=new double[data[0].length]; 
-		RealMatrix rm = new Array2DRowRealMatrix(data);	
-		for (int i=0; i<data[0].length; i++){
-			stdResults[i]=std(rm.getColumn(i)); 
-		}
-		return stdResults; 
-	}
+	//	/**
+	//	 * Get the standard deviation for a 2D double array
+	//	 * @param data - a 2D array of doubles
+	//	 * @return std for each COLUMN
+	//	 */
+	//	public static double[] std(double[][] data){
+	//		if (data.length<1) return null;
+	//		double[] stdResults=new double[data[0].length]; 
+	//		RealMatrix rm = new Array2DRowRealMatrix(data);	
+	//		for (int i=0; i<data[0].length; i++){
+	//			stdResults[i]=std(rm.getColumn(i)); 
+	//		}
+	//		return stdResults; 
+	//	}
 
 
 	/**
@@ -561,18 +751,18 @@ public class JArrayUtils {
 
 	}
 
-//	/**
-//	 * Flip an array so that it is in the reverse order. Note the array is 
-//	 * cloned. 
-//	 * @param flipArray - the waveform to flip
-//	 * @return the array with elements reversed.
-//	 */
-//	public static double[] flip(double[] flipArray) {
-//		double[] clone=ArrayUtils.clone(flipArray); 
-//		ArrayUtils.reverse(clone);
-//		return clone; 
-//	}
-	
+	//	/**
+	//	 * Flip an array so that it is in the reverse order. Note the array is 
+	//	 * cloned. 
+	//	 * @param flipArray - the waveform to flip
+	//	 * @return the array with elements reversed.
+	//	 */
+	//	public static double[] flip(double[] flipArray) {
+	//		double[] clone=ArrayUtils.clone(flipArray); 
+	//		ArrayUtils.reverse(clone);
+	//		return clone; 
+	//	}
+
 	/**
 	 * Square or raise the power all elements in an array 
 	 * @param  array - the array 
@@ -711,7 +901,7 @@ public class JArrayUtils {
 	 * Divide each element in an array by a number. 
 	 * @param array - the array to divide. 
 	 * @param divisor - the number to divide by. 
-	 * @return the same array with all elements divided by divisor.
+	 * @return an array with all elements divided by divisor.
 	 */
 	public static double[] divide(double[] array, double divisor) {
 		double[] arrayD = new double[array.length]; 
@@ -721,6 +911,21 @@ public class JArrayUtils {
 		return arrayD;
 	}
 	
+	
+	/**
+	 * Create a new array where a constant is divided by each element in an array 
+	 * @param array - the array to divide. 
+	 * @param b - the number that is divided
+	 * @return an array were b is divided by all elements in the array. 
+	 */
+	private static double[] divide(double b, double[] array) {
+		double[] arrayD = new double[array.length]; 
+		for (int j=0;j<array.length;j++) {
+			arrayD[j]=b/array[j]; 
+		}
+		return arrayD;
+	}
+
 	/**
 	 * Divide each element in a 2D array by a number
 	   @param array - the array to divide. 
@@ -736,7 +941,20 @@ public class JArrayUtils {
 		return arrayD;
 	}
 
-
+	/**
+	 * Divide each element in a 2D array by a number
+	   @param array - the array to divide. 
+	 * @param divisor - the number to divide by. 
+	 * @return a new array with all elements divided by divisor.
+	 */
+	public static double[][] divide(double divisor, double[][] array) {
+		double[][] arrayD = new double[array.length][]; 
+		//this method works on ragged arrays 
+		for (int j=0;j<array.length;j++) {
+			arrayD[j]=divide(divisor, array[j]); 
+		}
+		return arrayD;
+	}
 
 	/**
 	 * Convert an array to a  delimited string. 
@@ -845,6 +1063,299 @@ public class JArrayUtils {
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Subtract two array from each other. 
+	 * @param a - the first array. 
+	 * @param b - the second array. Must be the same length as a
+	 * @return elements in a minus elements in b. 
+	 */
+	public static double[] subtract(double[] a, double[] b) {
+		double[] output = new double[a.length]; 
+		for (int i=0; i<a.length; i++) {
+			output[i] = a[i] - b[i]; 
+		}
+		return output;
+	}
+
+	/**
+	 * Subtract a number from an array. 
+	 * @param a - the first array. 
+	 * @param b - the number to subtract from all elements in a.
+	 * @return elements in a minus b. 
+	 */
+	public static double[] subtract(double[] a, double b) {
+		double[] output = new double[a.length]; 
+		for (int i=0; i<a.length; i++) {
+			output[i] = a[i] - b; 
+		}
+		return output;
+	}
+
+	/**
+	 * Subtract a number from a 2D array. 
+	 * @param img - the array. 
+	 * @param b - the number to subtract from all elements in a.
+	 * @return elements in img minus b. 
+	 */
+	public static double[][] subtract(double[][] img, double b) {
+		double[][] output = new double[img.length][]; 
+
+		double[] temp; 
+		for (int i=0; i<img.length; i++) {
+			temp = new double[img[i].length]; 
+			for (int j=0; j<img.length; j++) {
+				temp[j] = img[i][j]-b; 
+			}
+			output[i]=temp; 
+		}
+		return output;
+	}
+
+
+	/**
+	 * Add two arrays together
+	 * @param a - the first array. 
+	 * @param b - the second array. Must be the same length as a
+	 * @return elements in a plus elements in b. 
+	 */
+	public static double[] add(double[] a, double[] b) {
+		double[] output = new double[a.length]; 
+		for (int i=0; i<a.length; i++) {
+			output[i] = a[i] + b[i]; 
+		}
+		return output;
+	}
+
+	/**
+	 * Subtract a number from an array. 
+	 * @param a - the first array. 
+	 * @param b - the number to add to all elements in a.
+	 * @return elements in a plus b. 
+	 */
+	public static double[] add(double[] a, double b) {
+		double[] output = new double[a.length]; 
+		for (int i=0; i<a.length; i++) {
+			output[i] = a[i] + b; 
+		}
+		return output;
+	}
+
+
+	/**
+	 * Add a number to a 2D array. 
+	 * @param img - the array. 
+	 * @param b - the number to add to elements.
+	 * @return elements in  img plus b. 
+	 */
+	public static double[][] add(double[][] img, double b) {
+		double[][] output = new double[img.length][]; 
+
+		double[] temp; 
+		for (int i=0; i<img.length; i++) {
+			temp = new double[img[i].length]; 
+			for (int j=0; j<img.length; j++) {
+				temp[j] = img[i][j]+b; 
+			}
+			output[i]=temp; 
+		}
+		return output;
+	}
+
+	/**
+	/**
+	 * Multiply two arrays together
+	 * @param a - the first array. 
+	 * @param b - the second array. Must be the same length as a
+	 * @return elements in a multiplied by elements in b. 
+	 */
+	public static double[] product(double[] a, double[] b) {
+		double[] output = new double[a.length]; 
+		for (int i=0; i<a.length; i++) {
+			output[i] = a[i] * b[i]; 
+		}
+		return output;
+	}
+
+	/**
+	 * Multiply an array by a number. 
+	 * @param a - the first array. 
+	 * @param b - the number to add to all elements in a.
+	 * @return elements in a multiplied by b. 
+	 */
+	public static double[] product(double[] a, double b) {
+		double[] output = new double[a.length]; 
+		for (int i=0; i<a.length; i++) {
+			output[i] = a[i] * b; 
+		}
+		return output;
+	}
+
+
+	/**
+	 * Subtract two array from each other. 
+	 * @param a - the first array. 
+	 * @param b - the second array. Must be the same length as a
+	 * @return elements in a minus elements in b. 
+	 */
+	public static int[] subtract(int[] a, int[] b) {
+		int[] output = new int[a.length]; 
+		for (int i=0; i<a.length; i++) {
+			output[i] = a[i] - b[i]; 
+		}
+		return output;
+	}
+
+	/**
+	 * Subtract a number from an array. 
+	 * @param a - the first array. 
+	 * @param b - the number to subtract from all elements in a.
+	 * @return elements in a minus b. 
+	 */
+	public static int[] subtract(int[] a, int b) {
+		int[] output = new int[a.length]; 
+		for (int i=0; i<a.length; i++) {
+			output[i] = a[i] - b; 
+		}
+		return output;
+	}
+
+
+
+	/**
+	 * Add two arrays together
+	 * @param a - the first array. 
+	 * @param b - the second array. Must be the same length as a
+	 * @return elements in a plus elements in b. 
+	 */
+	public static int[] add(int[] a, int[] b) {
+		int[] output = new int[a.length]; 
+		for (int i=0; i<a.length; i++) {
+			output[i] = a[i] + b[i]; 
+		}
+		return output;
+	}
+
+	/**
+	 * Subtract a number from an array. 
+	 * @param a - the first array. 
+	 * @param b - the number to add to all elements in a.
+	 * @return elements in a plus b. 
+	 */
+	public static int[] add(int[] a, int b) {
+		int[] output = new int[a.length]; 
+		for (int i=0; i<a.length; i++) {
+			output[i] = a[i] + b; 
+		}
+		return output;
+	}
+
+
+
+	/**
+	 * Multiply two arrays together
+	 * @param a - the first array. 
+	 * @param b - the second array. Must be the same length as a
+	 * @return elements in a multiplied by elements in b. 
+	 */
+	public static int[] product(int[] a, int[] b) {
+		int[] output = new int[a.length]; 
+		for (int i=0; i<a.length; i++) {
+			output[i] = a[i] * b[i]; 
+		}
+		return output;
+	}
+
+	/**
+	 * Multiply an array by a number. 
+	 * @param a - the first array. 
+	 * @param b - the number to add to all elements in a.
+	 * @return elements in a multiplied by b. 
+	 */
+	public static int[] product(int[] a, int b) {
+		int[] output = new int[a.length]; 
+		for (int i=0; i<a.length; i++) {
+			output[i] = a[i] * b; 
+		}
+		return output;
+	}
+
+	/**
+	 * Multiply an array by a number. 
+	 * @param a - the first array. 
+	 * @param b - the number to add to all elements in a.
+	 * @return elements in a multiplied by b. 
+	 */
+	public static double[] product(int[] a, double b) {
+		double[] output = new double[a.length]; 
+		for (int i=0; i<a.length; i++) {
+			output[i] = a[i] * b; 
+		}
+		return output;
+	}
+
+	/**
+	 * Multiple a 2D array by a number;  
+	 * @param a - the array. 
+	 * @param b - the number to multiply all elements by.
+	 * @return the array multiplied by b. 
+	 */
+	public static double[][] product(double[][] img, double b) {
+		double[][] output = new double[img.length][]; 
+
+		double[] temp; 
+		for (int i=0; i<img.length; i++) {
+			temp = new double[img[i].length]; 
+			for (int j=0; j<img.length; j++) {
+				temp[j] = img[i][j]*b; 
+			}
+			output[i]=temp; 
+		}
+		return output;
+	}
+
+
+	/**
+	 * Take the exponential of every element in a 2D array
+	 * @param img - the array 
+	 * @return a new array with the exponent of every element
+	 */
+	public static double[][] exp(double[][] img) {
+		double[][] output = new double[img.length][]; 
+
+		double[] temp; 
+		for (int i=0; i<img.length; i++) {
+			temp = new double[img[i].length]; 
+			for (int j=0; j<img.length; j++) {
+				temp[j] = Math.exp(img[i][j]); 
+			}
+			output[i]=temp; 
+		}
+		return output;
+
+	}
+
+	/**
+	 * Multiply two images together, 
+	 * @param img1 - the img.
+	 * @param img2 - the scaling.
+	 * @return - the product of the two matrices. 
+	 */
+	public static double[][] product(double[][] img1, double[][] img2) {
+		double[][] output = new double[img1.length][]; 
+
+		double[] temp; 
+		for (int i=0; i<img1.length; i++) {
+			temp = new double[img1[i].length]; 
+			for (int j=0; j<img1.length; j++) {
+				temp[j] = img1[i][j]*img2[i][j]; 
+			}
+			output[i]=temp; 
+		}
+		
+		return output; 
 	}
 
 

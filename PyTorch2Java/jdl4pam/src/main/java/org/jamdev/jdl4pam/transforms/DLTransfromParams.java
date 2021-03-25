@@ -22,6 +22,11 @@ public class DLTransfromParams implements Serializable {
 	 */
 	public DLTransformType dltransfromType; 
 	
+	/**
+	 * Basic params.
+	 */
+	public Number[] params; 
+	
 	
 
 }

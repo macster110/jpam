@@ -70,8 +70,8 @@
 		</dependency>
 
 
-		<!-- https://mvnrepository.com/artifact/commons-io/commons-io 
-		Has useful functions for file names etc. -->
+		<!-- https://mvnrepository.com/artifact/commons-io/commons-io Has useful 
+			functions for file names etc. -->
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -162,12 +162,26 @@
 	</developers>
 	<description>Deep learning tools for passive acoustic monitoring</description>
 
-	<distributionManagement>
+	<!-- <distributionManagement>
 		<repository>
 			<id>bintray-macster110-jpam</id>
 			<name>macster110-jpam</name>
 			<url>https://api.bintray.com/maven/macster110/jpam/;publish=1</url>
 		</repository>
+	</distributionManagement>-->
+
+
+	<distributionManagement>
+		<repository>
+			<id>central</id>
+			<name>a0u0ltozdsehx-artifactory-primary-0-releases</name>
+			<url>https://jmachund.jfrog.io/artifactory/jpam</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>a0u0ltozdsehx-artifactory-primary-0-snapshots</name>
+			<url>https://jmachund.jfrog.io/artifactory/jpam</url>
+		</snapshotRepository>
 	</distributionManagement>
 
 	<modules>

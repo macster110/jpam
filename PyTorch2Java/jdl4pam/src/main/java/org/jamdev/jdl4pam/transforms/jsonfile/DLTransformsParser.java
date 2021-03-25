@@ -22,7 +22,7 @@ import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 
 /**
  * Write the transforms to a JSON file. Note that this is not the most elegant way of writing data files, however, 
- * i's how python exports maps which means that Python and Java can inter- chnage files. This 
+ * i's how Python exports maps which means that Python and Java can inter-change files. This 
  * @author Jamie Macaulay 
  *
  */
@@ -46,29 +46,29 @@ public class DLTransformsParser {
 	}
 
 	/**
-	 * Write a list of parameters to a string file. Should be a .pgtf file for consistency. 
+	 * Write a list of parameters to a string. 
 	 * @param file - the file to write to . 
 	 * @param dlTransforms - the transform paramters list
 	 * @return true of the file was written successfully. 
 	 */
-	public static boolean writeJSONFile(File file, List<DLTransfromParams> dlTransforms) {
+	public static String writeJSONString(List<DLTransfromParams> dlTransforms) {
 		JSONObject object = writeJSONObject(dlTransforms); 
-		
+
 		//System.out.println(object.get("amplitude_to_decibel").toString()); 
 
 		//Ok this is annoying but we have to do this to make sure the string is in order of the 
 		//transforms. 
 		String jsonString = object.toString(); 
-		
+
 		System.out.println(jsonString); 
 
 
 		//get rid of { and } at start and of string. 
 		jsonString = jsonString.substring(1, jsonString.length()-2); 
-		
+
 
 		String[] jsonStrings = jsonString.split("\",\""); 
-		
+
 		String orderedJSONString =""; 
 		for (int i=0; i<dlTransforms.size(); i++) {
 			String jsonName = getJSONDLTransformName(dlTransforms.get(i).dltransfromType); 
@@ -86,12 +86,34 @@ public class DLTransformsParser {
 		}
 		//get rid of last ","
 		orderedJSONString = orderedJSONString.substring(0, orderedJSONString.length()-1); 
-		
-		orderedJSONString= "{" + orderedJSONString + "}"; 
-		
-		System.out.println(orderedJSONString); 
 
+		orderedJSONString= "{" + orderedJSONString + "}"; 
+
+//		System.out.println(orderedJSONString); 
+
+		return orderedJSONString; 
 		
+//		// Write the content in file 
+//		try(FileWriter fileWriter = new FileWriter(file)) {
+//			fileWriter.write(orderedJSONString);
+//			fileWriter.close();
+//			return true; 
+//		} catch (IOException e) {
+//			// Exception handling
+//			e.printStackTrace();
+//			return false;
+//		}
+
+	}
+
+	/**
+	 * Write a list of parameters to a text file. Should be a .pgtf file for consistency. 
+	 * @param file - the file to write to . 
+	 * @param dlTransforms - the transform paramters list
+	 * @return true of the file was written successfully. 
+	 */
+	public static boolean writeJSONFile(File file, List<DLTransfromParams> dlTransforms) {
+		String orderedJSONString = writeJSONString(dlTransforms); 
 		// Write the content in file 
 		try(FileWriter fileWriter = new FileWriter(file)) {
 			fileWriter.write(orderedJSONString);
@@ -102,7 +124,6 @@ public class DLTransformsParser {
 			e.printStackTrace();
 			return false;
 		}
-
 	}
 
 
@@ -119,7 +140,7 @@ public class DLTransformsParser {
 				ch = fileReader.read();
 				jsonData+=(char)ch; 
 
-			 System.out.print((char)ch);
+				System.out.print((char)ch);
 
 				//have the string data. now make a json object. 
 			}
@@ -223,6 +244,9 @@ public class DLTransformsParser {
 		case SPEC2DB:
 			dlTransformParams = new SimpleTransformParams(dlTransformType, null); 
 			break;
+		case SPECNORMALISEROWSUM:
+			dlTransformParams = new SimpleTransformParams(dlTransformType, null); 
+			break;
 		case SPECCLAMP:
 			number = new Number[2]; 
 			number[0] = 0.0; //- there is no JSON string for this in pytroch library 
@@ -285,52 +309,65 @@ public class DLTransformsParser {
 		JSONObject jsonObjectParams; 
 		DLTransfromParams dltarnsformParams = null; 
 		for (int i=0; i<jsonstrings.length; i++) {
-			System.out.println(jsonstrings[i]); 
+			System.out.println(jsonstrings[i] + "  " + getTransformType(jsonstrings[i])); 
 			dltarnsformParams = null;
-			switch (jsonstrings[i]) {
-			case "amplitude_to_decibel":
-				jsonObjectParams = new JSONObject(jsonObject.getString("amplitude_to_decibel")); 
-				dltarnsformParams = parseDLTransformParams(DLTransformType.SPEC2DB, jsonObjectParams); 
+
+			if (getTransformType(jsonstrings[i])!=null) {
+				//may need some special cases here but most can be handdled by this 
+				jsonObjectParams = new JSONObject(jsonObject.getString(jsonstrings[i])); 
+				dltarnsformParams = parseDLTransformParams(getTransformType(jsonstrings[i]), jsonObjectParams); 
 				dlTransformParamsArr.add(dltarnsformParams); 
-				break;
-			case "pre_emph":
-				jsonObjectParams = new JSONObject(jsonObject.getString("pre_emph")); 
-				dltarnsformParams = parseDLTransformParams(DLTransformType.PREEMPHSIS, jsonObjectParams); 
-				dlTransformParamsArr.add(dltarnsformParams); 
-				break;
-			case "spectrogram":
-				jsonObjectParams = new JSONObject(jsonObject.getString("spectrogram")); 
-				dltarnsformParams = parseDLTransformParams(DLTransformType.SPECTROGRAM, jsonObjectParams); 
-				dlTransformParamsArr.add(dltarnsformParams); 
-				break;
-			case "normalize":
-				jsonObjectParams = new JSONObject(jsonObject.getString("normalize")); 
-				dltarnsformParams = parseDLTransformParams(DLTransformType.SPECNORMALISE, jsonObjectParams); 
-				dlTransformParamsArr.add(dltarnsformParams); 
-				//				//also add the clamp here - it is separate in PG but integrated in AnimalSpot. 
-				//				dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECCLAMP, 0.0, 1.0)); 
-				break;
-			case "load_audio":
-				jsonObjectParams = new JSONObject(jsonObject.getString("load_audio")); 
-				dltarnsformParams = parseDLTransformParams(DLTransformType.DECIMATE, jsonObjectParams);
-				dlTransformParamsArr.add(dltarnsformParams); 
-				break;
-			case "freq_compression":
-				jsonObjectParams = new JSONObject(jsonObject.getString("freq_compression")); 
-				dltarnsformParams = parseDLTransformParams(DLTransformType.SPECCROPINTERP, jsonObjectParams);
-				dlTransformParamsArr.add(dltarnsformParams); 
-				break;
-			case "trim":
-				jsonObjectParams = new JSONObject(jsonObject.getString("trim")); 
-				dltarnsformParams = parseDLTransformParams(DLTransformType.TRIM, jsonObjectParams);
-				dlTransformParamsArr.add(dltarnsformParams); 
-				break;
-			case "clamp":
-				jsonObjectParams = new JSONObject(jsonObject.getString("clamp")); 
-				dltarnsformParams = parseDLTransformParams(DLTransformType.SPECCLAMP, jsonObjectParams); 
-				dlTransformParamsArr.add(dltarnsformParams); 
-				break;
 			}
+
+			//			switch (jsonstrings[i]) {
+			//			case "amplitude_to_decibel":
+			//				jsonObjectParams = new JSONObject(jsonObject.getString("amplitude_to_decibel")); 
+			//				dltarnsformParams = parseDLTransformParams(DLTransformType.SPEC2DB, jsonObjectParams); 
+			//				dlTransformParamsArr.add(dltarnsformParams); 
+			//				break;
+			//			case "pre_emph":
+			//				jsonObjectParams = new JSONObject(jsonObject.getString("pre_emph")); 
+			//				dltarnsformParams = parseDLTransformParams(DLTransformType.PREEMPHSIS, jsonObjectParams); 
+			//				dlTransformParamsArr.add(dltarnsformParams); 
+			//				break;
+			//			case "spectrogram":
+			//				jsonObjectParams = new JSONObject(jsonObject.getString("spectrogram")); 
+			//				dltarnsformParams = parseDLTransformParams(DLTransformType.SPECTROGRAM, jsonObjectParams); 
+			//				dlTransformParamsArr.add(dltarnsformParams); 
+			//				break;
+			//			case "normalize":
+			//				jsonObjectParams = new JSONObject(jsonObject.getString("normalize")); 
+			//				dltarnsformParams = parseDLTransformParams(DLTransformType.SPECNORMALISE, jsonObjectParams); 
+			//				dlTransformParamsArr.add(dltarnsformParams); 
+			//				//				//also add the clamp here - it is separate in PG but integrated in AnimalSpot. 
+			//				//				dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECCLAMP, 0.0, 1.0)); 
+			//				break;
+			//			case "load_audio":
+			//				jsonObjectParams = new JSONObject(jsonObject.getString("load_audio")); 
+			//				dltarnsformParams = parseDLTransformParams(DLTransformType.DECIMATE, jsonObjectParams);
+			//				dlTransformParamsArr.add(dltarnsformParams); 
+			//				break;
+			//			case "freq_compression":
+			//				jsonObjectParams = new JSONObject(jsonObject.getString("freq_compression")); 
+			//				dltarnsformParams = parseDLTransformParams(DLTransformType.SPECCROPINTERP, jsonObjectParams);
+			//				dlTransformParamsArr.add(dltarnsformParams); 
+			//				break;
+			//			case "trim":
+			//				jsonObjectParams = new JSONObject(jsonObject.getString("trim")); 
+			//				dltarnsformParams = parseDLTransformParams(DLTransformType.TRIM, jsonObjectParams);
+			//				dlTransformParamsArr.add(dltarnsformParams); 
+			//				break;
+			//			case "clamp":
+			//				jsonObjectParams = new JSONObject(jsonObject.getString("clamp")); 
+			//				dltarnsformParams = parseDLTransformParams(DLTransformType.SPECCLAMP, jsonObjectParams); 
+			//				dlTransformParamsArr.add(dltarnsformParams); 
+			//				break;
+			//			case "norm_row_sum":
+			//				jsonObjectParams = new JSONObject(jsonObject.getString("norm_row_sum")); 
+			//				dltarnsformParams = parseDLTransformParams(DLTransformType.SPECNORMALISEROWSUM, jsonObjectParams); 
+			//				dlTransformParamsArr.add(dltarnsformParams); 
+			//				break;
+			//			}
 
 		}
 
@@ -378,7 +415,35 @@ public class DLTransformsParser {
 		}
 
 		return jsonStringName; 
+	}
 
+
+	/**
+	 * Get the transform type from the string name. 
+	 * @return the transform type from the string name. 
+	 */
+	public static DLTransformType getTransformType(String string) {
+		switch (string) {
+		case "amplitude_to_decibel":
+			return DLTransformType.SPEC2DB; 
+		case "pre_emph":
+			return DLTransformType.PREEMPHSIS; 
+		case "spectrogram":
+			return DLTransformType.SPECTROGRAM; 
+		case "normalize":
+			return DLTransformType.SPECNORMALISE; 
+		case "load_audio":
+			return DLTransformType.DECIMATE; 
+		case "freq_compression":
+			return DLTransformType.SPECCROPINTERP; 
+		case "trim":
+			return DLTransformType.TRIM; 
+		case "clamp":
+			return DLTransformType.SPECCLAMP; 
+		case "norm_row_sum":
+			return DLTransformType.SPECNORMALISEROWSUM; 
+		}
+		return null; 
 	}
 
 
@@ -420,7 +485,7 @@ public class DLTransformsParser {
 
 
 		String outFile = "/Users/au671271/Desktop/dlparams.pdtf"; 
-		
+
 		//first open the model and get the correct parameters. 
 		SoundSpotModel soundSpotModel;
 		try {
@@ -428,24 +493,24 @@ public class DLTransformsParser {
 
 			//create the DL params. 
 			SoundSpotParams dlParams = new SoundSpotParams(soundSpotModel.getTransformsString());
-			
+
 			System.out.println("----Loaded from model------"); 
 			System.out.println(dlParams.toString()); 
 
 			writeJSONFile(new File(outFile), dlParams.dlTransforms); 
 
 			ArrayList<DLTransfromParams> dlTransforms = readJSONFile(new File(outFile));  
-			
+
 			System.out.println("----Saved to file and then loaded again------"); 
 
 			String string =""; 
-			 string += "***********\n"; 
+			string += "***********\n"; 
 			for (int i=0; i<dlTransforms.size(); i++) {
 				string += dlTransforms.get(i).toString() + "\n"; 
 			}
 
 			string += "***********\n"; 
-			
+
 			System.out.println(string); 
 
 

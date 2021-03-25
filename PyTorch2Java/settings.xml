@@ -1,42 +1,56 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<settings xsi:schemaLocation='http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd'
-          xmlns='http://maven.apache.org/SETTINGS/1.0.0' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
-    
-    
-     <servers>
-        <server>
-            <id>bintray-macster110-jpam</id>
-            <username>macster110</username>
-            <password>56dec3c4ad95c7532c97cf10dfa3b06e85ca0292</password>
-        </server>
-    </servers>
-    
-    <profiles>
-        <profile>
-            <repositories>
-                <repository>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <id>bintray-macster110-jpam</id>
-                    <name>bintray</name>
-                    <url>https://dl.bintray.com/macster110/jpam</url>
-                </repository>
-            </repositories>
-            <pluginRepositories>
-                <pluginRepository>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <id>bintray-macster110-jpam</id>
-                    <name>bintray-plugins</name>
-                    <url>https://dl.bintray.com/macster110/jpam</url>
-                </pluginRepository>
-            </pluginRepositories>
-            <id>bintray</id>
-        </profile>
-    </profiles>
-    <activeProfiles>
-        <activeProfile>bintray</activeProfile>
-    </activeProfiles>
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd" xmlns="http://maven.apache.org/SETTINGS/1.1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <servers>
+    <server>
+      <username>macster110@gmail.com</username>
+      <password>AKCp8ihLGvG5Kgxpbd6W1H3bFR1YRwEri9adKTbgFH5CdQmP24bpQ38TNvQAVrbytFsYbHfii </password>
+      <id>central</id>
+    </server>
+    <server>
+      <username>${security.getCurrentUsername()}</username>
+      <password>${security.getEscapedEncryptedPassword()!"AKCp8ihLGvG5Kgxpbd6W1H3bFR1YRwEri9adKTbgFH5CdQmP24bpQ38TNvQAVrbytFsYbHfii"} </password>
+      <id>snapshots</id>
+    </server>
+  </servers>
+  <profiles>
+    <profile>
+      <repositories>
+        <repository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>central</id>
+          <name>jpam2</name>
+          <url>https://jmachund.jfrog.io/artifactory/jpam2</url>
+        </repository>
+        <repository>
+          <snapshots />
+          <id>snapshots</id>
+          <name>jpam2</name>
+          <url>https://jmachund.jfrog.io/artifactory/jpam2</url>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>central</id>
+          <name>jpam2</name>
+          <url>https://jmachund.jfrog.io/artifactory/jpam2</url>
+        </pluginRepository>
+        <pluginRepository>
+          <snapshots />
+          <id>snapshots</id>
+          <name>jpam2</name>
+          <url>https://jmachund.jfrog.io/artifactory/jpam2</url>
+        </pluginRepository>
+      </pluginRepositories>
+      <id>artifactory</id>
+    </profile>
+  </profiles>
+  <activeProfiles>
+    <activeProfile>artifactory</activeProfile>
+  </activeProfiles>
 </settings>

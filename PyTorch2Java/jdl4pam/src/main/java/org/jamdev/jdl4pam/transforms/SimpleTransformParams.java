@@ -60,7 +60,11 @@ public class SimpleTransformParams extends DLTransfromParams {
 		case TRIM:
 			string = dltransfromType.toString() + " min samples: " + params[0] + " max samples: " + params[1];
 			break;
+		case SPECNORMALISEROWSUM:
+			string = dltransfromType.toString();
+			break;
 		default:
+			string = dltransfromType.toString();
 			break;
 		}
 		return string;

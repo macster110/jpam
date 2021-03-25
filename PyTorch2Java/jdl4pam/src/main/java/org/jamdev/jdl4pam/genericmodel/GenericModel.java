@@ -31,7 +31,7 @@ public class GenericModel {
 	 * The predictor for the model. 
 	 */
 	Predictor<float[][][], float[]> predictor;
-	
+
 	/**
 	 * The input shape from the loaded model. 
 	 */
@@ -58,8 +58,8 @@ public class GenericModel {
 		String extension = FilenameUtils.getExtension(file.getAbsolutePath());
 
 		System.out.println("Generic Model: Available engines: " + Engine.getAllEngines()); 
-		
-	
+
+
 		Model model; 
 		switch  (extension) {
 		case "pb":
@@ -76,19 +76,25 @@ public class GenericModel {
 			break;
 		}
 
-		if (model.describeInput()!=null) {
-			System.out.println("Generic Model: Input: " + model.describeInput().get(0).getValue()); 
-			inputShape =  model.describeInput().get(0).getValue();
-		}
-		if (model.describeOutput()!=null) {
-			System.out.println("Generic Model: Output: " + model.describeOutput().get(0).getValue()); 
-			outShape = model.describeOutput().get(0).getValue();
+		if (model == null) {
+			System.err.println("Generic Model: Could not load model: " + modelPath);
 		}
 
-		translator = new SpectrogramTranslator(inputShape); 
-		
-		//predictor for the model
-		predictor = model.newPredictor(translator);
+		else {
+			if (model!=null && model.describeInput()!=null) {
+				System.out.println("Generic Model: Input: " + model.describeInput().get(0).getValue()); 
+				inputShape =  model.describeInput().get(0).getValue();
+			}
+			if (model!=null && model.describeOutput()!=null) {
+				System.out.println("Generic Model: Output: " + model.describeOutput().get(0).getValue()); 
+				outShape = model.describeOutput().get(0).getValue();
+			}
+
+			translator = new SpectrogramTranslator(inputShape); 
+
+			//predictor for the model
+			predictor = model.newPredictor(translator);
+		}
 
 	}
 

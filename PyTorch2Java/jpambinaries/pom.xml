@@ -62,12 +62,12 @@
 	</developers>
 	<description>Tools for importing acoustic data files</description>
 
-	<distributionManagement>
+	<!--<distributionManagement>
 		<repository>
 			<id>bintray-macster110-jpam</id>
 			<name>macster110-jpam</name>
 			<url>https://api.bintray.com/maven/macster110/jpam/jpambinaries/;publish=1</url>
 		</repository>
-	</distributionManagement>
+	</distributionManagement>-->
 
 </project>

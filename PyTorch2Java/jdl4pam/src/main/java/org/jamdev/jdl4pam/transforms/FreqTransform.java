@@ -83,11 +83,17 @@ public class FreqTransform extends SimpleTransform {
 
 		switch (flag) {
 		case SPECCROPINTERP:
+			//need to be careful here that the frequency limits applied are not beyond stuff. 
+			double[] freqLimsBfr = ((FreqTransform) transform).getFreqlims(); 
+			
+			if (params[0].doubleValue() > freqLimsBfr[1]) params[0] = 0;
+			if (params[1].doubleValue() > freqLimsBfr[1]) params[1] = freqLimsBfr[1];
+
+
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().interpolate(params[0].doubleValue(),  params[1].doubleValue(), params[2].intValue()); 
 			//frquency limits change for this transform.  
 			freqlims[0] = params[0].doubleValue(); 
 			freqlims[1] = params[1].doubleValue(); 
-
 			break;
 		case SPEC2DB:
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().dBSpec();
