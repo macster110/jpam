@@ -1,4 +1,4 @@
-package org.jamdev.jdl4pam.SoundSpot;
+package org.jamdev.jdl4pam.animalSpot;
 
 import java.util.ArrayList;
 
@@ -16,7 +16,7 @@ import org.jamdev.jpamutils.wavFiles.AudioData;
  * <p> Notw that this example is based on the AWS djl library. 
  *
  */
-public class BatDLdjl {
+public class AnimalSpotBatTest {
 
 	public static void main( String[] args ) {
 
@@ -43,11 +43,11 @@ public class BatDLdjl {
 		//wav file 
 		try {			
 			//first open the model and get the correct parameters. 
-			SoundSpotModel soundSpotModel = new SoundSpotModel(modelPath); 
+			AnimalSpot soundSpotModel = new AnimalSpot(modelPath); 
 
 //System.out.println(soundSpotModel.getRawParamsString());
 			//create the DL params. 
-			SoundSpotParams dlParams = new SoundSpotParams(soundSpotModel.getTransformsString());
+			AnimalSpotParams dlParams = new AnimalSpotParams(soundSpotModel.getTransformsString());
 
 			//Open wav files. 
 			AudioData soundData = DLUtils.loadWavFile(wavFilePath);

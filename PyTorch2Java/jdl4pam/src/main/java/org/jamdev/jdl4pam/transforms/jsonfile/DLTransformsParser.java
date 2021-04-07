@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.jamdev.jdl4pam.SoundSpot.SoundSpotModel;
-import org.jamdev.jdl4pam.SoundSpot.SoundSpotParams;
+import org.jamdev.jdl4pam.animalSpot.AnimalSpot;
+import org.jamdev.jdl4pam.animalSpot.AnimalSpotParams;
 import org.jamdev.jdl4pam.transforms.DLTransfromParams;
 import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
 import org.json.JSONObject;
@@ -125,14 +125,14 @@ public class DLTransformsParser {
 			return false;
 		}
 	}
-
-
+	
 	/**
-	 * load the JSON file which contains DLTransfroms. 
-	 * @param the JSON file to loads
+	 * Read a JSON file from a string. 
+	 * @param file - the file. 
+	 * @return the JSON string. 
 	 */
-	public static ArrayList<DLTransfromParams> readJSONFile(File file) {
-		// Read the content from file
+	public static String readJSONString(File file) {
+		
 		try(FileReader fileReader = new FileReader(file)) {
 			int ch =0; 
 			String jsonData = ""; 
@@ -140,23 +140,32 @@ public class DLTransformsParser {
 				ch = fileReader.read();
 				jsonData+=(char)ch; 
 
-				System.out.print((char)ch);
+				//System.out.print((char)ch);
 
 				//have the string data. now make a json object. 
 			}
 			fileReader.close();
+			return jsonData; 
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null; 
+		}
+	}
+
+
+	/**
+	 * Load the JSON file which contains DLTransfroms. 
+	 * @param the JSON file to loads
+	 */
+	public static ArrayList<DLTransfromParams> readJSONFile(File file) {
+		// Read the content from file
+		try {
+			 String jsonData = readJSONString(file); 
 
 			return parseTransfromParams(jsonData); 
 
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			// Exception handling
-			return null;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null; 
-			// Exception handling
-		}
+		} 
 		catch (Exception e) {
 			e.printStackTrace(); 
 			return null; 
@@ -279,6 +288,37 @@ public class DLTransformsParser {
 			number[0] = jsonObjectParams.getInt("min"); 
 			number[1] = jsonObjectParams.getInt("max"); 
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
+		case NORMALISESTD:
+			number = new Number[2]; 
+			number[0] = jsonObjectParams.getDouble("mean"); 
+			number[1] = jsonObjectParams.getDouble("std"); 
+			
+			if (number[0]==null) number[0] = Double.valueOf(0.0);
+			if (number[0]==null) number[0] = Double.valueOf(1.0);
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
+		case REDUCETONALNOISE_MEAN:
+			number = new Number[1]; 
+			number[0] = jsonObjectParams.getInt("time_const_len"); 
+			
+			if (number[0]==null) number[0] = Integer.valueOf(30);
+
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
+		case REDUCETONALNOISE_MEDIAN:
+			dlTransformParams = new SimpleTransformParams(dlTransformType, null); 
+		case MEDIANFILTER:
+			dlTransformParams = new SimpleTransformParams(dlTransformType, null); 
+		case ENHANCE:
+			number = new Number[1]; 
+			number[0] = jsonObjectParams.getDouble("enhancement");
+			if (number[0]==null) number[0] = Double.valueOf(1.0);
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number);
+		case GAUSSIAN_FILTER:
+			number = new Number[1]; 
+			number[0] = jsonObjectParams.getDouble("sigma"); 
+			if (number[0]==null) number[0] = Double.valueOf(0.5);
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number);
+		case FILTER_ISOLATED_SPOTS:
+			//TODO
 			break;
 		default:
 			break;
@@ -381,40 +421,40 @@ public class DLTransformsParser {
 	 * @return
 	 */
 	public static String getJSONDLTransformName(DLTransformType dlTransformType) {
-		String jsonStringName = null; 
-		switch (dlTransformType) {
-		case DECIMATE:
-			jsonStringName = "load_audio";
-			break;
-		case PREEMPHSIS:
-			jsonStringName = "pre_emph";
-			break;
-		case SPEC2DB:
-			jsonStringName = "amplitude_to_decibel"; 
-			break;
-		case SPECCLAMP:
-			jsonStringName = "clamp";
-			break;
-		case SPECCROPINTERP:
-			jsonStringName = "freq_compression";
-			break;
-		case SPECNORMALISE:
-			jsonStringName = "normalize";
-			break;
-		case SPECNORMALISEROWSUM:
-			jsonStringName = "norm_row_sum";
-			break;
-		case SPECTROGRAM:
-			jsonStringName = "spectrogram";
-			break;
-		case TRIM:
-			jsonStringName = "trim";
-			break;
-		default:
-			break;
-		}
+//		String jsonStringName = null; 
+//		switch (dlTransformType) {
+//		case DECIMATE:
+//			jsonStringName = "load_audio";
+//			break;
+//		case PREEMPHSIS:
+//			jsonStringName = "pre_emph";
+//			break;
+//		case SPEC2DB:
+//			jsonStringName = "amplitude_to_decibel"; 
+//			break;
+//		case SPECCLAMP:
+//			jsonStringName = "clamp";
+//			break;
+//		case SPECCROPINTERP:
+//			jsonStringName = "freq_compression";
+//			break;
+//		case SPECNORMALISE:
+//			jsonStringName = "normalize";
+//			break;
+//		case SPECNORMALISEROWSUM:
+//			jsonStringName = "norm_row_sum";
+//			break;
+//		case SPECTROGRAM:
+//			jsonStringName = "spectrogram";
+//			break;
+//		case TRIM:
+//			jsonStringName = "trim";
+//			break;
+//		default:
+//			break;
+//		}
 
-		return jsonStringName; 
+		return dlTransformType.getJSONString(); 
 	}
 
 
@@ -423,27 +463,45 @@ public class DLTransformsParser {
 	 * @return the transform type from the string name. 
 	 */
 	public static DLTransformType getTransformType(String string) {
-		switch (string) {
-		case "amplitude_to_decibel":
-			return DLTransformType.SPEC2DB; 
-		case "pre_emph":
-			return DLTransformType.PREEMPHSIS; 
-		case "spectrogram":
-			return DLTransformType.SPECTROGRAM; 
-		case "normalize":
-			return DLTransformType.SPECNORMALISE; 
-		case "load_audio":
-			return DLTransformType.DECIMATE; 
-		case "freq_compression":
-			return DLTransformType.SPECCROPINTERP; 
-		case "trim":
-			return DLTransformType.TRIM; 
-		case "clamp":
-			return DLTransformType.SPECCLAMP; 
-		case "norm_row_sum":
-			return DLTransformType.SPECNORMALISEROWSUM; 
+		DLTransformType[] dlTransformTypes = DLTransformType.values();
+		
+		//System.out.println(" DLTransformType: " + string); 
+		for (DLTransformType dlTransformType: dlTransformTypes) {
+			if (dlTransformType.getJSONString().equals(string)) {
+				return dlTransformType; 
+			}
 		}
+		
 		return null; 
+//		switch (string) {
+//		case "amplitude_to_decibel":
+//			return DLTransformType.SPEC2DB; 
+//		case "pre_emph":
+//			return DLTransformType.PREEMPHSIS; 
+//		case "spectrogram":
+//			return DLTransformType.SPECTROGRAM; 
+//		case "normalize":
+//			return DLTransformType.SPECNORMALISE; 
+//		case "load_audio":
+//			return DLTransformType.DECIMATE; 
+//		case "freq_compression":
+//			return DLTransformType.SPECCROPINTERP; 
+//		case "trim":
+//			return DLTransformType.TRIM; 
+//		case "clamp":
+//			return DLTransformType.SPECCLAMP; 
+//		case "norm_row_sum":
+//			return DLTransformType.SPECNORMALISEROWSUM; 
+//		case "reduce_tonal_noise_median":
+//			return DLTransformType.REDUCETONALNOISE_MEDIAN; 
+//		case "reduce_tonal_noise_mean":
+//			return DLTransformType.REDUCETONALNOISE_MEAN; 
+//		case "enhance_signal":
+//			return DLTransformType.ENHANCE; 
+//		case "normalise_std":
+//			return DLTransformType.NORMALISESTD; 
+//		}
+//		return null; 
 	}
 
 
@@ -487,12 +545,12 @@ public class DLTransformsParser {
 		String outFile = "/Users/au671271/Desktop/dlparams.pdtf"; 
 
 		//first open the model and get the correct parameters. 
-		SoundSpotModel soundSpotModel;
+		AnimalSpot soundSpotModel;
 		try {
-			soundSpotModel = new SoundSpotModel(modelPath);
+			soundSpotModel = new AnimalSpot(modelPath);
 
 			//create the DL params. 
-			SoundSpotParams dlParams = new SoundSpotParams(soundSpotModel.getTransformsString());
+			AnimalSpotParams dlParams = new AnimalSpotParams(soundSpotModel.getTransformsString());
 
 			System.out.println("----Loaded from model------"); 
 			System.out.println(dlParams.toString()); 
@@ -523,5 +581,6 @@ public class DLTransformsParser {
 			e.printStackTrace();
 		} 
 	}
+	
 
 }

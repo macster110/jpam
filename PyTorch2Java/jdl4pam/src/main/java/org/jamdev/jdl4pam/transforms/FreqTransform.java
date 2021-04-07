@@ -89,7 +89,6 @@ public class FreqTransform extends SimpleTransform {
 			if (params[0].doubleValue() > freqLimsBfr[1]) params[0] = 0;
 			if (params[1].doubleValue() > freqLimsBfr[1]) params[1] = freqLimsBfr[1];
 
-
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().interpolate(params[0].doubleValue(),  params[1].doubleValue(), params[2].intValue()); 
 			//frquency limits change for this transform.  
 			freqlims[0] = params[0].doubleValue(); 
@@ -112,6 +111,7 @@ public class FreqTransform extends SimpleTransform {
 			Spectrogram spectrogram = new Spectrogram(((WaveTransform) transform).getWaveData(), (int) params[0], (int) params[1]); 
 			specTransfrom = new SpecTransform(spectrogram); 
 			specTransfrom.setTransformedData(this.specTransfrom.getSpectrgram().getAbsoluteSpectrogram()); 
+
 			//initialise freq
 			freqlims[0] = 0.0; 
 			freqlims[1] = ((WaveTransform) transform).getWaveData().getSampleRate()/2.0; 
@@ -120,10 +120,33 @@ public class FreqTransform extends SimpleTransform {
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().clamp(params[0].doubleValue(),  params[1].doubleValue()); 
 			freqlims = ((FreqTransform) transform).freqlims; 
 			break;
+		case NORMALISESTD:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().normaliseStd(params[0].doubleValue(),  params[1].doubleValue()); 
+			freqlims = ((FreqTransform) transform).freqlims; 
+			break;
+		case ENHANCE:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().enhance(params[0].doubleValue()); 
+			freqlims = ((FreqTransform) transform).freqlims; 
+			break;
+		case GAUSSIAN_FILTER:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().gaussianFilter(params[0].doubleValue()); 
+			freqlims = ((FreqTransform) transform).freqlims; 
+			break;
+		case MEDIANFILTER:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().medianFilter(params[0].doubleValue(), params[1].doubleValue());
+			freqlims = ((FreqTransform) transform).freqlims; 
+			break;
+		case REDUCETONALNOISE_MEDIAN:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().reduceTonalNoiseMedian();
+			freqlims = ((FreqTransform) transform).freqlims; 
+			break;
+		case REDUCETONALNOISE_MEAN:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().reduceTonalNoiseMean(params[0].intValue());
+			freqlims = ((FreqTransform) transform).freqlims; 
+			break;
 		default:
 			break;
 		}
-
 		return this;
 	}
 

@@ -362,7 +362,7 @@ public class JamArr {
 			for (int i=0; i<data[0].length; i++) {
 				medianTemp = new double[data.length]; 
 				for (int j=0; j<data.length; j++) {
-					medianTemp[i] = data[j][i]; 
+					medianTemp[j] = data[j][i]; 
 				}
 				median[i] = median(medianTemp);
 			}
@@ -507,7 +507,7 @@ public class JamArr {
 	public static double[][] transposeMatrix(double [][] m){
 		double[][] temp = new double[m[0].length][m.length];
 		for (int i = 0; i < m.length; i++)
-			for (int j = 0; j < m[0].length; j++)
+			for (int j = 0; j < m[i].length; j++)
 				temp[j][i] = m[i][j];
 		return temp;
 	}
@@ -1106,7 +1106,7 @@ public class JamArr {
 		double[] temp; 
 		for (int i=0; i<img.length; i++) {
 			temp = new double[img[i].length]; 
-			for (int j=0; j<img.length; j++) {
+			for (int j=0; j<img[i].length; j++) {
 				temp[j] = img[i][j]-b; 
 			}
 			output[i]=temp; 
@@ -1156,7 +1156,7 @@ public class JamArr {
 		double[] temp; 
 		for (int i=0; i<img.length; i++) {
 			temp = new double[img[i].length]; 
-			for (int j=0; j<img.length; j++) {
+			for (int j=0; j<img[i].length; j++) {
 				temp[j] = img[i][j]+b; 
 			}
 			output[i]=temp; 
@@ -1308,7 +1308,7 @@ public class JamArr {
 		double[] temp; 
 		for (int i=0; i<img.length; i++) {
 			temp = new double[img[i].length]; 
-			for (int j=0; j<img.length; j++) {
+			for (int j=0; j<img[i].length; j++) {
 				temp[j] = img[i][j]*b; 
 			}
 			output[i]=temp; 
@@ -1328,7 +1328,7 @@ public class JamArr {
 		double[] temp; 
 		for (int i=0; i<img.length; i++) {
 			temp = new double[img[i].length]; 
-			for (int j=0; j<img.length; j++) {
+			for (int j=0; j<img[i].length; j++) {
 				temp[j] = Math.exp(img[i][j]); 
 			}
 			output[i]=temp; 
@@ -1349,7 +1349,7 @@ public class JamArr {
 		double[] temp; 
 		for (int i=0; i<img1.length; i++) {
 			temp = new double[img1[i].length]; 
-			for (int j=0; j<img1.length; j++) {
+			for (int j=0; j<img1[i].length; j++) {
 				temp[j] = img1[i][j]*img2[i][j]; 
 			}
 			output[i]=temp; 

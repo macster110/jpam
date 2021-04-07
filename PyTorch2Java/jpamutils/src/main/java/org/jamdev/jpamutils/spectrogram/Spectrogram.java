@@ -1,7 +1,5 @@
 package org.jamdev.jpamutils.spectrogram;
 
-import java.util.ArrayList;
-
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
@@ -47,6 +45,8 @@ public class Spectrogram {
 	 * Holds the complex data of the spectrogram for further analysis.
 	 */
 	private ComplexArray[] complexSpectrogram;
+
+
 
 	/**
 	 * The number of fft bins per second
@@ -344,6 +344,22 @@ public class Spectrogram {
 	 */
 	public int getFFTHop() {
 		return fftHop;
+	}
+	
+	/**
+	 * Get the spectrogram with both magnitude and phase information. 
+	 * @return array of ComplaxArray where each ComplexArray is an FFT. 
+	 */
+	public ComplexArray[] getComplexSpectrogram() {
+		return complexSpectrogram;
+	}
+
+	/**
+	 * Set the spectrogram with both magnitude and phase information. 
+	 * @param array of ComplaxArray where each ComplexArray is an FFT. 
+	 */
+	public void setComplexSpectrogram(ComplexArray[] complexSpectrogram) {
+		this.complexSpectrogram = complexSpectrogram;
 	}
 
 }

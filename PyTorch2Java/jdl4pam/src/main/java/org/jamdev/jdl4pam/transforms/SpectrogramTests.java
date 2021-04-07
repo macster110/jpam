@@ -5,8 +5,8 @@ import java.io.IOException;
 import org.jamdev.jpamutils.spectrogram.SpecTransform;
 import org.jamdev.jpamutils.spectrogram.Spectrogram;
 import org.jamdev.jpamutils.wavFiles.AudioData;
-import org.jamdev.jdl4pam.SoundSpot.LegacySoundSpotParams;
-import org.jamdev.jdl4pam.SoundSpot.SoundSpotParams;
+import org.jamdev.jdl4pam.animalSpot.AnimalSpotParams;
+import org.jamdev.jdl4pam.animalSpot.LegacySoundSpotParams;
 import org.jamdev.jdl4pam.utils.DLMatFile;
 import org.jamdev.jdl4pam.utils.DLUtils;
 

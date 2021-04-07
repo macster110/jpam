@@ -101,7 +101,8 @@ public class AudioData {
 	 * @return the scaled amplitude samples. 
 	 */
 	public double[] getScaledSampleAmpliudes() {
-		double bitSize = Math.pow(2, bitRate); 
+		//must divide the bitsize by because we are scaling between -1 and 1 i.e a range of 2. 
+		double bitSize = Math.pow(2, bitRate)/2; 
 
 		double[] wavArray = new double[samples.length]; 
 		for (int i=0; i<wavArray.length; i++) {

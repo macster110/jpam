@@ -1,4 +1,4 @@
-package org.jamdev.jdl4pam.SoundSpot;
+package org.jamdev.jdl4pam.animalSpot;
 
 /**
  * Old sound spot params. More readable though. 

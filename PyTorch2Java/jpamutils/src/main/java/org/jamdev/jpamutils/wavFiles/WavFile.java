@@ -44,11 +44,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.sound.sampled.spi.AudioFileReader;
 
@@ -73,7 +75,7 @@ public class WavFile extends AudioFileReader
 	/**
 	 * The file. 
 	 */
-	private File file;
+	private URL file;
 
 	/**
 	 * The audio format of the .wav file
@@ -85,9 +87,14 @@ public class WavFile extends AudioFileReader
 	 */
 	private  int byteLength = -1;
 	
-
-
+	
 	public WavFile(File file) throws UnsupportedAudioFileException, IOException {
+		this(file.toURI().toURL());
+	}
+
+
+
+	public WavFile(URL file) throws UnsupportedAudioFileException, IOException {
 		this.file=file; 
 		this.audioFormat = getAudioFileFormat();
 	}
@@ -160,6 +167,7 @@ public class WavFile extends AudioFileReader
 			din = (DataInputStream) in;
 		else
 			din = new DataInputStream(in);
+	
 		
 		//System.out.println("Bytes avalaible header start: " + din.available()); 
 
@@ -271,7 +279,7 @@ public class WavFile extends AudioFileReader
 	public AudioInputStream getAudioInputStream()
 			throws UnsupportedAudioFileException, IOException
 	{
-		return getAudioInputStream(new FileInputStream(file));
+		return getAudioInputStream(file);
 	}
 
 	/* Get an AudioInputStream from the given InputStream.
@@ -399,7 +407,21 @@ public class WavFile extends AudioFileReader
 	 * @return the file object. 
 	 */
 	public File getFile() {
-		return file;
+		try {
+			return new File(file.toURI());
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null; 
+		} 
+	}
+	
+	/**
+	 * Get the file object for the .wav file. 
+	 * @return the file object. 
+	 */
+	public URL getFileURL() {
+		return file; 
 	}
 	
 	/**

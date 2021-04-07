@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import org.jamdev.jdl4pam.SoundSpot.SoundSpotParams;
+import org.jamdev.jdl4pam.animalSpot.AnimalSpotParams;
 import org.jamdev.jdl4pam.utils.DLMatFile;
 import org.jamdev.jdl4pam.utils.DLUtils;
 import org.jamdev.jpamutils.wavFiles.AudioData;
@@ -34,7 +34,7 @@ public class DLTransformTest {
 
 		
 		//create the DL params. 
-		SoundSpotParams dlParams = new SoundSpotParams();
+		AnimalSpotParams dlParams = new AnimalSpotParams();
 		
 		AudioData soundData = null; 
 		//Open wav files. 

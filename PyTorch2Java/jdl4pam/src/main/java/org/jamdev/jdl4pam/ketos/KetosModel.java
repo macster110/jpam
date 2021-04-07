@@ -1,0 +1,143 @@
+package org.jamdev.jdl4pam.ketos;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.jamdev.jdl4pam.genericmodel.SpectrogramTranslator;
+import org.jamdev.jdl4pam.transforms.jsonfile.DLTransformsParser;
+
+import ai.djl.MalformedModelException;
+import ai.djl.Model;
+import ai.djl.util.ZipUtils;
+
+/**
+ * Load a model from Meridian's Ketos framework. 
+ * <p>
+ * https://meridian.cs.dal.ca/2015/04/12/ketos/
+ * 
+ * @author Jamie Macaulay 
+ *
+ */
+public class KetosModel {
+
+	/**
+	 * The spectrogram translator
+	 */
+	private SpectrogramTranslator translator;
+
+	/**
+	 * File with transform settings. 
+	 */
+	String audReprFile = null;
+	
+	/**
+	 * The model file. 
+	 */
+	String modelPath = null;
+	
+	/**
+	 * The model. 
+	 */
+	private Model model;
+
+	
+	public KetosModel(File file) throws IOException, MalformedModelException {
+
+		FileInputStream fileInputStream= new FileInputStream(file); 
+		
+		String zipFolder = System.getProperty("user.home") + "/ketos_models/" + getFileNameWithoutExtension(file);
+
+		File outFile = new File(zipFolder);
+		
+		//Creating the directory
+		boolean bool = outFile.mkdir();
+//		if(bool){
+//			System.out.println("Directory created successfully");
+//		}else{
+//			System.out.println("Sorry couldn’t create specified directory: " +outFile);
+//		}
+
+		//unzip the model into the temporary directory....
+		ZipUtils.unzip(fileInputStream, Paths.get(zipFolder));
+		
+		//tnhe file that contains the model meta data
+		audReprFile = zipFolder + "/audio_repr.json";
+
+		//the model path. 
+		modelPath = zipFolder + "/model/saved_model.pb"; 
+		
+		Path modelDir = Paths.get(new File(modelPath).getParent()); //the directory of the file (in case the file is local this should also return absolute directory)
+		model = Model.newInstance(modelPath, "TensorFlow"); 
+		model.load(modelDir, "saved_model.pb");
+		
+		//translator = new SpectrogramTranslator(inputShape); 
+	}
+	
+	
+	/**
+	 * Get the audio representation file. This holds the information for transforming the 
+	 * raw sound data to an image to pass the model. 
+	 * @return the audio file. 
+	 */
+	public String getAudioReprFile() {
+		return audReprFile;
+	}
+
+	
+	/**
+	 * Get the filename without an extension. 
+	 * @param file - the input file
+	 * @return - the name of the file without an extension. 
+	 */
+    private static String getFileNameWithoutExtension(File file) {
+        String fileName = "";
+ 
+        try {
+            if (file != null && file.exists()) {
+                String name = file.getName();
+                fileName = name.replaceFirst("[.][^.]+$", "");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            fileName = "";
+        }
+ 
+        return fileName;
+ 
+    }
+ 
+
+	/**
+	 * Converts a 
+	 * @return
+	 */
+	private String ketos2Jpam() {
+		return null; 
+	}
+
+	
+	public static void main(String[] args) {
+		File file = new File("/Users/au671271/Google Drive/PAMGuard_dev/Deep_Learning/Meridian/right_whales/for_pamguard/narw.ktpb"); 
+
+		try {
+			//the ketos model. 
+			KetosModel  ketosModel = new KetosModel(file);
+			
+			//read the JSOn string from the the file. 
+			String jsonString  = DLTransformsParser.readJSONString(new File(ketosModel.getAudioReprFile()));
+	
+			//get the audio representation file. 
+			KetosParams ketosParams = new KetosParams(jsonString); 
+			
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	}
+
+	
+}

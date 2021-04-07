@@ -1,9 +1,10 @@
-package org.jamdev.jdl4pam.Ketos;
+package org.jamdev.jdl4pam.ketos;
 
 import java.io.IOException;
 
 import org.jamdev.jdl4pam.utils.DLMatFile;
 import org.jamdev.jdl4pam.utils.DLUtils;
+import org.jamdev.jpamutils.JamArr;
 import org.jamdev.jpamutils.spectrogram.SpecTransform;
 import org.jamdev.jpamutils.spectrogram.Spectrogram;
 import org.jamdev.jpamutils.wavFiles.AudioData;
@@ -46,52 +47,80 @@ public class KetosTransformsTest {
 			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
 			System.out.println( "Open sound file: No. samples: "+ soundData.samples.length + " sample rate: " + soundData.sampleRate);
 
+			double[] minmax = JamArr.minmax(soundData.getScaledSampleAmpliudes());
+			System.out.println("sound amplutude: min " + minmax[0] + " max " + minmax[1]);
+			
+			
 			int n_fft = (int) (0.256*soundData.sampleRate);
-			int hop_length = (int) (0.32*soundData.sampleRate);
+			int hop_length = (int) (0.032*soundData.sampleRate);
+			
+			System.out.println("FFTLen: " +  n_fft + " hop length: " +  hop_length);
 					
 			//make a spectrogram 
 			Spectrogram spectrogram = new Spectrogram(soundData, n_fft, hop_length); 
 
 			double[][] spec = spectrogram.getAbsoluteSpectrogram(); 
+			Matrix matrixSpec=  DLMatFile.array2Matrix(spec);
 
 			//apply transforms to the spectrogram 
 			
 			// interpolate the spectrogram
-			SpecTransform spectransform = new SpecTransform(spectrogram)
-					.interpolate(0, 500, 129);
+			SpecTransform specInterp = new SpecTransform(spectrogram).dBSpec(false).interpolate(0, 500, 129);
 
-			double[][] transformInterp = spectransform.getTransformedData(); 
+//			specInterp = specInterp.dBSpec(); 
+			
+			
+			double[][] specMatrix = specInterp.getTransformedData(); 
+			Matrix matrixTransformInterp =  DLMatFile.array2Matrix(specMatrix);
 			
 			//convert the spectrogram to dB
-			spectransform = spectransform.reduceTonalNoiseMean(hop_length); 
+			specInterp = specInterp.reduceTonalNoiseMedian(); 
 			
+			double[][] reduceTonalMean = specInterp.getTransformedData(); 
+			Matrix matrixReduceTonalMean =  DLMatFile.array2Matrix(reduceTonalMean);
+
+			//enahnce the spectrogram. 
+			specInterp = specInterp.enhance(1.0); 
+			
+			double[][] enhance = specInterp.getTransformedData(); 
+			Matrix matrixEnhance =  DLMatFile.array2Matrix(enhance);
+
+			specInterp = specInterp.normaliseStd(0,  1.0); 
+			
+			double[][] normalisestd = specInterp.getTransformedData();
+			Matrix matrixNormaliseStd =  DLMatFile.array2Matrix(normalisestd);
+			
+			specInterp = specInterp.gaussianFilter(0.5);
+			
+			double[][] gaussian = specInterp.getTransformedData();
+			Matrix matrixGaussinaBlur =  DLMatFile.array2Matrix(gaussian);
 			
 			//print out some information on each transform. 
 			int[] shape;
 			
 			shape = DLUtils.arrayShape(spec); 
-			System.out.println("Spectrogram        size: [" + shape[0] + "  " + shape[1]+ "] First 3 data points:  " + 
+			System.out.println("Spectrogram size: [" + shape[0] + "  " + shape[1]+ "] First 3 data points:  " + 
 					spec[0][0] + ", " + spec[0][1] + "," + spec[0][2]);
 			
-			shape = DLUtils.arrayShape(transformInterp); 
+			shape = DLUtils.arrayShape(specMatrix); 
 			System.out.println("Spectrogram interp size: [" + shape[0] + "  " + shape[1]+ "] First 3 data points:  " + 
-					transformInterp[0][0] + ", " + transformInterp[0][1] + "," + transformInterp[0][2]);
+					specMatrix[0][0] + ", " + specMatrix[0][1] + "," + specMatrix[0][2]);
 			
-	
-					
-			//export to MATLAB
-			Matrix matrixSpec=  DLMatFile.array2Matrix(spectrogram.getAbsoluteSpectrogram());
-			Matrix matrixTransformInterp =  DLMatFile.array2Matrix(transformInterp);
 
-			
+			//export to MATLAB
+			//Matrix matrixSpec=  DLMatFile.array2Matrix(spec);
 			//save the sound file
 			System.out.println("Sound data length: " + soundData.getScaledSampleAmpliudes().length);
 			Matrix rawSoundData =  DLMatFile.array2Matrix(soundData.getScaledSampleAmpliudes());
 
 
 			MatFile matFile = Mat5.newMatFile()
-					.addArray("spectrogram", matrixSpec)
-					.addArray("spectrogram_transform_interp", matrixTransformInterp)
+					.addArray("spectrogram_j", matrixSpec)
+					.addArray("transform_interp_j", matrixTransformInterp)
+					.addArray("reduce_tonal_noise_j", matrixReduceTonalMean)
+					.addArray("enhance_j", matrixEnhance)
+					.addArray("normalisestd_j", matrixNormaliseStd)
+					.addArray("gaussian_blur_j", matrixGaussinaBlur)
 					.addArray("sample_rate", Mat5.newScalar(spectrogram.getSampleRate()))
 					.addArray("y", rawSoundData); 
 			

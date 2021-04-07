@@ -3,7 +3,7 @@ package org.jamdev.jdl4pam.dlpam;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.jamdev.jdl4pam.SoundSpot.SoundSpotParams;
+import org.jamdev.jdl4pam.animalSpot.AnimalSpotParams;
 import org.jamdev.jdl4pam.transforms.DLTransform;
 import org.jamdev.jdl4pam.transforms.DLTransformsFactory;
 import org.jamdev.jdl4pam.transforms.FreqTransform;

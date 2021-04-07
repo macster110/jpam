@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import org.jamdev.jdl4pam.SoundSpot.SoundSpotModel;
-import org.jamdev.jdl4pam.SoundSpot.SoundSpotParams;
+import org.jamdev.jdl4pam.animalSpot.AnimalSpot;
+import org.jamdev.jdl4pam.animalSpot.AnimalSpotParams;
 import org.jamdev.jdl4pam.transforms.DLTransform;
 import org.jamdev.jdl4pam.transforms.DLTransformsFactory;
 import org.jamdev.jdl4pam.transforms.FreqTransform;
@@ -48,13 +48,13 @@ public class SoundSpotTransfromsTest {
 			
 			
 			//first open the model and get the correct parameters. 
-			SoundSpotModel soundSpotModel;
-			soundSpotModel = new SoundSpotModel(modelPath);
+			AnimalSpot soundSpotModel;
+			soundSpotModel = new AnimalSpot(modelPath);
 
 			System.out.println(soundSpotModel.getTransformsString());
 
 			//create the DL params from the transforms string
-			SoundSpotParams dlParams = new SoundSpotParams(soundSpotModel.getTransformsString());
+			AnimalSpotParams dlParams = new AnimalSpotParams(soundSpotModel.getTransformsString());
 
 			AudioData soundData = null; 
 			//Open wav files. 

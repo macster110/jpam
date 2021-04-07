@@ -1,4 +1,4 @@
-package org.jamdev.jdl4pam.SoundSpot;
+package org.jamdev.jdl4pam.animalSpot;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +27,7 @@ import ai.djl.translate.TranslatorContext;
  * @author Jamie Macaulay 
  *
  */
-public class SoundSpotModel {
+public class AnimalSpot {
 	
 	/**
 	 * The currently loaded model 
@@ -50,7 +50,7 @@ public class SoundSpotModel {
 	private HashMap<String, String> hashMap; 
 
 
-	public SoundSpotModel(String modelPath) throws MalformedModelException, IOException{
+	public AnimalSpot(String modelPath) throws MalformedModelException, IOException{
 		
 		File file = new File(modelPath); 
 		
@@ -85,6 +85,8 @@ public class SoundSpotModel {
 	
 	/**
 	 * Get the sound spot parameters from the extra files information. 
+	 * <p>
+	 * Has now been replaced by getTransformsString(); 
 	 * @return the sound spot parameters string. 
 	 */
 	@Deprecated 
@@ -103,9 +105,9 @@ public class SoundSpotModel {
 	
 	
 	/**
-	 * Run the model.
-	 * @param specImage
-	 * @return
+	 * Run the AnimalSpot model.
+	 * @param specImage - a stacked set of spectrogram images. 
+	 * @return the predictions results with length no. classes * specImage.length; 
 	 */
 	public float[] runModel(float[][][] specImage) {
 		try {

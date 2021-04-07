@@ -1,4 +1,4 @@
-package org.jamdev.jdl4pam.SoundSpot;
+package org.jamdev.jdl4pam.animalSpot;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,24 +26,24 @@ import org.jamdev.jpamutils.wavFiles.AudioData;
  * @author Jamie Macaulay
  *
  */
-public class SoundSpotClassifier {
+public class AnimalSpotClassifier {
 
 	/**
 	 * The current sound spot model. 
 	 */
-	private SoundSpotModel soundSpotModel;
+	private AnimalSpot soundSpotModel;
 
 
 	/**
 	 * Paramters for the SoundSpot model. 
 	 */
-	private SoundSpotParams soundSpotParams;
+	private AnimalSpotParams soundSpotParams;
 
 
 	/**
 	 * Run the Sounds
 	 */
-	public SoundSpotClassifier() {
+	public AnimalSpotClassifier() {
 
 	}
 	
@@ -51,7 +51,7 @@ public class SoundSpotClassifier {
 	 * Constructor for the SoundSpotClassifier. 
 	 * @param modelPath - path to a SoundSpot model. 
 	 */
-	public SoundSpotClassifier(String modelPath) {
+	public AnimalSpotClassifier(String modelPath) {
 		loadModel(modelPath); 
 	}
 
@@ -66,9 +66,9 @@ public class SoundSpotClassifier {
 	public boolean loadModel(String modelPath) {
 		//first open the model and get the correct parameters. 
 		try {
-			soundSpotModel = new SoundSpotModel(modelPath);
+			soundSpotModel = new AnimalSpot(modelPath);
 			//create the DL params. 
-			soundSpotParams = new SoundSpotParams(soundSpotModel.getTransformsString());
+			soundSpotParams = new AnimalSpotParams(soundSpotModel.getTransformsString());
 			return true; 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -136,7 +136,7 @@ public class SoundSpotClassifier {
 	 * Get the sound spot model. 
 	 * @return the sound spot model. 
 	 */
-	public SoundSpotModel getSoundSpotModel() {
+	public AnimalSpot getSoundSpotModel() {
 		return soundSpotModel;
 	}
 
@@ -145,7 +145,7 @@ public class SoundSpotClassifier {
 	 * Get the sound spot parameters class. 
 	 * @return the sound spot paramaters class. 
 	 */
-	public SoundSpotParams getSoundSpotParams() {
+	public AnimalSpotParams getSoundSpotParams() {
 		return soundSpotParams;
 	}
 
@@ -167,7 +167,7 @@ public class SoundSpotClassifier {
 			soundData = DLUtils.loadWavFile(wavFilePath);
 			soundData = soundData.trim(samplesChunk[0], samplesChunk[1]); 
 			
-			SoundSpotClassifier soundSpotClassifier = new SoundSpotClassifier(modelPath); 
+			AnimalSpotClassifier soundSpotClassifier = new AnimalSpotClassifier(modelPath); 
 
 			double[] result = soundSpotClassifier.runModel(soundData.getScaledSampleAmpliudes(), soundData.sampleRate); 
 			
