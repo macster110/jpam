@@ -68,12 +68,38 @@ public class KetosParams extends GenericModelParams {
 		//convert to JPAM default JSON names. 
 		switch (transformName) {
 		case "normalize":
+			//ketos does not specify the type of normalisation used so we must do that here as there are many 
+			//different types of normalisation for DLTransfroms. 
 			transformName = "normalisestd";
 			break; 
 		case "reduce_tonal_noise":
-			//TODO - must figure out if this is 
-			transformName = "reduce_tonal_noise_median";
+			//This a little tricky. There are two transform types in DLTransfromType, a running median and a running mean
+			//but Ketos considers this a single transform wiht two options so must separate here.
+			//  {"name": "reduce_tonal_noise", "method": "MEDIAN"},
+			//  {"name": "reduce_tonal_noise", "method": "RUNNING_MEAN", "time_const_len": 3}	
+			//  {"name": "reduce_tonal_noise"},
+			if (jsonObjectParams.has("method")) {
+				String method = jsonObjectParams.getString("method"); 
+				if (method.equals("RUNNING_MEAN")) {
+					transformName = "reduce_tonal_noise_mean";
+				}
+				else {
+					transformName = "reduce_tonal_noise_median";
+				}
+			}
+			else {
+				//no method then assume median 
+				transformName = "reduce_tonal_noise_median";
+			}
 			break; 
+
+		case "crop":
+			if (jsonObjectParams.get("start")==null) {
+				return null;
+			}
+			else {
+				transformName = "freq_compression";
+			}
 		}
 
 		DLTransformType type = DLTransformsParser.getTransformType(transformName);
@@ -126,7 +152,7 @@ public class KetosParams extends GenericModelParams {
 		//first parse the transforms.
 		JSONObject jsonObject = new JSONObject(rawString);
 
-		String[] jsonObjects = JSONObject.getNames(jsonObject); 
+		//String[] jsonObjects = JSONObject.getNames(jsonObject); 
 		//		for (int i=0; i<jsonObjects.length; i++) {
 		//			System.out.println(jsonObjects[i]); 
 		//		}
@@ -138,15 +164,30 @@ public class KetosParams extends GenericModelParams {
 		//set the segment length. 
 		this.seglen = getKetosDouble(specObject, "duration"); 
 
-		double sampleRate = getKetosDouble(specObject, "rate"); 
+		double sampleRate = getKetosDouble(specObject, "rate")*2;//very important 
 
 		int n_fft = (int) (getKetosDouble(specObject, "window") *sampleRate); 
 		int hop_length = (int) (getKetosDouble(specObject, "step") *sampleRate); 
 
+		double freq_min = getKetosDouble(specObject, "freq_min"); 
+		double freq_max = getKetosDouble(specObject, "freq_max"); 
+
+		JSONArray expectedShapeJSON = specObject.getJSONArray("input_shape"); 
+		double[] expectedShape = new double[expectedShapeJSON.length()];
+
+		for(int j = 0; j < expectedShapeJSON.length(); j++){               
+			expectedShape[j] = expectedShapeJSON.getDouble(j);               
+		}
+
+
 
 		ArrayList<DLTransfromParams> dlTransformParamsArr = new ArrayList<DLTransfromParams>();
 		//we are assiming a mag spectrogram here. 
+
+
+		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.DECIMATE, sampleRate)); 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAM, n_fft, hop_length)); 
+		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPEC2DB)); 
 
 
 		//		String[] specObjectsString = JSONObject.getNames(specObject); 
@@ -167,8 +208,16 @@ public class KetosParams extends GenericModelParams {
 
 			params =  parseDLTransformParams(object); 
 
-			System.out.println(object); 
+			if (params!=null) {
+				dlTransformParamsArr.add(params);
+			}
+			//System.out.println(object); 
 		}
+
+		//FIXEM
+		//add the interpolation at the end to make sure we get the expected shape. We were one biin out with right whales for the FFT length. 
+		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECCROPINTERP, freq_min, freq_max, expectedShape[2])); 
+
 		//		
 		//must order these in the correct way!l 
 		//			switch (jsonstrings[i]) {
@@ -203,6 +252,8 @@ public class KetosParams extends GenericModelParams {
 		//				this.freq_compression = jsonObject.getString("freq_compression"); 
 		//				break;
 		//			}
+
+		this.dlTransforms = dlTransformParamsArr; 
 
 	}
 
@@ -244,10 +295,15 @@ public class KetosParams extends GenericModelParams {
 
 		string += "Segment length: " + seglen + " milliseconds\n"; 
 
-		string += "***********\n"; 
-		string += "No. classes: " + this.classNames.length + "  \n"; 
-		for (int i=0; i<this.classNames.length; i++) {
-			string += classNames[i] + "\n"; 
+
+		if (classNames!=null) {
+			string += "***********\n"; 
+
+			string += "No. classes: " + this.classNames.length + "  \n"; 
+
+			for (int i=0; i<this.classNames.length; i++) {
+				string += classNames[i] + "\n"; 
+			}
 		}
 
 		string += "***********\n"; 

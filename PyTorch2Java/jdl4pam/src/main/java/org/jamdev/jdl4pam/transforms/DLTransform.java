@@ -71,6 +71,13 @@ public interface DLTransform {
 		 * Normalises the spectrogram
 		 */
 		SPECNORMALISE("Normalise Spectrogram", "normalize"),
+		
+		
+		/**
+		 * Normalises the spectrogram using a min max normalisation. 
+		 * <p> No associated paramters. 
+		 */
+		SPECNORMALISE_MINIMAX("Normalise Spectrogram Min. Max.", "normalize_min_max"),
 
 		/**
 		 * Normalises the spectrogram by summing squared rows and dividing by the square
@@ -107,7 +114,7 @@ public interface DLTransform {
 		 * @param std  - Standard deviation of the normalized array. The default is 1.
 		 * @return the normalised array
 		 */
-		NORMALISESTD("Normalise std", "normalisestd"),
+		SPECNORMALISESTD("Normalise std", "normalisestd"),
 
 		/**
 		 * Subtracts from each row the median value of that row.

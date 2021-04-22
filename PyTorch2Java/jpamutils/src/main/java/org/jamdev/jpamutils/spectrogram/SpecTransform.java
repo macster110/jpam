@@ -31,9 +31,9 @@ public class SpecTransform {
 	/**
 	 * A gaussian filter. 
 	 */
-	private GaussianFilter gaussianFilter;
+	//private GaussianFilter gaussianFilter;
 
-	
+
 	/**
 	 * True to maintain the phase information after each transform. This will
 	 * slow down calculations. 
@@ -82,6 +82,17 @@ public class SpecTransform {
 	public SpecTransform normalise(double min_leveldB, double ref_level_dB) {
 		if (this.specData==null) initialiseSpecData(); 
 		this.specData = normalise(this.specData, min_leveldB, ref_level_dB);
+		if (maintainPhase) absSpec2Complex(); //set the new data in the complex spectrogram
+		return this;
+	}
+	
+	/**
+	 * Normalise the current spectrogram between the minimum and maximum of the array 
+	 * @return reference to the normalised spectrogram
+	 */
+	public SpecTransform normaliseMinMax() {
+		if (this.specData==null) initialiseSpecData(); 
+		this.specData = normaliseMinMax(this.specData);
 		if (maintainPhase) absSpec2Complex(); //set the new data in the complex spectrogram
 		return this;
 	}
@@ -248,12 +259,12 @@ public class SpecTransform {
 	 * @return reference the clamped spectrogram. 
 	 */
 	public SpecTransform gaussianFilter(double sigma) {
-		
-	
+
+
 		if (specData==null) initialiseSpecData(); 
-//		if (gaussianFilter==null) gaussianFilter = new GaussianFilter(); 
-//		this.complexData = gaussianFilter.runFilter(complexData);
-//		this.specData = Spectrogram.buildAbsoluteSpectram(complexData); 
+		//		if (gaussianFilter==null) gaussianFilter = new GaussianFilter(); 
+		//		this.complexData = gaussianFilter.runFilter(complexData);
+		//		this.specData = Spectrogram.buildAbsoluteSpectram(complexData); 
 		this.specData = blurImage(this.specData, sigma); 
 		if (maintainPhase) absSpec2Complex(); //set the new data in the complex spectrogram
 		return this;
@@ -305,11 +316,52 @@ public class SpecTransform {
 
 
 	/**
+	 * A minimum/maximum spectrogram normalisation. 
+	 * @param img - the absolute spectrogram array. 
+	 * @return the normalised spectrogram. 
+	 */
+	public static double[][] normaliseMinMax(double[][] img) {
+
+		double[][] array = copyArr(img); 
+		
+		double min = JamArr.min(array);
+
+		array = JamArr.subtract(array, min);
+		
+		double max = JamArr.max(array);
+
+		array = JamArr.divide(array, max);
+
+		return array; 
+	}
+	
+	
+	/**
+	 * Hard copy of an array. 
+	 * @param array
+	 * @return
+	 */
+	public static double[][] copyArr( double[][] array){
+		
+		double[][] arrCopy = new double[array.length][array[0].length];
+
+		for (int i = 0; i < array.length; i++) {
+			 System.arraycopy(array[i], 0, arrCopy[i], 0, array[i].length);
+		}
+		
+		return arrCopy; 
+	}
+
+
+	/**
 	 * Normalise a spectrogram by summing each row and squaring it then dividing the entire array by that value. 
 	 * @param array - the absolute spectrogram array. 
 	 * @return the normalised spectrogram. 
 	 */
-	public static double[][] normaliseRowSum(double[][] array) {
+	public static double[][] normaliseRowSum(double[][] img) {
+		
+		double[][] array = copyArr(img); 
+		
 		double tot = 0; 
 		for (int i = 0; i < array.length; i++) {
 			tot+=JamArr.sum(JamArr.pow(array[i], 2)); 
@@ -500,28 +552,28 @@ public class SpecTransform {
 		return null;
 	}
 
-//	/**
-//	 * Smooth the input image using a median or Gaussian blur filter.
-//	 * 
-//	 * 
-//	 * For further details, see
-//	 * https://docs.scipy.org/doc/scipy/reference/ndimage.html
-//	 * <p>
-//	 * From Ketos Meridian.
-//	 * 
-//	 * @param img      - image to be processed.
-//	 * @param size     - Only used by the median filter. Describes the shape that is
-//	 *                 taken from the input array, at every element position, to
-//	 *                 define the input to the filter function.
-//	 * @param sigma    - Only used by the Gaussian filter. Standard deviation for
-//	 *                 Gaussian kernel. for the axes to have different standard
-//	 *                 deviations.
-//	 * @param gaussian - Switch between median and Gaussian (default) filter
-//	 * @return blurred image.
-//	 */
-//	public static double[][] blurImage(double[][] img, int size, double sigma, boolean gaussian) {		
-//		return blurImage(img,  size, new double[] {sigma},  gaussian) ;
-//	}
+	//	/**
+	//	 * Smooth the input image using a median or Gaussian blur filter.
+	//	 * 
+	//	 * 
+	//	 * For further details, see
+	//	 * https://docs.scipy.org/doc/scipy/reference/ndimage.html
+	//	 * <p>
+	//	 * From Ketos Meridian.
+	//	 * 
+	//	 * @param img      - image to be processed.
+	//	 * @param size     - Only used by the median filter. Describes the shape that is
+	//	 *                 taken from the input array, at every element position, to
+	//	 *                 define the input to the filter function.
+	//	 * @param sigma    - Only used by the Gaussian filter. Standard deviation for
+	//	 *                 Gaussian kernel. for the axes to have different standard
+	//	 *                 deviations.
+	//	 * @param gaussian - Switch between median and Gaussian (default) filter
+	//	 * @return blurred image.
+	//	 */
+	//	public static double[][] blurImage(double[][] img, int size, double sigma, boolean gaussian) {		
+	//		return blurImage(img,  size, new double[] {sigma},  gaussian) ;
+	//	}
 
 	/**
 	 * Smooth the input image using a median or Gaussian blur filter.
@@ -575,16 +627,15 @@ public class SpecTransform {
 
 
 	}
-	
-	
-	  private static int bound(int value, int endIndex)
-	  {
-	    if (value < 0)
-	      return 0;
-	    if (value < endIndex)
-	      return value;
-	    return endIndex - 1;
-	  }
+
+
+	private static int bound(int value, int endIndex){
+		if (value < 0)
+			return 0;
+		if (value < endIndex)
+			return value;
+		return endIndex - 1;
+	}
 
 
 	/**
@@ -605,7 +656,7 @@ public class SpecTransform {
 				// Accumulate the kernel values
 				sum += kernel[x][y];
 			}
-//
+		//
 		// Normalize the kernel
 		for (int x = 0; x < W; ++x) 
 			for (int y = 0; y < W; ++y)

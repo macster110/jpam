@@ -11,7 +11,7 @@
 
 	<groupId>org.jamdev</groupId>
 	<artifactId>jdl4pam</artifactId>
-	<version>0.0.83</version>
+	<version>0.0.84</version>
 	<packaging>jar</packaging>
 
 	<name>jdl4pam</name>
@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>org.jamdev</groupId>
 			<artifactId>jpamutils</artifactId>
-			<version>0.0.5</version>
+			<version>0.0.51</version>
 		</dependency>
 
 		<dependency>

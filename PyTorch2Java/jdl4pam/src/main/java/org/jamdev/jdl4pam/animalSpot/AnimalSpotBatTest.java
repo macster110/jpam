@@ -7,6 +7,7 @@ import org.jamdev.jdl4pam.transforms.DLTransformsFactory;
 import org.jamdev.jdl4pam.transforms.FreqTransform;
 import org.jamdev.jdl4pam.transforms.WaveTransform;
 import org.jamdev.jdl4pam.utils.DLUtils;
+import org.jamdev.jpamutils.JamArr;
 import org.jamdev.jpamutils.wavFiles.AudioData;
 
 /**
@@ -31,21 +32,23 @@ public class AnimalSpotBatTest {
 		//		int[] samplesChunk = new int[] {1536, 2810}; // the sample chunk to use. 
 		//		int[] samplesChunk = new int[] {1024, 2298}; // the sample chunk to use. 
 		String wavFilePath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/example_wav/call_393_2019_S4U05619MOL2-20180917-051012_2525_2534.wav";
+
 		int[] samplesChunk = new int[] {0, 1274}; // the sample chunk to use. 
 
 		//Path to the model
 		//		String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_dummy/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000.pk";
 		//		String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JAMIE.pk"; 
-//		String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JIT.pk";
+		//		String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JIT.pk";
 		//String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/BAT_MODEL2/BAT_4ms_256ft_8hop_NOISEAUG_40000_100000_-100_0_256000.pk"; 
-		String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/BAT_MODEL2/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000.pk.pk"; 
+		//String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/BAT_MODEL2/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000.pk.pk"; 
+		String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/BAT_MODEL_3/BAT_JAMIE_4ms_256fft_8hop_-100_20_15_60_128_256_NOJIT_BAT_DATA_NAUG_V1_JIT.pk"; 
 
 		//wav file 
 		try {			
 			//first open the model and get the correct parameters. 
-			AnimalSpot soundSpotModel = new AnimalSpot(modelPath); 
+			AnimalSpotModel soundSpotModel = new AnimalSpotModel(modelPath); 
 
-//System.out.println(soundSpotModel.getRawParamsString());
+			//System.out.println(soundSpotModel.getRawParamsString());
 			//create the DL params. 
 			AnimalSpotParams dlParams = new AnimalSpotParams(soundSpotModel.getTransformsString());
 
@@ -56,14 +59,18 @@ public class AnimalSpotBatTest {
 			//generate the transforms. 
 			ArrayList<DLTransform> transforms =	DLTransformsFactory.makeDLTransforms(dlParams.dlTransforms); 
 
+			System.out.println(dlParams.toString());
 
 			((WaveTransform) transforms.get(0)).setWaveData(soundData); 
 
 			DLTransform transform = transforms.get(0); 
 			for (int i=0; i<transforms.size(); i++) {
+//				System.out.println(transforms); 
 				transform = transforms.get(i).transformData(transform); 
 			}
-
+			
+			double[][] dataTest = ((FreqTransform) transform).getSpecTransfrom().getTransformedData(); 
+			System.out.println("Data min:  " + JamArr.min(dataTest) +  " max:  " +  JamArr.max(dataTest));
 
 			float[] output = null; 
 			float[][][] data;

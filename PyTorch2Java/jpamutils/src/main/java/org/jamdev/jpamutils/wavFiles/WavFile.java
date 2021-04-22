@@ -98,6 +98,7 @@ public class WavFile extends AudioFileReader
 		this.file=file; 
 		this.audioFormat = getAudioFileFormat();
 	}
+	
 
 
 	private static long readUnsignedIntLE (DataInputStream is) 

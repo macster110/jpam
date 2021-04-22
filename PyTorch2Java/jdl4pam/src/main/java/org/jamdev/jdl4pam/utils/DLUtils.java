@@ -2,6 +2,8 @@ package org.jamdev.jdl4pam.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -359,13 +361,21 @@ public class DLUtils {
 		return Math.exp(input) / total;
 	}
 
-
-	/*
-	 * Load a wav file. 
+	/**
+	 * Load audioData from a URL
+	 * @param - the URL to load audio data from.  
 	 */
-	public static AudioData loadWavFile(String path) throws IOException, UnsupportedAudioFileException {
+	public static AudioData loadWavFile(URL path) throws IOException, UnsupportedAudioFileException {
 		// reads the first 44 bytes for header
-		WavFile wavFile = new  WavFile(new File(path));
+		WavFile wavFile = new  WavFile(path);
+		return loadwavFile(wavFile);
+	}
+	
+	/**
+	 * Load a audio data from a WavFile object. 
+	 * @param - the wavFile object 
+	 */
+	public static AudioData loadwavFile(WavFile wavFile) throws IOException, UnsupportedAudioFileException {
 		AudioFormat format = wavFile.getAudioFileFormat().getFormat(); 
 
 		int channels = format.getChannels(); 
@@ -395,7 +405,17 @@ public class DLUtils {
 		int sampleRate = (int) format.getSampleRate();
 
 		return new AudioData(samples, sampleRate); 
-
+	}
+	
+	/*
+	 * 8
+	 * Load a audio data from a path string
+	 * @param - the path string. 
+	 */
+	public static AudioData loadWavFile(String path) throws IOException, UnsupportedAudioFileException {
+		// reads the first 44 bytes for header
+		WavFile wavFile = new  WavFile(new File(path));
+		return loadwavFile(wavFile);
 	}
 
 

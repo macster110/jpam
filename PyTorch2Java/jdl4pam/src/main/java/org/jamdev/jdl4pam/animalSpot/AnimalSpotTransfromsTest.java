@@ -1,12 +1,10 @@
-package org.jamdev.jdl4pam.dlpam;
+package org.jamdev.jdl4pam.animalSpot;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import org.jamdev.jdl4pam.animalSpot.AnimalSpot;
-import org.jamdev.jdl4pam.animalSpot.AnimalSpotParams;
 import org.jamdev.jdl4pam.transforms.DLTransform;
 import org.jamdev.jdl4pam.transforms.DLTransformsFactory;
 import org.jamdev.jdl4pam.transforms.FreqTransform;
@@ -28,7 +26,7 @@ import us.hebi.matlab.mat.types.Matrix;
  * @author Jamie Macaulay
  *
  */
-public class SoundSpotTransfromsTest {
+public class AnimalSpotTransfromsTest {
 
 
 
@@ -41,15 +39,16 @@ public class SoundSpotTransfromsTest {
 			int[] samplesChunk = new int[] {0, 1274}; // the sample chunk to use. 
 
 			//the model path
-			String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JIT.pk"; 
-			
+//			String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JIT.pk"; 
+			String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/BAT_MODEL_3/BAT_JAMIE_4ms_256fft_8hop_-100_20_15_60_128_256_NOJIT_BAT_DATA_NAUG_V1_JIT.pk"; 
+
 			//output file path to test what the java spectrgram transforms look like. 
 			String outputMatfile = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/DLTransformTest.mat"; 
 			
 			
 			//first open the model and get the correct parameters. 
-			AnimalSpot soundSpotModel;
-			soundSpotModel = new AnimalSpot(modelPath);
+			AnimalSpotModel soundSpotModel;
+			soundSpotModel = new AnimalSpotModel(modelPath);
 
 			System.out.println(soundSpotModel.getTransformsString());
 

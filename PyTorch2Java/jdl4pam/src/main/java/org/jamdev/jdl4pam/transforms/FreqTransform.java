@@ -36,7 +36,7 @@ public class FreqTransform extends SimpleTransform {
 	 * <p>
 	 * See {@link FreqTransform.FreqTransformType} for a description of each transform. 
 	 * <p>
-	 * Each transform type has a unique set of parameters. These are
+	 * Each transform type has a unique set of parameters. For example these are...
 	 * <ul>
 	 *<li>SPECTROGRAM: FFT length (samples), FFT hop size (samples)</li>
 	 *<li>SPECCROPINTERP: minimum frequency (Hz), maximum frequency (Hz), Number of frequency (int)</li>
@@ -61,7 +61,7 @@ public class FreqTransform extends SimpleTransform {
 	 * <p>
 	 * See {@link FreqTransform.FreqTransformType} for a description of each transform. 
 	 * <p>
-	 * Each transform type has a unique set of parameters. These are
+	 * Each transform type has a unique set of parameters. For example these are...
 	 * <ul>
 	 *<li>SPECTROGRAM: FFT length (samples), FFT hop size (samples)</li>
 	 *<li>SPECCROPINTERP: minimum frequency (Hz), maximum frequency (Hz), Number of frequency (int)</li>
@@ -106,6 +106,14 @@ public class FreqTransform extends SimpleTransform {
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().normaliseRowSum(); 
 			freqlims = ((FreqTransform) transform).freqlims; 
 			break;
+		case SPECNORMALISE_MINIMAX:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().normaliseMinMax();
+			freqlims = ((FreqTransform) transform).freqlims; 
+			break;
+		case SPECNORMALISESTD:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().normaliseStd(params[0].doubleValue(), params[1].doubleValue()); 
+			freqlims = ((FreqTransform) transform).freqlims; 
+			break;
 		case SPECTROGRAM:
 			//make a spectrogram 
 			Spectrogram spectrogram = new Spectrogram(((WaveTransform) transform).getWaveData(), (int) params[0], (int) params[1]); 
@@ -118,10 +126,6 @@ public class FreqTransform extends SimpleTransform {
 			break;
 		case SPECCLAMP:
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().clamp(params[0].doubleValue(),  params[1].doubleValue()); 
-			freqlims = ((FreqTransform) transform).freqlims; 
-			break;
-		case NORMALISESTD:
-			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().normaliseStd(params[0].doubleValue(),  params[1].doubleValue()); 
 			freqlims = ((FreqTransform) transform).freqlims; 
 			break;
 		case ENHANCE:

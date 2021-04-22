@@ -644,6 +644,41 @@ public class JamArr {
 
 		return max;
 	}
+	
+	
+	/**
+	 * Calculate the maximum int value of a 2D int array. 
+	 * @param arr - the array to find the maximum value of. 
+	 * @return the minimum and maximum value in the array
+	 */
+	public static int max(int[][] arr) {
+		int max = Integer.MIN_VALUE;
+
+		for(int i=0; i<arr.length; i++) {
+			for(int j=0; j<arr.length; j++) {
+				max = Math.max(max, arr[i][j]);
+			}
+		}
+
+		return max;
+	}
+	
+	/**
+	 * Calculate the  maximum double value of a 2D double array. 
+	 * @param arr - the array to find the maximum value of. 
+	 * @return the minimum and maximum value in the array
+	 */
+	public static double max(double[][] arr) {
+		double max = Double.NEGATIVE_INFINITY;
+
+		for(int i=0; i<arr.length; i++) {
+			for(int j=0; j<arr.length; j++) {
+				max = Math.max(max, arr[i][j]);
+			}
+		}
+
+		return max;
+	}
 
 	/**
 	 * Calculate the maximum value in an array 
@@ -703,6 +738,41 @@ public class JamArr {
 	}
 
 
+	/**
+	 * Calculate the minimum int value of a 2D int array. 
+	 * @param arr - the array to find the maximum value of. 
+	 * @return the minimum and maximum value in the array
+	 */
+	public static int min(int[][] arr) {
+		int min = Integer.MIN_VALUE;
+
+		for(int i=0; i<arr.length; i++) {
+			for(int j=0; j<arr.length; j++) {
+				min = Math.min(min, arr[i][j]);
+			}
+		}
+
+		return min; 
+	}
+	
+	
+	/**
+	 * Calculate the minimum double value of a 2D double array. 
+	 * @param arr - the array to find the maximum value of. 
+	 * @return the minimum and maximum value in the array
+	 */
+	public static double min(double[][] arr) {
+		double min = Double.MIN_VALUE;
+
+		for(int i=0; i<arr.length; i++) {
+			for(int j=0; j<arr.length; j++) {
+				min = Math.min(min, arr[i][j]);
+			}
+		}
+
+		return min; 
+	}
+	
 	/**
 	 * Normalise an array
 	 * @param arr  - the array to normalise

@@ -27,7 +27,7 @@ import ai.djl.translate.TranslatorContext;
  * @author Jamie Macaulay 
  *
  */
-public class AnimalSpot {
+public class AnimalSpotModel {
 	
 	/**
 	 * The currently loaded model 
@@ -50,7 +50,7 @@ public class AnimalSpot {
 	private HashMap<String, String> hashMap; 
 
 
-	public AnimalSpot(String modelPath) throws MalformedModelException, IOException{
+	public AnimalSpotModel(String modelPath) throws MalformedModelException, IOException{
 		
 		File file = new File(modelPath); 
 		

@@ -39,7 +39,8 @@ public class RightWhaleDL {
 
 		// let's test on some right whale data. 
 
-		//right whale at 3.01.201 - 181 sexonds. 
+		//right whale at 3.01.201 - 181 seconds. 
+		//the second  class is right whale. class 0 = noise, Class 1= right whale. 
 		
 		String wavFilePath = "/Users/au671271/Google Drive/PAMGuard_dev/Deep_Learning/Right_whales_DG/SouthernRightWhale001-v1/sar98_trk3_8000.wav";
 
@@ -51,9 +52,9 @@ public class RightWhaleDL {
 		String outMatlabPath = "/Users/au671271/Google Drive/Programming/MATLAB/PAMGUARD/deep_learning/generic_classifier/rightwhaespec.mat";
 
 		float sr = 2000; 
-//		int startchunk =  (int) (181.2*sr); //right whale call
+		int startchunk =  (int) (181.2*sr); //right whale call
 		
-		int startchunk =  (int) (190.2*sr); 
+		//int startchunk =  (int) (190.2*sr); 
 
 		int chunkSize = 4000; 
 		

@@ -31,7 +31,7 @@ public class AnimalSpotClassifier {
 	/**
 	 * The current sound spot model. 
 	 */
-	private AnimalSpot soundSpotModel;
+	private AnimalSpotModel soundSpotModel;
 
 
 	/**
@@ -66,7 +66,7 @@ public class AnimalSpotClassifier {
 	public boolean loadModel(String modelPath) {
 		//first open the model and get the correct parameters. 
 		try {
-			soundSpotModel = new AnimalSpot(modelPath);
+			soundSpotModel = new AnimalSpotModel(modelPath);
 			//create the DL params. 
 			soundSpotParams = new AnimalSpotParams(soundSpotModel.getTransformsString());
 			return true; 
@@ -136,7 +136,7 @@ public class AnimalSpotClassifier {
 	 * Get the sound spot model. 
 	 * @return the sound spot model. 
 	 */
-	public AnimalSpot getSoundSpotModel() {
+	public AnimalSpotModel getSoundSpotModel() {
 		return soundSpotModel;
 	}
 

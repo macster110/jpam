@@ -11,6 +11,9 @@ import org.jamdev.jdl4pam.transforms.jsonfile.DLTransformsParser;
 
 import ai.djl.MalformedModelException;
 import ai.djl.Model;
+import ai.djl.inference.Predictor;
+import ai.djl.ndarray.types.Shape;
+import ai.djl.translate.TranslateException;
 import ai.djl.util.ZipUtils;
 
 /**
@@ -43,6 +46,21 @@ public class KetosModel {
 	 */
 	private Model model;
 
+	/**
+	 * The predictor for the model. 
+	 */
+	Predictor<float[][][], float[]> predictor;
+
+	/**
+	 * The input shape from the loaded model. 
+	 */
+	private Shape inputShape = null; 
+
+	/**
+	 * The output shape from the model. 
+	 */
+	private Shape outShape = null; 
+
 	
 	public KetosModel(File file) throws IOException, MalformedModelException {
 
@@ -72,6 +90,28 @@ public class KetosModel {
 		Path modelDir = Paths.get(new File(modelPath).getParent()); //the directory of the file (in case the file is local this should also return absolute directory)
 		model = Model.newInstance(modelPath, "TensorFlow"); 
 		model.load(modelDir, "saved_model.pb");
+		
+		
+		if (model == null) {
+			System.err.println("Generic Model: Could not load model: " + modelPath);
+		}
+
+		else {
+			if (model!=null && model.describeInput()!=null) {
+				System.out.println("Generic Model: Input: " + model.describeInput().get(0).getValue()); 
+				inputShape =  model.describeInput().get(0).getValue();
+			}
+			if (model!=null && model.describeOutput()!=null) {
+				System.out.println("Generic Model: Output: " + model.describeOutput().get(0).getValue()); 
+				outShape = model.describeOutput().get(0).getValue();
+			}
+
+			//create the predictior for the new shape. 
+			translator = new SpectrogramTranslator(inputShape); 
+
+			//predictor for the model
+			predictor = model.newPredictor(translator);
+		}
 		
 		//translator = new SpectrogramTranslator(inputShape); 
 	}
@@ -108,14 +148,24 @@ public class KetosModel {
         return fileName;
  
     }
- 
+    
+    
 
 	/**
-	 * Converts a 
-	 * @return
+	 * Run the model.
+	 * @param specImage - the spectrogram image
+	 * @return the results 
 	 */
-	private String ketos2Jpam() {
-		return null; 
+	public float[] runModel(float[][][] specImage) {
+		try {
+			float[] results  = predictor.predict(specImage);
+			//DLUtils.printArray(results);
+			return results; 
+		} catch (TranslateException e) {
+			System.out.println("Error on model: "); 
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	

@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>jpamutils</artifactId>
-	<version>0.0.5</version>
+	<version>0.0.51</version>
 	<packaging>jar</packaging>
 
 	<name>jpamutils</name>

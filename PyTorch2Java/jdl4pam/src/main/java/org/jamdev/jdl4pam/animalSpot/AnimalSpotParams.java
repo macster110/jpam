@@ -76,10 +76,11 @@ public class AnimalSpotParams extends GenericModelParams {
 	public static ArrayList<DLTransfromParams>  parseTransfromParams(String rawString) {
 		 ArrayList<DLTransfromParams>  params =  DLTransformsParser.parseTransfromParams(rawString);
 		
-		//SoundSpot is ever so slightly different as it includes the clamp transform with the interp so need to add it
+		//SoundSpot is ever so slightly different as it includes the clamp transform with the normalisation so need to add it
 //		//also add the clamp here - it is separate in PG but integrated in AnimalSpot. 
 		 for (int i =0; i<params.size(); i++) {
 			 if (params.get(i).dltransfromType==DLTransformType.SPECNORMALISE) {
+				 //if the transform is a mindB then add the clamp....
 				 params.add(i+1, new SimpleTransformParams(DLTransformType.SPECCLAMP, 0.0, 1.0)); 
 				 break; 
 			 }
