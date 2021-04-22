@@ -11,7 +11,7 @@
 
 	<groupId>org.jamdev</groupId>
 	<artifactId>jdl4pam</artifactId>
-	<version>0.0.84</version>
+	<version>0.0.85</version>
 	<packaging>jar</packaging>
 
 	<name>jdl4pam</name>
