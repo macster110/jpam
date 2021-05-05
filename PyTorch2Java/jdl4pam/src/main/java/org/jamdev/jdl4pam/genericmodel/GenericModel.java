@@ -64,7 +64,7 @@ public class GenericModel {
 		switch  (extension) {
 		case "pb":
 			model = Model.newInstance(modelPath, "TensorFlow"); 
-			model.load(modelDir, "saved_model.pb");
+			model.load(modelDir, modelName);
 			break; 
 		case "py":
 			model = Model.newInstance(modelName);
