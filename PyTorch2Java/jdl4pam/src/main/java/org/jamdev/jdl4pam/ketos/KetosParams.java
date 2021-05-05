@@ -34,9 +34,15 @@ public class KetosParams extends GenericModelParams {
 
 
 	/**
-	 * The default segment length for the classifier. 
+	 * The default segment length for the classifier (seconds). 
 	 */
-	public double seglen = 11.0; //milliseconds  
+	public double seglen = 11.0; //seconds  
+
+	
+//	/**
+//	 * The numebr of output classes.
+//	 */
+//	public int outputClass = 2;   
 
 
 	/**
@@ -173,12 +179,15 @@ public class KetosParams extends GenericModelParams {
 		double freq_max = getKetosDouble(specObject, "freq_max"); 
 
 		JSONArray expectedShapeJSON = specObject.getJSONArray("input_shape"); 
-		double[] expectedShape = new double[expectedShapeJSON.length()];
+		int[] expectedShape = new int[expectedShapeJSON.length()];
 
 		for(int j = 0; j < expectedShapeJSON.length(); j++){               
-			expectedShape[j] = expectedShapeJSON.getDouble(j);               
+			expectedShape[j] = expectedShapeJSON.getInt(j);               
 		}
+		
 
+//		JSONArray outputShapeJSON = specObject.getJSONArray("output_shape"); 
+//		this.outputClass = outputShapeJSON.getInt(1);
 
 
 		ArrayList<DLTransfromParams> dlTransformParamsArr = new ArrayList<DLTransfromParams>();
@@ -216,7 +225,8 @@ public class KetosParams extends GenericModelParams {
 
 		//FIXEM
 		//add the interpolation at the end to make sure we get the expected shape. We were one biin out with right whales for the FFT length. 
-		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECCROPINTERP, freq_min, freq_max, expectedShape[2])); 
+		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECCROPINTERP, freq_min, freq_max, 
+				(int) expectedShape[2])); //important to cast to int for GUI stuff in JavaFX
 
 		//		
 		//must order these in the correct way!l 

@@ -622,7 +622,7 @@ public class JamArr {
 		int min = Integer.MIN_VALUE;
 
 		for(int i=0; i<arr.length; i++) {
-			for(int j=0; j<arr.length; j++) {
+			for(int j=0; j<arr[i].length; j++) {
 				max = Math.max(max, arr[i][j]);
 				min = Math.min(min, arr[i][j]);
 			}
@@ -655,7 +655,7 @@ public class JamArr {
 		int max = Integer.MIN_VALUE;
 
 		for(int i=0; i<arr.length; i++) {
-			for(int j=0; j<arr.length; j++) {
+			for(int j=0; j<arr[i].length; j++) {
 				max = Math.max(max, arr[i][j]);
 			}
 		}
@@ -672,7 +672,7 @@ public class JamArr {
 		double max = Double.NEGATIVE_INFINITY;
 
 		for(int i=0; i<arr.length; i++) {
-			for(int j=0; j<arr.length; j++) {
+			for(int j=0; j<arr[i].length; j++) {
 				max = Math.max(max, arr[i][j]);
 			}
 		}
@@ -747,7 +747,7 @@ public class JamArr {
 		int min = Integer.MIN_VALUE;
 
 		for(int i=0; i<arr.length; i++) {
-			for(int j=0; j<arr.length; j++) {
+			for(int j=0; j<arr[i].length; j++) {
 				min = Math.min(min, arr[i][j]);
 			}
 		}
@@ -765,7 +765,7 @@ public class JamArr {
 		double min = Double.MIN_VALUE;
 
 		for(int i=0; i<arr.length; i++) {
-			for(int j=0; j<arr.length; j++) {
+			for(int j=0; j<arr[i].length; j++) {
 				min = Math.min(min, arr[i][j]);
 			}
 		}

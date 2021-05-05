@@ -159,7 +159,7 @@ public class AnimalSpotModel {
 				results[i] = number[i].floatValue(); 
 			}
 
-			System.out.println("Number of results: " + results.length); 
+			//System.out.println("Number of results: " + results.length); 
 
 			return results; 
 		}

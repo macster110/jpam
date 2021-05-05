@@ -40,7 +40,7 @@ public class KetosModelTest  {
 			//get the audio representation file. 
 			KetosParams ketosParams = new KetosParams(jsonString); 			
 
-			System.out.println(ketosParams.toString());
+			//System.out.println(ketosParams.toString());
 
 			//Open wav files. 
 			AudioData soundData = DLUtils.loadWavFile(wavFilePath);

@@ -116,7 +116,24 @@ public class KetosModel {
 		//translator = new SpectrogramTranslator(inputShape); 
 	}
 	
-	
+	/**
+	 * Get the output shape. 
+	 * @return the output shape. 
+	 */
+	public Shape getOutShape() {
+		return outShape;
+	}
+
+
+	/**
+	 * Get the expect input shape. 
+	 * @return the input shape. 
+	 */
+	public Shape getInputShape() {
+		return inputShape;
+	}
+
+
 	/**
 	 * Get the audio representation file. This holds the information for transforming the 
 	 * raw sound data to an image to pass the model. 
