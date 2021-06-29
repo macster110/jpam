@@ -42,6 +42,7 @@ public class AnimalSpotBatTest {
 		//String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/BAT_MODEL2/BAT_4ms_256ft_8hop_NOISEAUG_40000_100000_-100_0_256000.pk"; 
 		//String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/BAT_MODEL2/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000.pk.pk"; 
 		String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/BAT_MODEL_3/BAT_JAMIE_4ms_256fft_8hop_-100_20_15_60_128_256_NOJIT_BAT_DATA_NAUG_V1_JIT.pk"; 
+		//String modelPath = "/Users/au671271/Downloads/BAT_MULTI_JAMIE_5ms_256fft_10hop_DB_0_100_128_256_AUG_LN_WITHJAMIEDATA_V1.pk"; //<- has new class name format
 
 		//wav file 
 		try {			

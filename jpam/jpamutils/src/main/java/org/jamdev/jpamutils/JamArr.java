@@ -644,8 +644,8 @@ public class JamArr {
 
 		return max;
 	}
-	
-	
+
+
 	/**
 	 * Calculate the maximum int value of a 2D int array. 
 	 * @param arr - the array to find the maximum value of. 
@@ -662,7 +662,7 @@ public class JamArr {
 
 		return max;
 	}
-	
+
 	/**
 	 * Calculate the  maximum double value of a 2D double array. 
 	 * @param arr - the array to find the maximum value of. 
@@ -754,8 +754,8 @@ public class JamArr {
 
 		return min; 
 	}
-	
-	
+
+
 	/**
 	 * Calculate the minimum double value of a 2D double array. 
 	 * @param arr - the array to find the maximum value of. 
@@ -772,7 +772,7 @@ public class JamArr {
 
 		return min; 
 	}
-	
+
 	/**
 	 * Normalise an array
 	 * @param arr  - the array to normalise
@@ -980,8 +980,8 @@ public class JamArr {
 		}
 		return arrayD;
 	}
-	
-	
+
+
 	/**
 	 * Create a new array where a constant is divided by each element in an array 
 	 * @param array - the array to divide. 
@@ -1424,12 +1424,78 @@ public class JamArr {
 			}
 			output[i]=temp; 
 		}
-		
+
 		return output; 
 	}
 
 
+	/**
+	 *  Shuffle an array according to the given order of elements
+	 * @param arr - the input array to shuffle 
+	 * @param pos - the index array. 
+	 */
+	public static int[] rearrange(int[] arr, int[] pos){
+		// create an auxiliary array of size `n`
+		int[] aux = new int[arr.length];
 
+		// fill the auxiliary array with the correct order of elements
+		for (int i = 0; i < arr.length; i++) {
+			aux[pos[i]] = arr[i];
+		}
+		return aux; 
+	}
+
+
+
+	/**
+	 *  Shuffle an array according to the given order of elements
+	 * @param arr - the input array to shuffle 
+	 * @param pos - the index array. 
+	 */    
+	public static double[] rearrange(double[] arr, int[] pos){
+		// create an auxiliary array of size `n`
+		double[] aux = new double[arr.length];
+
+		// fill the auxiliary array with the correct order of elements
+		for (int i = 0; i < arr.length; i++) {
+			aux[pos[i]] = arr[i];
+		}
+		return aux; 
+	}
+
+
+	/**
+	 *  Shuffle an array according to the given order of elements
+	 * @param arr - the input array to shuffle 
+	 * @param pos - the index array. 
+	 */    
+	public static float[] rearrange(float[] arr, int[] pos){
+		// create an auxiliary array of size `n`
+		float[] aux = new float[arr.length];
+
+		// fill the auxiliary array with the correct order of elements
+		for (int i = 0; i < arr.length; i++) {
+			aux[pos[i]] = arr[i];
+		}
+		return aux; 
+	}
+
+
+	/**
+	 *  Shuffle a string array according to the given order of elements
+	 * @param arr - the input array to shuffle 
+	 * @param pos - the index array. 
+	 */    
+	public static String[] rearrange(String[] arr, int[] pos){
+		// create an auxiliary array of size `n`
+		String[] aux = new String[arr.length];
+
+		// fill the auxiliary array with the correct order of elements
+		for (int i = 0; i < arr.length; i++) {
+			aux[pos[i]] = arr[i];
+		}
+		return aux; 
+	}
 
 
 }

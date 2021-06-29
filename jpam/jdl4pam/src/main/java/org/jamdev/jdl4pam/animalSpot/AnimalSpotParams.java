@@ -6,6 +6,7 @@ import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 import org.jamdev.jdl4pam.transforms.DLTransfromParams;
 import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
 import org.jamdev.jdl4pam.transforms.jsonfile.DLTransformsParser;
+import org.jamdev.jpamutils.JamArr;
 import org.json.JSONObject;
 
 /**
@@ -104,17 +105,51 @@ public class AnimalSpotParams extends GenericModelParams {
 
 		//		//now get the class names. 
 		String classString = jsonObject.getString("class_info"); 
-		//ugly but owrks - cannot use 
+		
+		//ugly but works - cannot use 
 		String classNamesRaw = classString.substring(classString.indexOf("name_class :")+12, classString.length()-1);
+		
+		String[] classNames; 
+		if (!classString.contains(": 0,")) {
+			//System.out.println("ANIMAL_SPOT class names format 1"); 
+			//Format 1
+			//{num_class : 6, name_class : daub,mnatter,noct,pipi,sero,noise};
+			
 
-
-		//		int nClass  = jsonObjectParams.getInt("num_class"); 
-		//		String classNamesRaw  = jsonObjectParams.getString("name_class"); 
-		String[] classNames = classNamesRaw.split(",");
-		for (int i=0; i<classNames.length; i++) {
-			classNames[i]=classNames[i].trim(); //remove whitespace
-
+			//		int nClass  = jsonObjectParams.getInt("num_class"); 
+			//		String classNamesRaw  = jsonObjectParams.getString("name_class"); 
+			classNames = classNamesRaw.split(",");
+			for (int i=0; i<classNames.length; i++) {
+				classNames[i]=classNames[i].trim(); //remove whitespace
+			}
 		}
+		else {
+			classNamesRaw = classNamesRaw.trim();
+			classNamesRaw = classNamesRaw.substring(1, classNamesRaw.length()-1);
+			
+			//System.out.println("ANIMAL_SPOT class names format 2: " + classNamesRaw); 
+
+			String[] classNameStructs = classNamesRaw.split(",");
+			
+			int[] index = new int[classNameStructs.length]; 
+			classNames = new String[classNameStructs.length]; 
+			for (int i=0; i<classNameStructs.length; i++) {
+				String[] nameBits = classNameStructs[i].split(":"); 
+				
+				index[i] =  Integer.valueOf(nameBits[1].trim()); 
+				
+//				System.out.println(nameBits[0]); 
+						
+				classNames[i]=nameBits[0].trim(); 
+				//remove the ' ' bits
+				classNames[i]=classNames[i].substring(1, classNames[i].length()-1).trim(); 
+
+			} 
+			
+			//now gave to order the array by the index
+			classNames = JamArr.rearrange(classNames, index); 
+		}
+		
 		this.classNames = classNames; 
 
 		JSONObject jsonObjectParams = new JSONObject(jsonObject.getString("seg_size")); 
@@ -158,6 +193,7 @@ public class AnimalSpotParams extends GenericModelParams {
 		//			}
 
 	}
+	
 
 	@Override
 	public String toString() {
