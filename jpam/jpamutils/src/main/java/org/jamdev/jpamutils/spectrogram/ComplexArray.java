@@ -2,7 +2,7 @@ package org.jamdev.jpamutils.spectrogram;
 
 import org.apache.commons.math3.complex.Complex;
 
-public class ComplexArray extends ComplexArrayF implements Cloneable {
+public class ComplexArray extends ComplexArrayD implements Cloneable {
 
 	/**
 	 * 
@@ -13,22 +13,18 @@ public class ComplexArray extends ComplexArrayF implements Cloneable {
 
 	public ComplexArray(Complex[] complexArr) {
 		super(complexArr);
-		// TODO Auto-generated constructor stub
 	}
 
-	public ComplexArray(float[] realData, float[] imagData) {
+	public ComplexArray(double[] realData, double[] imagData) {
 		super(realData, imagData);
-		// TODO Auto-generated constructor stub
 	}
 
-	public ComplexArray(float[] complexData) {
+	public ComplexArray(double[] complexData) {
 		super(complexData);
-		// TODO Auto-generated constructor stub
 	}
 
 	public ComplexArray(int n) {
 		super(n);
-		// TODO Auto-generated constructor stub
 	}
 
 

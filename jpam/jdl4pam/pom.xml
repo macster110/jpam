@@ -11,7 +11,7 @@
 
 	<groupId>org.jamdev</groupId>
 	<artifactId>jdl4pam</artifactId>
-	<version>0.0.89</version>
+	<version>0.0.91</version>
 	<packaging>jar</packaging>
 
 	<name>jdl4pam</name>
@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>org.jamdev</groupId>
 			<artifactId>jpamutils</artifactId>
-			<version>0.0.52</version>
+			<version>0.0.54</version>
 		</dependency>
 
 		<dependency>
@@ -59,21 +59,21 @@
 			<groupId>ai.djl.pytorch</groupId>
 			<artifactId>pytorch-engine</artifactId>
 			<version>0.11.0</version>
-			<scope>runtime</scope>
+<!-- 			<scope>runtime</scope> -->
 		</dependency>
 
 		<dependency>
 			<groupId>ai.djl.pytorch</groupId>
 			<artifactId>pytorch-native-auto</artifactId>
 			<version>1.8.1</version>
-			<scope>runtime</scope>
+<!-- 			<scope>runtime</scope> -->
 		</dependency>
 
 		<dependency>
 			<groupId>ai.djl.tensorflow</groupId>
 			<artifactId>tensorflow-engine</artifactId>
 			<version>0.11.0</version>
-			<scope>runtime</scope>
+<!-- 			<scope>runtime</scope> -->
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/ai.djl.tensorflow/tensorflow-native-auto -->
@@ -81,7 +81,7 @@
 			<groupId>ai.djl.tensorflow</groupId>
 			<artifactId>tensorflow-native-auto</artifactId>
 			<version>2.4.1</version>
-			<scope>runtime</scope>
+<!-- 			<scope>runtime</scope> -->
 		</dependency>
 
 

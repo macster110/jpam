@@ -26,10 +26,10 @@ public class SimpleTransformParams extends DLTransfromParams {
 	}
 
 	
-	/**
-	 * The paramters for the transform. 
-	 */
-	public Number[] params; 
+//	/**
+//	 * The paramters for the transform. 
+//	 */
+//	public Number[] params; 
 	
 	@Override
 	public String toString() {
@@ -43,7 +43,7 @@ public class SimpleTransformParams extends DLTransfromParams {
 			string = dltransfromType.toString() + " factor: " + params[0];
 			break;
 		case SPEC2DB:
-			string = dltransfromType.toString();
+			string = dltransfromType.toString() + " mindB " + (params == null ? null : params[0].toString());
 			break;
 		case SPECCLAMP:
 			string = dltransfromType.toString() + " min: " + params[0] + " max: " + params[1];

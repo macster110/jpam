@@ -299,7 +299,7 @@ public class AnimalSpotParams extends GenericModelParams {
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.PREEMPHSIS, preemphases)); 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAM, n_fft, hop_length)); 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECCROPINTERP, fmin, fmax, n_freq_bins)); 
-		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPEC2DB)); 
+		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPEC2DB, min_level_dB)); 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECNORMALISE, min_level_dB, ref_level_dB)); 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECCLAMP, clampMin, clampMax)); 
 

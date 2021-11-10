@@ -25,7 +25,7 @@ public class ComplexArrayD implements Cloneable, Serializable {
 	/**
 	 * Main data array of interleaved real / complex data. 
 	 */
-	private double[] data;
+	protected double[] data;
 
 	/**
 	 * Construct a complex array. Length of allocated

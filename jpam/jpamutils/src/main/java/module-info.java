@@ -6,4 +6,5 @@ module jpamutils {
 	requires commons.math3;
 	requires iirj;
 	requires java.desktop;
+	requires JTransforms;
 }

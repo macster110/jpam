@@ -190,7 +190,10 @@ public class DLTransformsParser {
 			paramsObject.put("pre_empf_factor", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue()); 
 			break;
 		case SPEC2DB:
-			//nothing to add here - no params. 
+			if (((SimpleTransformParams) dlTransfromParams).params[0]!=null) {
+				paramsObject.put("min_db", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue()); 
+			}
+			//otherwise nothing to add here - no params. 
 			break;
 		case SPECCLAMP:
 			//nothing to add here - params are assumed to be 0 and 1 
@@ -273,7 +276,9 @@ public class DLTransformsParser {
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
 			break;
 		case SPEC2DB:
-			dlTransformParams = new SimpleTransformParams(dlTransformType, null); 
+			number = new Number[1]; 
+			number[0] = jsonObjectParams.getDouble("min_db"); 
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number[0] == null? null : number); 
 			break;
 		case SPECNORMALISEROWSUM:
 			dlTransformParams = new SimpleTransformParams(dlTransformType, null); 

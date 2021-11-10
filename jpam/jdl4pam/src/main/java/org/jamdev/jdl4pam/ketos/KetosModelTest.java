@@ -23,12 +23,12 @@ public class KetosModelTest  {
 	public static void main(String[] args) {
 
 		//test on a right whale. 
-		File file = new File("/Users/au671271/Google Drive/PAMGuard_dev/Deep_Learning/Meridian/right_whales/for_pamguard/narw.ktpb"); 
+		File file = new File("/Volumes/GoogleDrive/My Drive/PAMGuard_dev/Deep_Learning/Meridian/right_whales/for_pamguard/narw.ktpb"); 
 
 		//the wav file to test.
-		String wavFilePath = "/Users/au671271/Google Drive/PAMGuard_dev/Deep_Learning/Meridian/right_whales/for_pamguard/input.wav"; 
+		String wavFilePath = "/Volumes/GoogleDrive/My Drive/PAMGuard_dev/Deep_Learning/Meridian/right_whales/for_pamguard/input.wav"; 
 
-		String outputMatfile = "/Users/au671271/Google Drive/Programming/MATLAB/PAMGUARD/deep_learning/ketos_classifier/java_transformed.mat"; 
+		String outputMatfile = "/Volumes/GoogleDrive/My Drive/Programming/MATLAB/PAMGUARD/deep_learning/ketos_classifier/java_transformed.mat"; 
 
 		try {
 			//the ketos model. 
@@ -79,16 +79,16 @@ public class KetosModelTest  {
 				e.printStackTrace();
 			}
 
-			Matrix trueTransformedDataM = Mat5.readFromFile("/Users/au671271/Google Drive/Programming/MATLAB/PAMGUARD/deep_learning/ketos_classifier/pythontransformed.mat")
-					.getMatrix("transformed_data_py");
-			
-			double[][] trueTransformedData = new double[trueTransformedDataM.getDimensions()[0]][trueTransformedDataM.getDimensions()[1]]; 
-			for (int i=0; i<trueTransformedDataM.getDimensions()[0]; i++) {
-				for (int j=0; j<trueTransformedDataM.getDimensions()[1]; j++) {
-					trueTransformedData[i][j]=  trueTransformedDataM.getDouble(i, j);
-				}
-			}
-			transformedData = trueTransformedData;
+//			Matrix trueTransformedDataM = Mat5.readFromFile("/Users/au671271/Google Drive/Programming/MATLAB/PAMGUARD/deep_learning/ketos_classifier/pythontransformed.mat")
+//					.getMatrix("transformed_data_py");
+//			
+//			double[][] trueTransformedData = new double[trueTransformedDataM.getDimensions()[0]][trueTransformedDataM.getDimensions()[1]]; 
+//			for (int i=0; i<trueTransformedDataM.getDimensions()[0]; i++) {
+//				for (int j=0; j<trueTransformedDataM.getDimensions()[1]; j++) {
+//					trueTransformedData[i][j]=  trueTransformedDataM.getDouble(i, j);
+//				}
+//			}
+//			transformedData = trueTransformedData;
 
 
 			float[] output = null; 

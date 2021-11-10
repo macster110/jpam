@@ -13,6 +13,8 @@ import org.jamdev.jpamutils.JamArr;
  */
 public class SpecTransform {
 
+	private static final double DEFAULT_MIN_DB = 0;
+
 	/**
 	 * The transformed spectrogram data. 
 	 */
@@ -55,10 +57,7 @@ public class SpecTransform {
 	 * @return reference to the spectrogram object.  
 	 */
 	public SpecTransform dBSpec() {
-		if (this.specData==null) initialiseSpecData(); 
-		this.specData = dBSpec(this.specData, true); 
-		if (maintainPhase) absSpec2Complex(); //set the new data in the complex spectrogram
-		return this;
+		return  dBSpec(false, DEFAULT_MIN_DB);
 	}
 
 	/**
@@ -67,11 +66,35 @@ public class SpecTransform {
 	 * @return reference to the spectrogram object.  
 	 */
 	public SpecTransform dBSpec(boolean power) {
+		return dBSpec(power, DEFAULT_MIN_DB);
+	}
+	
+
+	/**
+	 * Convert the current spectrogram data to dB using 10*log10(linear);
+	 * @param mindB - the minimum allowed mindB. 
+	 * @return reference to the spectrogram object.  
+	 */
+	public SpecTransform dBSpec(Double mindB) {
+		if (mindB == null) return dBSpec();
+		else return dBSpec(false, mindB);
+	}
+	
+
+	/**
+	 * Convert the current spectrogram data to dB using 10*log10(linear);
+	 * @param power -true for power 10*log(X) or false for amplitude 20*log10(X).
+	 * @param mindB - the minimum allowed mindB. 
+	 * @return reference to the spectrogram object.  
+	 */
+	public SpecTransform dBSpec(boolean power, double mindB) {
 		if (this.specData==null) initialiseSpecData(); 
-		this.specData = dBSpec(this.specData, power); 
+		this.specData = dBSpec(this.specData, power, mindB); 
 		if (maintainPhase) absSpec2Complex(); //set the new data in the complex spectrogram
 		return this;
 	}
+	
+
 
 	/**
 	 * Normalise the current spectrogram between two reference values. 
@@ -275,9 +298,10 @@ public class SpecTransform {
 	 * Convert a spectrogram to dB. 
 	 * @param array - the absolute spectrogram array. 
 	 * @param power -true for power 10*log(X) or false for amplitude 20*log10(X).
+	 * @param mindB - the minimum dB i.e. if the 10/20*log10(value) in array is below this value, the value is st to mindB. 
 	 * @return the normalised spectrogram. 
 	 */
-	public static double[][] dBSpec(double[][] array, boolean power) {
+	public static double[][] dBSpec(double[][] array, boolean power, double minddB) {
 
 		double coeff = 20; 
 		if (power) {
@@ -288,7 +312,10 @@ public class SpecTransform {
 
 		for (int i = 0; i < array.length; i++) {
 			for (int j = 0; j < array[i].length; j++) {
-				logSpectrgram[i][j] = coeff*Math.log10(array[i][j]); 
+				logSpectrgram[i][j] = coeff*Math.log10(array[i][j]);		
+				if (logSpectrgram[i][j]<-100) {
+					logSpectrgram[i][j] =-100; 
+				}
 			}
 		}
 

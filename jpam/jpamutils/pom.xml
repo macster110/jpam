@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>jpamutils</artifactId>
-	<version>0.0.52</version>
+	<version>0.0.55</version>
 	<packaging>jar</packaging>
 
 	<name>jpamutils</name>
@@ -45,6 +45,14 @@
 			<artifactId>commons-math3</artifactId>
 			<version>3.6.1</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/edu.emory.mathcs/JTransforms -->
+		<dependency>
+			<groupId>edu.emory.mathcs</groupId>
+			<artifactId>JTransforms</artifactId>
+			<version>2.4</version>
+		</dependency>
+		
 
 	</dependencies>
 

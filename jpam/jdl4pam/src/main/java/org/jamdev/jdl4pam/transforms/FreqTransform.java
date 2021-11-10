@@ -95,7 +95,7 @@ public class FreqTransform extends SimpleTransform {
 			freqlims[1] = params[1].doubleValue(); 
 			break;
 		case SPEC2DB:
-			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().dBSpec();
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().dBSpec(params == null || params.length == 0 ? null : params[0].doubleValue());
 			freqlims = ((FreqTransform) transform).freqlims; 
 			break; 
 		case SPECNORMALISE:

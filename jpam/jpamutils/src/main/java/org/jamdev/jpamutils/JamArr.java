@@ -585,8 +585,10 @@ public class JamArr {
 		double min = Double.POSITIVE_INFINITY;
 
 		for(double cur: arr) {
-			max = Math.max(max, cur);
-			min = Math.min(min, cur);
+			if (!Double.isNaN(cur)) {
+				max = Math.max(max, cur);
+				min = Math.min(min, cur);
+			}
 		}
 
 		return new double[] {min, max};
@@ -604,8 +606,10 @@ public class JamArr {
 
 		for(int i=0; i<arr.length; i++) {
 			for(int j=0; j<arr[i].length; j++) {
-				max = Math.max(max, arr[i][j]);
-				min = Math.min(min, arr[i][j]);
+				if (!Double.isNaN(arr[i][j])) {
+					max = Math.max(max, arr[i][j]);
+					min = Math.min(min, arr[i][j]);
+				}
 			}
 		}
 
@@ -620,7 +624,6 @@ public class JamArr {
 	public static int[] minmax(int[][] arr) {
 		int max = Integer.MAX_VALUE;
 		int min = Integer.MIN_VALUE;
-
 		for(int i=0; i<arr.length; i++) {
 			for(int j=0; j<arr[i].length; j++) {
 				max = Math.max(max, arr[i][j]);
@@ -639,8 +642,11 @@ public class JamArr {
 	public static double max(double[] arr) {
 		double max = Double.NEGATIVE_INFINITY;
 
-		for(double cur: arr)
-			max = Math.max(max, cur);
+		for(double cur: arr) {
+			if (!Double.isNaN(cur)) {
+				max = Math.max(max, cur);
+			}
+		}
 
 		return max;
 	}
@@ -673,10 +679,11 @@ public class JamArr {
 
 		for(int i=0; i<arr.length; i++) {
 			for(int j=0; j<arr[i].length; j++) {
-				max = Math.max(max, arr[i][j]);
+				if (!Double.isNaN(arr[i][j])) {
+					max = Math.max(max, arr[i][j]);
+				}
 			}
 		}
-
 		return max;
 	}
 
@@ -717,8 +724,11 @@ public class JamArr {
 	public static double min(double[] arr) {
 		double min = Double.POSITIVE_INFINITY;
 
-		for(double cur: arr)
-			min = Math.min(min, cur);
+		for(double cur: arr) {
+			if (!Double.isNaN(cur)) {
+				min = Math.min(min, cur);
+			}
+		}
 
 		return min;
 	}
@@ -731,8 +741,9 @@ public class JamArr {
 	public static int min(int[] arr) {
 		int min = Integer.MAX_VALUE;
 
-		for(int cur: arr)
+		for(int cur: arr) {
 			min = Math.min(min, cur);
+		}
 
 		return min;
 	}
@@ -744,7 +755,7 @@ public class JamArr {
 	 * @return the minimum and maximum value in the array
 	 */
 	public static int min(int[][] arr) {
-		int min = Integer.MIN_VALUE;
+		int min = Integer.MAX_VALUE;
 
 		for(int i=0; i<arr.length; i++) {
 			for(int j=0; j<arr[i].length; j++) {
@@ -762,11 +773,13 @@ public class JamArr {
 	 * @return the minimum and maximum value in the array
 	 */
 	public static double min(double[][] arr) {
-		double min = Double.MIN_VALUE;
+		double min = Double.POSITIVE_INFINITY;
 
 		for(int i=0; i<arr.length; i++) {
 			for(int j=0; j<arr[i].length; j++) {
-				min = Math.min(min, arr[i][j]);
+				if (!Double.isNaN(arr[i][j])) {
+					min = Math.min(min, arr[i][j]);
+				}
 			}
 		}
 

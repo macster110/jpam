@@ -176,15 +176,21 @@ public class Spectrogram {
 		}
 
 		// for each frame in signals, do fft on it
-		FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
-
+		//original way but could not handle FFT lengths not a power of 2. 
+		//FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
 		complexSpectrogram = new ComplexArray[numFrames];
+		
+		FastFFT fastFFT = new FastFFT();
 
-		Complex[] specData;
+		//Complex[] specData;
 		for (int i = 0; i < numFrames; i++) {
-			specData = fft.transform(signals[i], TransformType.FORWARD);
-			// System.out.println("First signal bin" + signals[i][0]);
-			complexSpectrogram[i] = new ComplexArray(specData);
+			//original way but could not handle FFT lengths not a power of 2. 
+			//specData = fft.transform(signals[i], TransformType.FORWARD);
+			//complexSpectrogram[i] = new ComplexArray(specData);
+			//System.out.println("Len1 " + complexSpectrogram[i].length()+ "  " + specData.length);
+
+			complexSpectrogram[i] = fastFFT.rfftFull(signals[i], signals[i].length);
+			//System.out.println("Len2 " + complexSpectrogram[i].length() + "  " + signals[i].length);
 		}
 
 		/**
