@@ -1,0 +1,17 @@
+org/jamdev/jpamutils/JamArr.class
+org/jamdev/jpamutils/wavFiles/PreEmphasisFilter.class
+org/jamdev/jpamutils/spectrogram/GaussianFilter.class
+org/jamdev/jpamutils/spectrogram/ComplexArray.class
+org/jamdev/jpamutils/spectrogram/SpecTransform.class
+org/jamdev/jpamutils/spectrogram/Complex.class
+org/jamdev/jpamutils/spectrogram/WindowFunction.class
+org/jamdev/jpamutils/spectrogram/Spectrogram.class
+org/jamdev/jpamutils/App.class
+module-info.class
+org/jamdev/jpamutils/spectrogram/ComplexArrayF.class
+org/jamdev/jpamutils/spectrogram/ComplexArrayD.class
+org/jamdev/jpamutils/wavFiles/AudioData.class
+org/jamdev/jpamutils/wavFiles/WavInterpolator.class
+org/jamdev/jpamutils/spectrogram/GaussianFilter$ChannelProcess.class
+org/jamdev/jpamutils/spectrogram/FastFFT.class
+org/jamdev/jpamutils/wavFiles/WavFile.class

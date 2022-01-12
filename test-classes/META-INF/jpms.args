@@ -1,0 +1,4 @@
+--patch-module
+jpamutils=_
+--add-reads
+jpamutils=ALL-UNNAMED
