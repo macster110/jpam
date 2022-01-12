@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>jpam</artifactId>
+		<groupId>org.jamdev</groupId>
+		<version>0.0.80</version>
+	</parent>
+
+	<groupId>org.jamdev</groupId>
+	<artifactId>jpambinaries</artifactId>
+	<version>0.0.3</version>
+
+	<name>jpambinaries</name>
+	<!-- FIXME change it to the project's website -->
+	<url>http://www.example.com</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
+	</properties>
+
+	<dependencies>
+	
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Useful utilities -->
+		<dependency>
+			<groupId>org.jamdev</groupId>
+			<artifactId>jpamutils</artifactId>
+			<version>0.0.3</version>
+		</dependency>
+
+	</dependencies>
+
+	<licenses>
+		<license>
+			<name>Apache-2.0</name>
+			<url>https://opensource.org/licenses/apache-2.0</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<scm>
+		<url>https://github.com/macster110/jpam.git</url>
+	</scm>
+	<developers>
+		<developer>
+			<id>macster110</id>
+			<name>Jamie Macaulay</name>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+	</developers>
+	<description>Tools for importing acoustic data files</description>
+
+	<!--<distributionManagement>
+		<repository>
+			<id>bintray-macster110-jpam</id>
+			<name>macster110-jpam</name>
+			<url>https://api.bintray.com/maven/macster110/jpam/jpambinaries/;publish=1</url>
+		</repository>
+	</distributionManagement>-->
+
+</project>
