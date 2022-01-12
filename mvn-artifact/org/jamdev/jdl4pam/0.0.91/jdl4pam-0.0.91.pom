@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>jpam</artifactId>
+		<groupId>org.jamdev</groupId>
+		<version>0.0.80</version>
+	</parent>
+
+	<groupId>org.jamdev</groupId>
+	<artifactId>jdl4pam</artifactId>
+	<version>0.0.91</version>
+	<packaging>jar</packaging>
+
+	<name>jdl4pam</name>
+	<url>https://github.com/macster110/jpam</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Useful utilities -->
+		<dependency>
+			<groupId>org.jamdev</groupId>
+			<artifactId>jpamutils</artifactId>
+			<version>0.0.54</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ai.djl</groupId>
+			<artifactId>api</artifactId>
+			<version>0.11.0</version>
+		</dependency>
+
+
+		<!-- <dependency> -->
+		<!-- <groupId>ai.djl.pytorch</groupId> -->
+		<!-- <artifactId>pytorch-model-zoo</artifactId> -->
+		<!-- <version>0.10.0</version> -->
+		<!-- </dependency> -->
+
+		<!-- <dependency> <groupId>ai.djl.pytorch</groupId> <artifactId>pytorch-native-cpu</artifactId> 
+			<classifier>osx-x86_64</classifier> <version>1.6.0</version> <scope>runtime</scope> 
+			</dependency> -->
+
+		<dependency>
+			<groupId>ai.djl.pytorch</groupId>
+			<artifactId>pytorch-engine</artifactId>
+			<version>0.11.0</version>
+<!-- 			<scope>runtime</scope> -->
+		</dependency>
+
+		<dependency>
+			<groupId>ai.djl.pytorch</groupId>
+			<artifactId>pytorch-native-auto</artifactId>
+			<version>1.8.1</version>
+<!-- 			<scope>runtime</scope> -->
+		</dependency>
+
+		<dependency>
+			<groupId>ai.djl.tensorflow</groupId>
+			<artifactId>tensorflow-engine</artifactId>
+			<version>0.11.0</version>
+<!-- 			<scope>runtime</scope> -->
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/ai.djl.tensorflow/tensorflow-native-auto -->
+		<dependency>
+			<groupId>ai.djl.tensorflow</groupId>
+			<artifactId>tensorflow-native-auto</artifactId>
+			<version>2.4.1</version>
+<!-- 			<scope>runtime</scope> -->
+		</dependency>
+
+
+		<!-- <dependency> -->
+		<!-- <groupId>ai.djl.tensorflow</groupId> -->
+		<!-- <artifactId>tensorflow-model-zoo</artifactId> -->
+		<!-- <version>0.10.0</version> -->
+		<!-- </dependency> -->
+
+	</dependencies>
+
+
+	<licenses>
+		<license>
+			<name>Apache-2.0</name>
+			<url>https://opensource.org/licenses/apache-2.0</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<scm>
+		<url>https://github.com/macster110/jpam.git</url>
+	</scm>
+	<developers>
+		<developer>
+			<id>macster110</id>
+			<name>Jamie Macaulay</name>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+	</developers>
+	<description>Deep learning tools for passive acoustic monitoring</description>
+
+	<!-- <distributionManagement> <repository> <id>bintray-macster110-jpam</id> 
+		<name>macster110-jpam</name> <url>https://api.bintray.com/maven/macster110/jpam/jdl4pam/;publish=1</url> 
+		</repository> </distributionManagement> -->
+
+</project>
