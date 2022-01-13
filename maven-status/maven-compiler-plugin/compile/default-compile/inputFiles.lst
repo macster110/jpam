@@ -1,9 +1,7 @@
-/Users/au671271/git/jpam2/jpam/jpamutilsfx/src/main/java/org/jamdev/jpamutilsfx/utilsfx/InfernoColorMap.java
-/Users/au671271/git/jpam2/jpam/jpamutilsfx/src/main/java/org/jamdev/jpamutilsfx/utilsfx/ColourArray.java
-/Users/au671271/git/jpam2/jpam/jpamutilsfx/src/main/java/org/jamdev/jpamutilsfx/colourslider/PamRangeSlider.java
-/Users/au671271/git/jpam2/jpam/jpamutilsfx/src/main/java/org/jamdev/jpamutilsfx/utilsfx/PamUtilsFX.java
-/Users/au671271/git/jpam2/jpam/jpamutilsfx/src/main/java/org/jamdev/jpamutilsfx/colourslider/DefaultSliderLabel.java
-/Users/au671271/git/jpam2/jpam/jpamutilsfx/src/main/java/org/jamdev/jpamutilsfx/utilsfx/PamSVGIcon.java
-/Users/au671271/git/jpam2/jpam/jpamutilsfx/src/main/java/org/jamdev/jpamutilsfx/colourslider/ColourRangeSlider.java
-/Users/au671271/git/jpam2/jpam/jpamutilsfx/src/main/java/org/jamdev/jpamutilsfx/colourslider/RangeSliderLabel.java
-/Users/au671271/git/jpam2/jpam/jpamutilsfx/src/main/java/org/jamdev/jpamutilsfx/App.java
+/Users/au671271/git/jpam2/jpam/jpambinaries/src/main/java/org/jamdev/jpambinaries/pamguard/FileHeader.java
+/Users/au671271/git/jpam2/jpam/jpambinaries/src/main/java/org/jamdev/jpambinaries/pamguard/PGBinaryFile.java
+/Users/au671271/git/jpam2/jpam/jpambinaries/src/main/java/org/jamdev/jpambinaries/pamguard/PamDataUnit.java
+/Users/au671271/git/jpam2/jpam/jpambinaries/src/main/java/org/jamdev/jpambinaries/pamguard/PGBinaryUtils.java
+/Users/au671271/git/jpam2/jpam/jpambinaries/src/main/java/org/jamdev/pambinaries/audiomoth/AudioMothTData.java
+/Users/au671271/git/jpam2/jpam/jpambinaries/src/main/java/org/jamdev/jpambinaries/App.java
+/Users/au671271/git/jpam2/jpam/jpambinaries/src/main/java/org/jamdev/pambinaries/audiomoth/AudioMothTFile.java
