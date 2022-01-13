@@ -12,7 +12,7 @@
 	<groupId>org.jamdev</groupId>
 	<artifactId>jdl4pam</artifactId>
 	<version>0.0.92</version>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 
 	<name>jdl4pam</name>
 	<url>https://github.com/macster110/jpam</url>
