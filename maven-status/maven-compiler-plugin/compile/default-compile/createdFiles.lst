@@ -1,7 +1,2 @@
-org/jamdev/pambinaries/audiomoth/AudioMothTData.class
-org/jamdev/jpambinaries/pamguard/PamDataUnit.class
-org/jamdev/pambinaries/audiomoth/AudioMothTFile.class
-org/jamdev/jpambinaries/pamguard/PGBinaryFile.class
-org/jamdev/jpambinaries/App.class
-org/jamdev/jpambinaries/pamguard/FileHeader.class
-org/jamdev/jpambinaries/pamguard/PGBinaryUtils.class
+org/jamdev/jpamtest/ReadBufferExceptionTest$1.class
+org/jamdev/jpamtest/ReadBufferExceptionTest.class
