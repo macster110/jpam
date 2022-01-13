@@ -1,1 +1,16 @@
-/Users/au671271/git/jpam2/jpam/jpamtest/src/main/java/org/jamdev/jpamtest/ReadBufferExceptionTest.java
+/Users/au671271/git/jpam2/jpam/jpamutils/src/main/java/org/jamdev/jpamutils/JamArr.java
+/Users/au671271/git/jpam2/jpam/jpamutils/src/main/java/org/jamdev/jpamutils/spectrogram/Complex.java
+/Users/au671271/git/jpam2/jpam/jpamutils/src/main/java/org/jamdev/jpamutils/wavFiles/WavInterpolator.java
+/Users/au671271/git/jpam2/jpam/jpamutils/src/main/java/org/jamdev/jpamutils/wavFiles/PreEmphasisFilter.java
+/Users/au671271/git/jpam2/jpam/jpamutils/src/main/java/org/jamdev/jpamutils/spectrogram/GaussianFilter.java
+/Users/au671271/git/jpam2/jpam/jpamutils/src/main/java/org/jamdev/jpamutils/spectrogram/FastFFT.java
+/Users/au671271/git/jpam2/jpam/jpamutils/src/main/java/org/jamdev/jpamutils/spectrogram/Spectrogram.java
+/Users/au671271/git/jpam2/jpam/jpamutils/src/main/java/org/jamdev/jpamutils/wavFiles/WavFile.java
+/Users/au671271/git/jpam2/jpam/jpamutils/src/main/java/org/jamdev/jpamutils/spectrogram/ComplexArrayD.java
+/Users/au671271/git/jpam2/jpam/jpamutils/src/main/java/module-info.java
+/Users/au671271/git/jpam2/jpam/jpamutils/src/main/java/org/jamdev/jpamutils/spectrogram/ComplexArray.java
+/Users/au671271/git/jpam2/jpam/jpamutils/src/main/java/org/jamdev/jpamutils/spectrogram/WindowFunction.java
+/Users/au671271/git/jpam2/jpam/jpamutils/src/main/java/org/jamdev/jpamutils/wavFiles/AudioData.java
+/Users/au671271/git/jpam2/jpam/jpamutils/src/main/java/org/jamdev/jpamutils/spectrogram/SpecTransform.java
+/Users/au671271/git/jpam2/jpam/jpamutils/src/main/java/org/jamdev/jpamutils/spectrogram/ComplexArrayF.java
+/Users/au671271/git/jpam2/jpam/jpamutils/src/main/java/org/jamdev/jpamutils/App.java
