@@ -25,7 +25,7 @@ public class WaveTransform extends SimpleTransform {
 	/**
 	 * Create a waveform transform including the initial raw audiodata. 
 	 * <p>
-	 * See {@link WaveTransform.WaveTransformType} for a description of each transform. 
+	 * See WaveTransform.WaveTransformType for a description of each transform. 
 	 * <p>
 	 * Each transform type has a unique set of parameters. These are
 	 * <ul>
@@ -46,7 +46,7 @@ public class WaveTransform extends SimpleTransform {
 	/**
 	 * Create a waveform transform.
 	 * <p>
-	 * See {@link WaveTransform.WaveTransformType} for a description of each transform. 
+	 * See WaveTransform.WaveTransformType for a description of each transform. 
 	 * <p>
 	 * Each transform type has a unique set of parameters. These are
 	 * <ul>

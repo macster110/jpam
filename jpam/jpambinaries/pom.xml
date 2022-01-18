@@ -5,11 +5,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>jpam</artifactId>
-		<groupId>org.jamdev</groupId>
+		<groupId>io.github.macster110</groupId>
 		<version>0.0.80</version>
 	</parent>
 
-	<groupId>org.jamdev</groupId>
 	<artifactId>jpambinaries</artifactId>
 	<version>0.0.3</version>
 
@@ -30,7 +29,7 @@
 		<dependency>
 			<groupId>org.jamdev</groupId>
 			<artifactId>jpamutils</artifactId>
-			<version>0.0.3</version>
+			<version>0.0.55</version>
 		</dependency>
 
 	</dependencies>

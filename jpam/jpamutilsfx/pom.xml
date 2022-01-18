@@ -9,7 +9,7 @@
 		<version>0.0.80</version>
 	</parent>
 
-	<groupId>org.jamdev</groupId>
+	<groupId>io.github.macster110</groupId>
 	<artifactId>jpamutilsfx</artifactId>
 	<version>0.0.1</version>
 

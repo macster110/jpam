@@ -5,7 +5,7 @@ import org.jamdev.jpamutils.spectrogram.Spectrogram;
 
 /**
  * Creates a spectrogram transform which can be used to 
- * apply various transforms (see {@link FreqTransform.FreqTransformType})
+ * apply various transforms (see FreqTransform.FreqTransformType)
  * to spectrogram data.  
  * 
  * @author Jamie Macaulay
@@ -34,7 +34,7 @@ public class FreqTransform extends SimpleTransform {
 	/**
 	 * Create a frequency transform.
 	 * <p>
-	 * See {@link FreqTransform.FreqTransformType} for a description of each transform. 
+	 * See FreqTransform.FreqTransformType for a description of each transform. 
 	 * <p>
 	 * Each transform type has a unique set of parameters. For example these are...
 	 * <ul>
@@ -59,7 +59,7 @@ public class FreqTransform extends SimpleTransform {
 	/**
 	 * Create a frequency transform.
 	 * <p>
-	 * See {@link FreqTransform.FreqTransformType} for a description of each transform. 
+	 * See FreqTransform.FreqTransformType for a description of each transform. 
 	 * <p>
 	 * Each transform type has a unique set of parameters. For example these are...
 	 * <ul>

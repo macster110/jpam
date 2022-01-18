@@ -126,7 +126,7 @@ public class ReadBufferExceptionTest {
 	/**
 	 * Make a dummy spectrogram for testing. Filled with random values.  
 	 * @param len - the length of the spectrogram in bins. 
-	 * @param height - the height of the spectrgram in bins. 
+	 * @param len2 - the height of the spectrgram in bins. 
 	 * @return a dummy spectrogram with random values. 
 	 */
 	public static double[][] makeDummySpectrogramd(int len, int len2){
@@ -156,6 +156,8 @@ public class ReadBufferExceptionTest {
 	/** 
 	 * Convert an arbitrary-dimensional rectangular double array to flat vector.<br>
 	 * Can pass double[], double[][], double[][][], etc.
+	 * @param doubleArray
+	 * 
 	 */
 	public static double[] flattenDoubleArray(Object doubleArray) {
 		if (doubleArray instanceof double[])

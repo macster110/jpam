@@ -5,13 +5,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.jamdev</groupId>
+	<groupId>io.github.macster110</groupId>
 	<artifactId>djl_test</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	
 	<parent>
 		<artifactId>jpam</artifactId>
-		<groupId>org.jamdev</groupId>
+		<groupId>io.github.macster110</groupId>
 		<version>0.0.80</version>
 	</parent>
 
@@ -32,7 +32,7 @@
 		<dependency>
 			<groupId>org.jamdev</groupId>
 			<artifactId>jpamutils</artifactId>
-			<version>0.0.4</version>
+			<version>0.0.55</version>
 		</dependency> 
 
 
