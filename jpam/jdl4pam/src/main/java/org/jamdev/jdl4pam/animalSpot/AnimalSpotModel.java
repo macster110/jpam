@@ -50,8 +50,9 @@ public class AnimalSpotModel {
 	private HashMap<String, String> hashMap; 
 
 
-	public AnimalSpotModel(String modelPath) throws MalformedModelException, IOException{
+	public AnimalSpotModel(String modelPath) throws Exception {
 		
+		try {
 		File file = new File(modelPath); 
 		
 		//String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JAMIE.pk"; 
@@ -72,6 +73,14 @@ public class AnimalSpotModel {
 				
 		//predictor for the model
 		predictor = model.newPredictor(translator);
+		}
+		catch (MalformedModelException mme){
+			  throw new Exception(mme.getMessage());
+
+		}
+		catch (IOException ioe) {
+			  throw new Exception(ioe.getMessage());
+		}
 				
 	}
 	

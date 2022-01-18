@@ -38,11 +38,11 @@ public class KetosParams extends GenericModelParams {
 	 */
 	public double seglen = 11.0; //seconds  
 
-	
-//	/**
-//	 * The numebr of output classes.
-//	 */
-//	public int outputClass = 2;   
+
+	//	/**
+	//	 * The numebr of output classes.
+	//	 */
+	//	public int outputClass = 2;   
 
 
 	/**
@@ -184,10 +184,10 @@ public class KetosParams extends GenericModelParams {
 		for(int j = 0; j < expectedShapeJSON.length(); j++){               
 			expectedShape[j] = expectedShapeJSON.getInt(j);               
 		}
-		
 
-//		JSONArray outputShapeJSON = specObject.getJSONArray("output_shape"); 
-//		this.outputClass = outputShapeJSON.getInt(1);
+
+		//		JSONArray outputShapeJSON = specObject.getJSONArray("output_shape"); 
+		//		this.outputClass = outputShapeJSON.getInt(1);
 
 
 		ArrayList<DLTransfromParams> dlTransformParamsArr = new ArrayList<DLTransfromParams>();
@@ -205,24 +205,28 @@ public class KetosParams extends GenericModelParams {
 		//		}
 
 
-		//the order of these is important. 
-		JSONArray transformObjects = specObject.getJSONArray("transforms");
+		//A model may have no additional transforms, in which case JSON will throw an exception or the transformObjects will be null. 
+		if (specObject.has("transforms")) {
+			//the order of these is important. 
+			JSONArray transformObjects = specObject.getJSONArray("transforms");
 
-		//System.out.println("transformObjects: "  +transformObjects);
+			if (transformObjects!=null  && transformObjects.length()>0) {
 
-		DLTransfromParams params; 
-		for (int i=0; i<transformObjects.length(); i++) {
+				//System.out.println("transformObjects: "  +transformObjects);
+				DLTransfromParams params; 
+				for (int i=0; i<transformObjects.length(); i++) {
 
-			JSONObject object = (JSONObject) transformObjects.get(i);
+					JSONObject object = (JSONObject) transformObjects.get(i);
 
-			params =  parseDLTransformParams(object); 
+					params =  parseDLTransformParams(object); 
 
-			if (params!=null) {
-				dlTransformParamsArr.add(params);
+					if (params!=null) {
+						dlTransformParamsArr.add(params);
+					}
+					//System.out.println(object); 
+				}
 			}
-			//System.out.println(object); 
 		}
-
 		//FIXEM
 		//add the interpolation at the end to make sure we get the expected shape. We were one biin out with right whales for the FFT length. 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECCROPINTERP, freq_min, freq_max, 

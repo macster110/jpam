@@ -9,19 +9,13 @@
 		<version>0.0.80</version>
 	</parent>
 
-	<groupId>org.jamdev</groupId>
+	<groupId>io.github.macster110</groupId>
 	<artifactId>jdl4pam</artifactId>
-	<version>0.0.91</version>
+	<version>0.0.92</version>
 	<packaging>jar</packaging>
 
 	<name>jdl4pam</name>
 	<url>https://github.com/macster110/jpam</url>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
-	</properties>
 
 	<dependencies>
 		<dependency>

@@ -31,7 +31,7 @@ public class SoundSpotModelTest {
 			System.out.println(dlParams.toString());
 
 			
-		} catch (MalformedModelException | IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
