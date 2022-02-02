@@ -102,21 +102,15 @@ jpamutilsfx contains useful [JavaFX](https://openjfx.io/) controls.
 
 ## Repository 
 
-jpam modeuls can be accessed using Maven. Each package requires both a repository and dependency to be declared. So for example, to use jdl4pam add the following to the list of repositories in your `pom.xml` file
+jpam modules can be downloaded using Maven (from [Maven Central](https://mvnrepository.com/artifact/io.github.macster110)). Each package requires both a repository and dependency to be declared. So for example, to use jdl4pam add the dependancy 
  
-    <repository>
-      <id>jdl4pam</id>
-      <url>https://raw.github.com/macster110/jpam/mvn-repo/</url>
-    </repository>
- 
- and then add the dependancy 
- 
-     <dependency>
-      <groupId>org.jamdev</groupId>
-      <artifactId>jdl4pam</artifactId>
-      <version>0.0.91</version>
-      <scope>compile</scope>
-    </dependency>
+<!-- https://mvnrepository.com/artifact/io.github.macster110/jdl4pam -->
+<dependency>
+    <groupId>io.github.macster110</groupId>
+    <artifactId>jdl4pam</artifactId>
+    <version>0.0.93</version>
+</dependency>
+
     
     
     
