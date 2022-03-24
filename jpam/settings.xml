@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd" xmlns="http://maven.apache.org/SETTINGS/1.1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    
+    
+    <profiles>
+    <profile>
+      <id>ossrh</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <gpg.executable>gpg2</gpg.executable>
+        <gpg.keyname>0x9C0118D2</gpg.keyname>
+        <gpg.passphrase>@64Tahariveila</gpg.passphrase>
+    	<gpg.executable>/usr/local/bin/gpg</gpg.executable>
+      </properties>
+    </profile>
+  </profiles>
+    
+  <servers>
+    <server>
+      <id>ossrh</id>
+      <username>macster110</username>
+      <password>@64Tahariveila</password>
+    </server>
+     <server>
+            <id>github</id>
+            <username>macster110</username>
+            <password>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</password>
+       </server>
+       <server>
+  <id>ossrh</id>
+  <username>2WT+dijB</username>
+  <password>YHo116t92jDAtO9B4RukvYMDcobbRt5YAkco+TqD/tx9</password>
+</server>
+  </servers>
+
+  
+</settings>

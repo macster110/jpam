@@ -12,7 +12,7 @@
 	<parent>
 		<artifactId>jpam</artifactId>
 		<groupId>io.github.macster110</groupId>
-		<version>0.0.80</version>
+		<version>0.0.81</version>
 	</parent>
 
 	<name>djl_test</name>
@@ -21,16 +21,17 @@
 
 
 	<dependencies>
+			<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
+		    <groupId>org.junit.jupiter</groupId>
+		    <artifactId>junit-jupiter-api</artifactId>
+		    <version>5.8.2</version>
+		    <scope>test</scope>
 		</dependency>
 		
 				 <!-- Useful utilities -->
 		<dependency>
-			<groupId>org.jamdev</groupId>
+			<groupId>io.github.macster110</groupId>
 			<artifactId>jpamutils</artifactId>
 			<version>0.0.55</version>
 		</dependency> 

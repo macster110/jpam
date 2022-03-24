@@ -6,7 +6,7 @@
 
 	<groupId>io.github.macster110</groupId>
 	<artifactId>jpam</artifactId>
-	<version>0.0.80</version>
+	<version>0.0.81</version>
 	<packaging>pom</packaging>
 
 	<name>org.jamdev</name>
@@ -133,7 +133,7 @@
 			    <artifactId>maven-deploy-plugin</artifactId>
 			    <version>3.0.0-M2</version>
 <!-- 			    <configuration>
-			        <altDeploymentRepository>
+			        <altDeploymentRepositSPYory>
 			            internal.repo::default::file://${project.build.directory}/mvn-artifact
 			        </altDeploymentRepository>
 			    </configuration> -->
@@ -141,8 +141,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
-				 <version>3.0.1</version>
-		
+				<version>3.0.1</version>
 				<executions>
 					<execution>
 						<id>sign-artifacts</id>

@@ -1,6 +1,12 @@
 package org.jamdev.jdl4pam.animalSpot;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+
+import javax.print.DocFlavor.URL;
 
 import org.jamdev.jdl4pam.transforms.DLTransform;
 import org.jamdev.jdl4pam.transforms.DLTransformsFactory;
@@ -20,8 +26,6 @@ import org.jamdev.jpamutils.wavFiles.AudioData;
 public class AnimalSpotBatTest {
 
 	public static void main( String[] args ) {
-
-
 		//Path to the wav file 
 		//		String wavFilePath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/example_wav/SKOVSOE_20200817_011402.wav"; 
 
@@ -32,9 +36,8 @@ public class AnimalSpotBatTest {
 		//		int[] samplesChunk = new int[] {1536, 2810}; // the sample chunk to use. 
 		//		int[] samplesChunk = new int[] {1024, 2298}; // the sample chunk to use. 
 		//String wavFilePath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/example_wav/call_393_2019_S4U05619MOL2-20180917-051012_2525_2534.wav";
-		String wavFilePath = "/Volumes/GoogleDrive/My Drive/Programming/MATLAB/research_Aarhus/bats_pamguard/deep_learning/species_classificiation/_tests/20200817_011424.wav";
+		//String wavFilePath = "/Volumes/GoogleDrive/My Drive/Programming/MATLAB/research_Aarhus/bats_pamguard/deep_learning/species_classificiation/_tests/20200817_011424.wav";
 
-		int[] samplesChunk = new int[] {0, 1999}; // the sample chunk to use. 
 
 		//Path to the model
 		//		String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_dummy/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000.pk";
@@ -44,7 +47,33 @@ public class AnimalSpotBatTest {
 		//String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/BAT_MODEL2/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000.pk.pk"; 
 		//String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/BAT_MODEL_3/BAT_JAMIE_4ms_256fft_8hop_-100_20_15_60_128_256_NOJIT_BAT_DATA_NAUG_V1_JIT.pk"; 
 		//String modelPath = "/Users/au671271/Downloads/BAT_MULTI_JAMIE_5ms_256fft_10hop_DB_0_100_128_256_AUG_LN_WITHJAMIEDATA_V1.pk"; //<- has new class name format
-		String modelPath = "/Volumes/GoogleDrive/My Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/BAT_MODEL_3/species_classifier_5/minmax/1_BAT_MULTI_JAMIE_5ms_256fft_10hop_MM_0_100_128_256_AUG_LN_WITHJAMIEDATA_AUGMENTATION_V1.pk"; 
+		//String modelPath = "/Volumes/GoogleDrive/My Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/BAT_MODEL_3/species_classifier_5/minmax/1_BAT_MULTI_JAMIE_5ms_256fft_10hop_MM_0_100_128_256_AUG_LN_WITHJAMIEDATA_AUGMENTATION_V1.pk"; 
+		
+		//String modelPath = "/Users/au671271/git/jpam2/jpam/jdl4pam/src/main/java/org/jamdev/jdl4pam/resources/animalSpot/bat_multi_species/1_BAT_MULTI_JAMIE_5ms_256fft_10hop_MM_0_100_128_256_AUG_LN_WITHJAMIEDATA_AUGMENTATION_V1.pk";
+		
+		 
+		 //String modelPath = "/Users/au671271/git/jpam2/jpam/jdl4pam/src/main/java/org/jamdev/jdl4pam/resources/animalSpot/bat_multi_species/1_BAT_MULTI_JAMIE_5ms_256fft_10hop_MM_0_100_128_256_AUG_LN_WITHJAMIEDATA_AUGMENTATION_V1.pk"; 
+		String relModelPath  ="./src/main/java/org/jamdev/jdl4pam/resources/animalSpot/bat_multi_species/1_BAT_MULTI_JAMIE_5ms_256fft_10hop_MM_0_100_128_256_AUG_LN_WITHJAMIEDATA_AUGMENTATION_V1.pk";
+		String relWavPath  ="./src/main/java/org/jamdev/jdl4pam/resources/animalSpot/bat_multi_species/20200817_011424.wav";
+ 
+	
+		Path path = Paths.get(relModelPath);
+		//note that normalize gets rid of all the redundant elements (e.g. .)
+		String modelPath = path.toAbsolutePath().normalize().toString();
+		
+		path = Paths.get(relWavPath);
+		String wavPath = path.toAbsolutePath().normalize().toString();
+
+		System.out.println(modelPath); 
+
+		int[] samplesChunk = new int[] {0, 1999}; // the sample chunk to use. 
+
+		runAnimalSpotBat(modelPath,  wavPath, samplesChunk); 
+
+
+	}
+
+	public static double[] runAnimalSpotBat(String modelPath, String wavFilePath, int[] samplesChunk) {
 		
 		//wav file 
 		try {			
@@ -68,7 +97,7 @@ public class AnimalSpotBatTest {
 
 			DLTransform transform = transforms.get(0); 
 			for (int i=0; i<transforms.size(); i++) {
-				System.out.println(transform.toString()); 
+				//System.out.println(transform.toString()); 
 				transform = transforms.get(i).transformData(transform); 
 			}
 			
@@ -98,15 +127,15 @@ public class AnimalSpotBatTest {
 				prob[j] = DLUtils.softmax(output[j], output); 
 				System.out.println("Class : " + j +" prediction:" + prob[j]); 
 			}
+			
+			return prob;
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return;
+			return null;
 		}
-
 	}
-
 
 
 }

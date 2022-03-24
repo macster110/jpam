@@ -48,8 +48,15 @@ public class SpectrogramTranslator implements Translator<float[][][], float[]> {
 		//Shape shape = new Shape(data.length, data[0].length, data[0][0].length, 1L); 
 		Shape shape; 
 		if (this.shape!=null) {
-			//need to the first element to be the number od data frames 
-			 shape = new Shape(data.length, this.shape.get(1), this.shape.get(2), this.shape.get(3)); 
+			
+			if (this.shape.dimension()==4) {
+				//need to the first element to be the number od data frames  Input: [(-1, 40, 40, 1)]
+				 shape = new Shape(data.length, this.shape.get(1), this.shape.get(2), this.shape.get(3)); 
+			}
+			else {
+				//might not be a 4 element shape
+				 shape = new Shape(data.length, this.shape.get(1), this.shape.get(2)); 
+			}
 		}
 		else {
 			//try this shape. 

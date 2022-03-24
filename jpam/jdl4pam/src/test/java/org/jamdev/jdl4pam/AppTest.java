@@ -13,7 +13,7 @@ public class AppTest
      * Rigorous Test :-)
      */
     @Test
-    public void shouldAnswerWithTrue()
+    public void animalSpotTest()
     {
         assertTrue( true );
     }
@@ -24,4 +24,7 @@ public class AppTest
     {
         assertTrue( !false );
     }
+    
+    
+ 
 }

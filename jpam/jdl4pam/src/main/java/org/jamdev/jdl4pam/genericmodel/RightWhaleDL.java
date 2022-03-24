@@ -31,29 +31,18 @@ import us.hebi.matlab.mat.types.Matrix;
  *
  */
 public class RightWhaleDL {
-	/**
-	 * Test the classifier on a wave file. 
-	 * @param args - the arguments. 
-	 */
-	public static void main(String[] args) {
-
-		// let's test on some right whale data. 
-
-		//right whale at 3.01.201 - 181 seconds. 
-		//the second  class is right whale. class 0 = noise, Class 1= right whale. 
-		
-		String wavFilePath = "/Users/au671271/Google Drive/PAMGuard_dev/Deep_Learning/Right_whales_DG/SouthernRightWhale001-v1/sar98_trk3_8000.wav";
-
-
-		//		String modelPath = "/Users/au671271/Google Drive/PAMGuard_dev/Deep_Learning/Right_whales_DG/model_lenet_dropout_input_conv_all.hdf5"; 
-		String modelPath = "/Users/au671271/Desktop/model_lenet_dropout_input_conv_all/saved_model.pb";
-		
 	
-		String outMatlabPath = "/Users/au671271/Google Drive/Programming/MATLAB/PAMGUARD/deep_learning/generic_classifier/rightwhaespec.mat";
-
+	/**
+	 * Run the right whale model. 
+	 * @param modelPath - the path the saved_model.pb file
+	 * @param wavFilePath - path to a wav file. 
+	 * @param startChunck - the locatation to start form in the file (in seconds). 
+	 * @return predicitons. 
+	 */
+	public static float[] runRightWhaleDL(String modelPath, String wavFilePath, int startChunck) {
 		float sr = 2000; 
 		int startchunk =  (int) (181.2*sr); //right whale call
-		
+		int nRuns = 5; 
 		//int startchunk =  (int) (190.2*sr); 
 
 		int chunkSize = 4000; 
@@ -114,23 +103,21 @@ public class RightWhaleDL {
 			float[][] dataF =  DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
 			System.out.println("Data input size: " + dataF.length + "   " + dataF[0].length);
 			
-			Matrix matrixSpec=  DLMatFile.array2Matrix(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
-
-			MatFile matFile = Mat5.newMatFile()
-					.addArray("spectrogram", matrixSpec); 
-
-			try {
-				Mat5.writeToFile(matFile, outMatlabPath);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-
+//			Matrix matrixSpec=  DLMatFile.array2Matrix(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
+//
+//			MatFile matFile = Mat5.newMatFile()
+//					.addArray("spectrogram", matrixSpec); 
+//
+//			try {
+//				Mat5.writeToFile(matFile, outMatlabPath);
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 
 			float[] output = null; 
 			float[][][] data;
-			for (int i=0; i<1; i++) {
+			for (int i=0; i<nRuns; i++) {
 				long time1 = System.currentTimeMillis();
 				//				data = DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
 				//				System.out.println("Data input size: " + data.length + "   " + data[0].length);
@@ -145,9 +132,6 @@ public class RightWhaleDL {
 				long time2 = System.currentTimeMillis();
 				System.out.println("Time to run model: " + (time2-time1) + " ms"); 
 
-				for (int j = 0; j<output.length; j++) {
-					System.out.println("Output: " + j + " : " + output[j]);
-				}
 			}
 
 			//			Criteria criteria = Criteria.builder().
@@ -155,38 +139,45 @@ public class RightWhaleDL {
 			//			 
 			//			 ModelZoo.loadModel(criteria);
 
-
+				return output; 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return null; 
+
 		} 
 
+	}
+	
+	/**
+	 * Test the classifier on a wave file. 
+	 * @param args - the arguments. 
+	 */
+	public static void main(String[] args) {
 
-		//		//Open wav files. 
-		//		try {
-		//			
-		//			GenericModelParams genericModelParams = new GenericModelParams();
-		//			
-		//			AudioData soundData;
-		//			soundData = DLUtils.loadWavFile(wavFilePath);
-		//			soundData = soundData.trim(samplesChunk[0], samplesChunk[1]); 
-		//			
-		//			GenericClassifier genericClassifier = new GenericClassifier(modelPath); 
-		//
-		//			double[] result = genericClassifier.runModel(soundData.getScaledSampleAmpliudes(), soundData.sampleRate); 
-		//			
-		//		    for (int j=0; j<result.length; j++) {
-		//		    	System.out.println("The probability of class " + j + " is "  + result[j]); 
-		//		    }
-		//
-		//
-		//		} catch (IOException e) {
-		//			// TODO Auto-generated catch block
-		//			e.printStackTrace();
-		//		} catch (UnsupportedAudioFileException e) {
-		//			// TODO Auto-generated catch block
-		//			e.printStackTrace();
-		//		}
+		// let's test on some right whale data. 
+
+		//right whale at 3.01.201 - 181 seconds. 
+		//the second  class is right whale. class 0 = noise, Class 1= right whale. 
+		String wavFilePath = "/Volumes/GoogleDrive-108005893101854397430/My Drive/PAMGuard_dev/Deep_Learning/Right_whales_DG/SouthernRightWhale001-v1/sar98_trk3_8000.wav";
+
+		//		String modelPath = "/Users/au671271/Google Drive/PAMGuard_dev/Deep_Learning/Right_whales_DG/model_lenet_dropout_input_conv_all.hdf5"; 
+		String modelPath = "/Volumes/GoogleDrive-108005893101854397430/My Drive/PAMGuard_dev/Deep_Learning/Right_whales_DG/model_lenet_dropout_input_conv_all/saved_model.pb";
+		
+	
+		String outMatlabPath = "/Users/au671271/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/generic_classifier/rightwhaespec.mat";
+		
+
+
+		float sr = 2000; 
+		int startchunk =  (int) (181.2*sr); //right whale call
+		
+		float[] output  = runRightWhaleDL(modelPath, wavFilePath, startchunk); 
+		
+
+		for (int j = 0; j<output.length; j++) {
+			System.out.println("Output: " + j + " : " + output[j]);
+		}
 	}
 
 }

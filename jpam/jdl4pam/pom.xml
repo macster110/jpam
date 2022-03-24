@@ -6,28 +6,29 @@
 	<parent>
 		<artifactId>jpam</artifactId>
 		<groupId>io.github.macster110</groupId>
-		<version>0.0.80</version>
+		<version>0.0.81</version>
 	</parent>
 
 	<groupId>io.github.macster110</groupId>
 	<artifactId>jdl4pam</artifactId>
-	<version>0.0.92</version>
+	<version>0.0.93</version>
 	<packaging>jar</packaging>
 
 	<name>jdl4pam</name>
 	<url>https://github.com/macster110/jpam</url>
 
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
+		    <groupId>org.junit.jupiter</groupId>
+		    <artifactId>junit-jupiter-api</artifactId>
+		    <version>5.8.2</version>
+		    <scope>test</scope>
 		</dependency>
 
 		<!-- Useful utilities -->
 		<dependency>
-			<groupId>org.jamdev</groupId>
+			<groupId>io.github.macster110</groupId>
 			<artifactId>jpamutils</artifactId>
 			<version>0.0.55</version>
 		</dependency>
@@ -35,7 +36,7 @@
 		<dependency>
 			<groupId>ai.djl</groupId>
 			<artifactId>api</artifactId>
-			<version>0.11.0</version>
+			<version>0.15.0</version>
 		</dependency>
 
 
@@ -52,21 +53,21 @@
 		<dependency>
 			<groupId>ai.djl.pytorch</groupId>
 			<artifactId>pytorch-engine</artifactId>
-			<version>0.11.0</version>
+			<version>0.15.0</version>
 <!-- 			<scope>runtime</scope> -->
 		</dependency>
 
 		<dependency>
 			<groupId>ai.djl.pytorch</groupId>
 			<artifactId>pytorch-native-auto</artifactId>
-			<version>1.8.1</version>
+			<version>1.9.1</version>
 <!-- 			<scope>runtime</scope> -->
 		</dependency>
 
 		<dependency>
 			<groupId>ai.djl.tensorflow</groupId>
 			<artifactId>tensorflow-engine</artifactId>
-			<version>0.11.0</version>
+			<version>0.15.0</version>
 <!-- 			<scope>runtime</scope> -->
 		</dependency>
 
