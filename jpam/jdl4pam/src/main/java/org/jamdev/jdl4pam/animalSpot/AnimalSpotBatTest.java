@@ -2,6 +2,7 @@ package org.jamdev.jdl4pam.animalSpot;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.management.MemoryUsage;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -15,6 +16,9 @@ import org.jamdev.jdl4pam.transforms.WaveTransform;
 import org.jamdev.jdl4pam.utils.DLUtils;
 import org.jamdev.jpamutils.JamArr;
 import org.jamdev.jpamutils.wavFiles.AudioData;
+
+import ai.djl.Device;
+import ai.djl.util.cuda.CudaUtils;
 
 /**
  * 
@@ -55,7 +59,10 @@ public class AnimalSpotBatTest {
 		 //String modelPath = "/Users/au671271/git/jpam2/jpam/jdl4pam/src/main/java/org/jamdev/jdl4pam/resources/animalSpot/bat_multi_species/1_BAT_MULTI_JAMIE_5ms_256fft_10hop_MM_0_100_128_256_AUG_LN_WITHJAMIEDATA_AUGMENTATION_V1.pk"; 
 		String relModelPath  ="./src/main/java/org/jamdev/jdl4pam/resources/animalSpot/bat_multi_species/1_BAT_MULTI_JAMIE_5ms_256fft_10hop_MM_0_100_128_256_AUG_LN_WITHJAMIEDATA_AUGMENTATION_V1.pk";
 		String relWavPath  ="./src/main/java/org/jamdev/jdl4pam/resources/animalSpot/bat_multi_species/20200817_011424.wav";
- 
+		
+		System.out.println(CudaUtils.getGpuCount()); // 0
+		System.out.println(CudaUtils.hasCuda()); // false
+
 	
 		Path path = Paths.get(relModelPath);
 		//note that normalize gets rid of all the redundant elements (e.g. .)
