@@ -1,6 +1,6 @@
 package org.jamdev.jdl4pam.animalSpot;
 
-public class AnimalSpotTest {
+public class AnimalSpotTest1 {
 	
 	
 	public static void main(String[] args) {
