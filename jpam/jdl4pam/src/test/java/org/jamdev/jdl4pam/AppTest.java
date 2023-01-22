@@ -10,7 +10,7 @@ import org.junit.Test;
 public class AppTest 
 {
     /**
-     * Rigorous Test :-)
+     * Test the test framework. 
      */
     @Test
     public void animalSpotTest()

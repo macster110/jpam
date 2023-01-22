@@ -30,7 +30,14 @@ public class GenericModel {
 	/**
 	 * The predictor for the model. 
 	 */
-	Predictor<float[][][], float[]> predictor;
+	Predictor<float[][][], float[]> specPredictor;
+	
+	
+	/**
+	 * Predictor for the model for waveforms. 
+	 */
+	Predictor<float[][], float[]> wavePredictor;
+
 
 	/**
 	 * The input shape from the loaded model. 
@@ -43,7 +50,10 @@ public class GenericModel {
 	private Shape outShape = null; 
 
 
-	private SpectrogramTranslator translator; 
+	private SpectrogramTranslator specTranslator;
+
+	private WaveformTranslator waveTranslator;
+
 
 
 	public GenericModel(String modelPath) throws MalformedModelException, IOException{
@@ -58,7 +68,6 @@ public class GenericModel {
 		String extension = FilenameUtils.getExtension(file.getAbsolutePath());
 
 		System.out.println("Generic Model: Available engines: " + Engine.getAllEngines()); 
-
 
 		Model model; 
 		switch  (extension) {
@@ -89,13 +98,37 @@ public class GenericModel {
 				System.out.println("Generic Model: Output: " + model.describeOutput().get(0).getValue()); 
 				outShape = model.describeOutput().get(0).getValue();
 			}
+			
+			this.model=model; 
 
-			translator = new SpectrogramTranslator(inputShape); 
+			specTranslator = new SpectrogramTranslator(inputShape); 
+			
+			waveTranslator = new WaveformTranslator(model.describeInput()); 
+			
+			//predictor for the model if using images as input
+			specPredictor = model.newPredictor(specTranslator);
+			
+			//predictor for the model if using
+			wavePredictor = model.newPredictor(waveTranslator);
 
-			//predictor for the model
-			predictor = model.newPredictor(translator);
 		}
 
+	}
+
+	/**
+	 * Get the predictor for spectrogram images.  
+	 * @return
+	 */
+	public Predictor<float[][][], float[]> getSpecPredictor() {
+		return specPredictor;
+	}
+
+	/***
+	 * Get the predictor for the waveform input. 
+	 * @return the predictor for waveforms. 
+	 */
+	public Predictor<float[][], float[]> getWavePredictor() {
+		return wavePredictor;
 	}
 
 	/**
@@ -112,7 +145,7 @@ public class GenericModel {
 	 */
 	public void setInputShape(Shape inputShape) {
 		this.inputShape = inputShape;
-		translator.setShape(inputShape);
+		specTranslator.setShape(inputShape);
 	}
 
 	/**
@@ -123,15 +156,16 @@ public class GenericModel {
 		return outShape;
 	}
 
+	 
 
 	/**
-	 * Run the model.
-	 * @param specImage - the spectrogram image
+	 * Run the model on spectrogram images
+	 * @param specImage - the spectrogram image [no. batches][image x][image y]
 	 * @return the results 
 	 */
 	public float[] runModel(float[][][] specImage) {
 		try {
-			float[] results  = predictor.predict(specImage);
+			float[] results  = specPredictor.predict(specImage);
 			//DLUtils.printArray(results);
 			return results; 
 		} catch (TranslateException e) {
@@ -139,6 +173,35 @@ public class GenericModel {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	
+	/**
+	 * Run the model on a raw waveform data
+	 * @param specImage - waveform data [no. batches][samples]
+	 * @return the results 
+	 */
+	public float[] runModel(float[][] waveform) {
+		try {
+			float[] results  = wavePredictor.predict(waveform);
+			//DLUtils.printArray(results);
+			return results; 
+		} catch (TranslateException e) {
+			System.out.println("Error on model: "); 
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	
+
+	
+	public Model getModel() {
+		return model;
+	}
+
+	public void setModel(Model model) {
+		this.model = model;
 	}
 
 
