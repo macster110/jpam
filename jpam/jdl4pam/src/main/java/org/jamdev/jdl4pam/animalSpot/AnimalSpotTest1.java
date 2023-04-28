@@ -4,7 +4,7 @@ public class AnimalSpotTest1 {
 	
 	
 	public static void main(String[] args) {
-		String modelPath = "/Volumes/GoogleDrive-108005893101854397430/My Drive/PAMGuard_dev/Deep_Learning/AnimalSpot/Minke_spot/models/MS-all-2048/model/minke-spot.pk";
+		String modelPath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/AnimalSpot/Bats_1/1_BAT_MULTI_JAMIE_5ms_256fft_10hop_MM_0_100_128_256_AUG_LN_WITHJAMIEDATA_AUGMENTATION_V1.pk";
 
 		//wav file 
 		try {			

@@ -170,10 +170,12 @@ public class KetosParams extends GenericModelParams {
 		//set the segment length. 
 		this.seglen = getKetosDouble(specObject, "duration"); 
 
-		double sampleRate = getKetosDouble(specObject, "rate")*2;//very important 
+		double sampleRate = getKetosDouble(specObject, "rate");//very important 
 
 		int n_fft = (int) (getKetosDouble(specObject, "window") *sampleRate); 
 		int hop_length = (int) (getKetosDouble(specObject, "step") *sampleRate); 
+		
+		System.out.println("FFT: " + n_fft + " Hope length: " + hop_length);
 
 		double freq_min = getKetosDouble(specObject, "freq_min"); 
 		double freq_max = getKetosDouble(specObject, "freq_max"); 

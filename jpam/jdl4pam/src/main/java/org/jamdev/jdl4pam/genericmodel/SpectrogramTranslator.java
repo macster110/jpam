@@ -47,10 +47,11 @@ public class SpectrogramTranslator implements Translator<float[][][], float[]> {
 		//this was the shap0e for the right whale classifie.r. 
 		//Shape shape = new Shape(data.length, data[0].length, data[0][0].length, 1L); 
 		Shape shape; 
+		
 		if (this.shape!=null) {
 			
 			if (this.shape.dimension()==4) {
-				//need to the first element to be the number od data frames  Input: [(-1, 40, 40, 1)]
+				//need to the first element to be the number of data frames  Input: [(-1, 40, 40, 1)]
 				 shape = new Shape(data.length, this.shape.get(1), this.shape.get(2), this.shape.get(3)); 
 			}
 			else {
@@ -63,8 +64,6 @@ public class SpectrogramTranslator implements Translator<float[][][], float[]> {
 			 shape = new Shape(data.length, data[0].length, data[0][0].length, 1L); 
 		}
 		
-		//System.out.println("NDArray shape: " + shape); 
-
 		float[] specgramFlat = DLUtils.flattenDoubleArrayF(data); 
 		
 		NDArray array = manager.create(specgramFlat, shape); 

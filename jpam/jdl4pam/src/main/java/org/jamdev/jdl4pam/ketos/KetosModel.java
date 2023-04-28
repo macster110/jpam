@@ -46,6 +46,7 @@ public class KetosModel {
 	 */
 	private Model model;
 
+
 	/**
 	 * The predictor for the model. 
 	 */
@@ -93,20 +94,19 @@ public class KetosModel {
 		
 		
 		if (model == null) {
-			System.err.println("Generic Model: Could not load model: " + modelPath);
+			System.err.println("Ketos Model: Could not load model: " + modelPath);
 		}
-
 		else {
 			if (model!=null && model.describeInput()!=null) {
-				System.out.println("Generic Model: Input: " + model.describeInput().get(0).getValue()); 
+				//System.out.println("Generic Model: Input: " + model.describeInput().get(0).getValue()); 
 				inputShape =  model.describeInput().get(0).getValue();
 			}
 			if (model!=null && model.describeOutput()!=null) {
-				System.out.println("Generic Model: Output: " + model.describeOutput().get(0).getValue()); 
+				//System.out.println("Generic Model: Output: " + model.describeOutput().get(0).getValue()); 
 				outShape = model.describeOutput().get(0).getValue();
 			}
 
-			//create the predictior for the new shape. 
+			//create the predictor for the new shape. 
 			translator = new SpectrogramTranslator(inputShape); 
 
 			//predictor for the model
@@ -116,6 +116,20 @@ public class KetosModel {
 		//translator = new SpectrogramTranslator(inputShape); 
 	}
 	
+	
+	/**
+	 * Set the input shape. This will also change the spectrogram translator and predictor. 
+	 * @param inputShape - the input shape to set. 
+	 */
+	public void setInputShape(Shape inputShape) {
+		this.inputShape = inputShape;
+		translator = new SpectrogramTranslator(inputShape); 
+		//predictor for the model
+		predictor = model.newPredictor(translator);
+	}
+
+
+
 	/**
 	 * Get the output shape. 
 	 * @return the output shape. 
@@ -184,6 +198,15 @@ public class KetosModel {
 		}
 		return null;
 	}
+	
+	/**
+	 * Get the model 
+	 * @return the model. 
+	 */
+	public Model getModel() {
+		return model;
+	}
+
 
 	
 	public static void main(String[] args) {

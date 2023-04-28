@@ -38,7 +38,6 @@ public class AnimalSpotTest {
 		
 
         for (int i =0; i<prob.length; i++) {
-        	
         	if (i==4) {
         		//pipi class should be >0.9
         		assertTrue( prob[i]>0.9 );
@@ -47,7 +46,6 @@ public class AnimalSpotTest {
         		//all other species should be less than 0.1
         	    assertTrue( prob[i]<0.1 );
         	}
-        	
         }
     }
     

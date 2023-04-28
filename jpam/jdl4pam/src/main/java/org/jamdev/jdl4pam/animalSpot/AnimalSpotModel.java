@@ -33,7 +33,8 @@ public class AnimalSpotModel {
 	 * The currently loaded model 
 	 */
 	private Model model;
-	
+
+
 	/**
 	 * The predictor for the model. 
 	 */
@@ -84,6 +85,11 @@ public class AnimalSpotModel {
 				
 	}
 	
+	
+	
+	
+	
+	
 	/**
 	 * get the extra file information from the SoundSpot model. 
 	 * @return the extra file information. 
@@ -130,7 +136,14 @@ public class AnimalSpotModel {
 		return null;
 	}
 
-
+	/**
+	 * Get the model. 
+	 * @return the model. 
+	 */
+	public Model getModel() {
+		return model;
+	}
+	
 	/**
 	 * The translator for the model. Ensure the input data is compatible for the model and the output  data 
 	 * is properly organised. 

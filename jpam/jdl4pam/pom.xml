@@ -9,9 +9,8 @@
 		<version>0.0.81</version>
 	</parent>
 
-	<groupId>io.github.macster110</groupId>
 	<artifactId>jdl4pam</artifactId>
-	<version>0.0.94</version>
+	<version>0.0.96</version>
 	<packaging>jar</packaging>
 
 	<name>jdl4pam</name>
@@ -36,7 +35,7 @@
 		<dependency>
 			<groupId>ai.djl</groupId>
 			<artifactId>api</artifactId>
-			<version>0.18.0</version>
+			<version>0.20.0</version>
 		</dependency>
 
 
@@ -53,7 +52,7 @@
 		<dependency>
 			<groupId>ai.djl.pytorch</groupId>
 			<artifactId>pytorch-engine</artifactId>
-			<version>0.18.0</version>
+			<version>0.20.0</version>
 <!-- 			<scope>runtime</scope> -->
 		</dependency>
 		
@@ -75,7 +74,7 @@
 		<dependency>
 			<groupId>ai.djl.tensorflow</groupId>
 			<artifactId>tensorflow-engine</artifactId>
-			<version>0.18.0</version>
+			<version>0.20.0</version>
 <!-- 			<scope>runtime</scope> -->
 		</dependency>
 

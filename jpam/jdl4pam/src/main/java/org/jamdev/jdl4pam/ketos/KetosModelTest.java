@@ -21,15 +21,34 @@ public class KetosModelTest  {
 
 
 	public static void main(String[] args) {
+		
 
 		//test on a right whale. 
 		//File file = new File("/Volumes/GoogleDrive/My Drive/PAMGuard_dev/Deep_Learning/Meridian/right_whales/for_pamguard/narw.ktpb"); 
-		File file = new File("/Volumes/GoogleDrive-108005893101854397430/My Drive/PAMGuard_dev/Deep_Learning/Meridian/humpback_whales/SOCAL_Mn_Network.ktpb");
+//		File file = new File("/Volumes/GoogleDrive-108005893101854397430/My Drive/PAMGuard_dev/Deep_Learning/Meridian/humpback_whales/SOCAL_Mn_Network.ktpb");
+		
+		//classic right whale detector from ketos
+//		File file = new File("/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Ketos/narw_2/kw_detector_v11_5s_test/kw_detector_v11_5s.ktpb");
+
+		//a new classifier based on a different architecture
+		File file = new File("/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Ketos/narw_2/hallo-kw-det_v1_test/hallo-kw-det_v1.ktpb"); 
+
+		/****Wav files*****/
 
 		//the wav file to test.
-		String wavFilePath = "/Volumes/GoogleDrive/My Drive/PAMGuard_dev/Deep_Learning/Meridian/right_whales/for_pamguard/input.wav"; 
+//		String wavFilePath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Ketos/right_whales/for_pamguard/input.wav"; 
+//		double timelims = new double[] {0, 3.0}; 
 
-		String outputMatfile = "/Volumes/GoogleDrive/My Drive/Programming/MATLAB/PAMGUARD/deep_learning/ketos_classifier/java_transformed.mat"; 
+		//JASCO_resampled_20k - use for right whales
+//		String wavFilePath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Ketos/narw_2/JASCO_resampled_20k.wav";
+		
+		//jasco_reduced - use for right whales hallo-kw-det_v1
+		String wavFilePath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Ketos/narw_2/hallo-kw-det_v1_test/audio/jasco_reduced.wav";
+		double[] timelims = new double[] {5.0, 10.0}; //5 second window
+		
+		
+		/****Output MAT file for diagnosis****/
+		String outputMatfile = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/Programming/MATLAB/PAMGUARD/deep_learning/ketos_classifier/java_transformed.mat"; 
 
 		try {
 			//the ketos model. 
@@ -45,7 +64,7 @@ public class KetosModelTest  {
 
 			//Open wav files. 
 			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
-			soundData = soundData.trim(0, (int) (soundData.getSampleRate()*3.0)); 
+			soundData = soundData.trim((int) (soundData.getSampleRate()*timelims[0]), (int) (soundData.getSampleRate()*timelims[1])); 
 
 			//generate the transforms. 
 			ArrayList<DLTransform> transforms =	DLTransformsFactory.makeDLTransforms(ketosParams.dlTransforms); 
@@ -57,7 +76,7 @@ public class KetosModelTest  {
 
 			DLTransform transform = transforms.get(0); 
 			for (int i=0; i<transforms.size(); i++) {
-				//				System.out.println(transforms); 
+				System.out.println(transform); 
 				transform = transforms.get(i).transformData(transform); 
 				//				if (i==1) {
 				//					 transfromedData =  DLMatFile.array2Matrix(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
@@ -69,6 +88,8 @@ public class KetosModelTest  {
 			}
 
 			double[][] transformedData = ((FreqTransform) transform).getSpecTransfrom().getTransformedData();
+			
+			System.out.println("Image size: " + transformedData.length + " x " + transformedData[0].length);  
 
 			transfromedDataM =  DLMatFile.array2Matrix(transformedData);
 			MatFile matFile = Mat5.newMatFile()
@@ -79,8 +100,10 @@ public class KetosModelTest  {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-//			Matrix trueTransformedDataM = Mat5.readFromFile("/Users/au671271/Google Drive/Programming/MATLAB/PAMGUARD/deep_learning/ketos_classifier/pythontransformed.mat")
+			
+//			///import the transformed data from python and use that insead
+//
+//			Matrix trueTransformedDataM = Mat5.readFromFile("/Users/au671271/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/ketos_classifier/pythontransfored4java.mat")
 //					.getMatrix("transformed_data_py");
 //			
 //			double[][] trueTransformedData = new double[trueTransformedDataM.getDimensions()[0]][trueTransformedDataM.getDimensions()[1]]; 
@@ -116,6 +139,7 @@ public class KetosModelTest  {
 				//softmax function
 				System.out.println("The output is: " + output[j]); 
 
+				
 				prob[j] = DLUtils.softmax(output[j], output); 
 				System.out.println("The probability is: " + prob[j]); 
 			}

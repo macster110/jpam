@@ -194,8 +194,6 @@ public class GenericModel {
 	}
 
 	
-
-	
 	public Model getModel() {
 		return model;
 	}
@@ -203,9 +201,6 @@ public class GenericModel {
 	public void setModel(Model model) {
 		this.model = model;
 	}
-
-
-
 
 
 }
