@@ -275,6 +275,8 @@ public class DLTransformsParser {
 			number[0] = jsonObjectParams.getDouble("pre_empf_factor"); 
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
 			break;
+		case NORMALISE_WAV:
+			dlTransformParams = new SimpleTransformParams(dlTransformType, null); 
 		case SPEC2DB:
 			number = new Number[1]; 
 			number[0] = jsonObjectParams.getDouble("min_db"); 

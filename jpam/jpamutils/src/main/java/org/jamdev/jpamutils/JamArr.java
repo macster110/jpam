@@ -82,9 +82,11 @@ public class JamArr {
 		double mean=meanTotal/n;
 		return mean;
 	}
+	
+	
 
 	/**
-	 * Calculate the standard deviation of an array of doubles, ignoring an 'initialtoIgnorePercentage' percentage of jumps
+	 * Calculate the standard deviation of an array of numbers, ignoring an 'initialtoIgnorePercentage' percentage of jumps
 	 * @param array
 	 * @param initialtoIgnorePercentage- percentage of initial values to ignore.
 	 * @return standard deviation of array. 
@@ -481,6 +483,29 @@ public class JamArr {
 	public static double std(double[] data)
 	{
 		return Math.sqrt(varience(data));
+	}
+	
+	/**
+	 * Calculate the standard deviation for a double[] array
+	 * @param data array of ints
+	 * @return the standard deviation
+	 */
+	public static double std(int[] data){
+		double[] arr = int2doubleArray(data); 
+		return std(arr); 
+	}
+	
+	/**
+	 * Convert an integer array to a double array
+	 * @param data - the int array to convert
+	 * @return the same array but with doubles. 
+	 */
+	private static double[] int2doubleArray(int[] data) {
+		double[] arr = new double[data.length];
+		for (int i=0; i<data.length; i++) {
+			arr[i] = data[i]; 
+		}
+		return arr;
 	}
 
 	//	/**

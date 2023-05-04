@@ -2,6 +2,8 @@ package org.jamdev.jpamutils.wavFiles;
 
 import java.util.Arrays;
 
+import org.jamdev.jpamutils.JamArr;
+
 /**
  * Holds .wav file data. 
  * 
@@ -150,6 +152,29 @@ public class AudioData {
 	 */
 	public AudioData preEmphasis(double factor) {
 		return new AudioData(preEmphasisFilter.preEmphasis(this.samples, factor) , sampleRate); 
+	}
+	
+	
+	/**
+	 * Normalise the audio data. 
+	 * @param mean - the target mean for the normalised data 
+	 * @param std = the target standard deviation for the normalised audio data
+	 * @return AudioData object containing normalised data. 
+	 */
+	public AudioData normalise(double mean, double std) {
+
+		// self.data = std * (self.data - np.mean(self.data)) / std_orig + mean
+		
+		double meanSamples = JamArr.mean(this.samples); 
+		double stdSamples = JamArr.std(this.samples); 
+		
+		int[] samplesNorm = new int[samples.length]; 
+		
+		for (int i=0; i<samples.length; i++) {
+			samplesNorm[i] = (int) (stdSamples*(samples[i] - meanSamples) / (std+mean));  
+		}
+
+		return new AudioData(samplesNorm, this.sampleRate); 
 	}
 
 	/**

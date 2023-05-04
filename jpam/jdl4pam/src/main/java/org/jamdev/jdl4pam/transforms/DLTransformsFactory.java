@@ -28,6 +28,9 @@ public class DLTransformsFactory {
 		case PREEMPHSIS:
 			dlTransform = new WaveTransform(dlTransformType, new Number[] {0.98}); 
 			break;
+		case NORMALISE_WAV:
+			dlTransform = new WaveTransform(dlTransformType, null); 
+			break;
 		case SPEC2DB:
 			dlTransform = new FreqTransform(dlTransformType, null); 
 			break;
@@ -118,6 +121,9 @@ public class DLTransformsFactory {
 		case TRIM:
 			dlTransform = new WaveTransform(DLTransformType.TRIM, ((SimpleTransformParams) dlTransfromParams).params); 
 			break;
+		case NORMALISE_WAV:
+			dlTransform = new WaveTransform(DLTransformType.NORMALISE_WAV, ((SimpleTransformParams) dlTransfromParams).params); 
+			break;
 		default:
 			dlTransform = new FreqTransform(dlTransfromParams.dltransfromType, ((SimpleTransformParams) dlTransfromParams).params); 
 			break;
@@ -134,6 +140,7 @@ public class DLTransformsFactory {
 		ArrayList<DLTransform>  transforms = new  ArrayList<DLTransform>(); 
 		for (int i=0; i<dlTransfromParams.size(); i++) {
 			transforms.add(makeDLTransform(dlTransfromParams.get(i))); 
+			System.out.println("dlTransfromParams.get(i): " + dlTransfromParams.get(i)); 
 		}
 		return transforms; 
 	}

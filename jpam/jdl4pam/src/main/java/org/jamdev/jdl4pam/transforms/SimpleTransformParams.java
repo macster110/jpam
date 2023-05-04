@@ -43,7 +43,7 @@ public class SimpleTransformParams extends DLTransfromParams {
 			string = dltransfromType.toString() + " factor: " + params[0];
 			break;
 		case SPEC2DB:
-			string = dltransfromType.toString() + " mindB " + (params == null ? null : params[0].toString());
+			string = dltransfromType.toString() + " mindB " + ((params == null || params.length==0 )? null : params[0].toString());
 			break;
 		case SPECCLAMP:
 			string = dltransfromType.toString() + " min: " + params[0] + " max: " + params[1];

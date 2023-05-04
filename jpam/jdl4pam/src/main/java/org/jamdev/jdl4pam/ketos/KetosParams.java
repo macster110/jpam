@@ -171,11 +171,21 @@ public class KetosParams extends GenericModelParams {
 		this.seglen = getKetosDouble(specObject, "duration"); 
 
 		double sampleRate = getKetosDouble(specObject, "rate");//very important 
-
-		int n_fft = (int) (getKetosDouble(specObject, "window") *sampleRate); 
-		int hop_length = (int) (getKetosDouble(specObject, "step") *sampleRate); 
 		
-		System.out.println("FFT: " + n_fft + " Hope length: " + hop_length);
+		System.out.println("WINDOW: " + getKetosDouble(specObject, "window") + " sampleRate: " + (getKetosDouble(specObject, "window") * sampleRate)); 
+
+		//note- it is very important to round here when casting - otherwise the FFT length is set to it's floor (for example - 509 for a value of 509.99999999
+		int n_fft = (int) Math.round(getKetosDouble(specObject, "window") * sampleRate); 
+		int hop_length = (int)  Math.round(getKetosDouble(specObject, "step") * sampleRate); 
+		
+		//normalise sample rate
+		
+		Boolean normaliseWav = false;
+		if (specObject.has("normalize_wav")) {
+			normaliseWav= specObject.getBoolean("normalize_wav"); 
+		}
+		
+		//System.out.println("FFT: " + n_fft + " Hope length: " + hop_length);
 
 		double freq_min = getKetosDouble(specObject, "freq_min"); 
 		double freq_max = getKetosDouble(specObject, "freq_max"); 
@@ -186,6 +196,8 @@ public class KetosParams extends GenericModelParams {
 		for(int j = 0; j < expectedShapeJSON.length(); j++){               
 			expectedShape[j] = expectedShapeJSON.getInt(j);               
 		}
+		
+		
 
 
 		//		JSONArray outputShapeJSON = specObject.getJSONArray("output_shape"); 
@@ -197,6 +209,9 @@ public class KetosParams extends GenericModelParams {
 
 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.DECIMATE, sampleRate)); 
+		if (normaliseWav!=null && normaliseWav.booleanValue()) {
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.NORMALISE_WAV, sampleRate)); 
+		}
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAM, n_fft, hop_length)); 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPEC2DB)); 
 
@@ -229,10 +244,10 @@ public class KetosParams extends GenericModelParams {
 				}
 			}
 		}
-		//FIXEM
-		//add the interpolation at the end to make sure we get the expected shape. We were one biin out with right whales for the FFT length. 
-		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECCROPINTERP, freq_min, freq_max, 
-				(int) expectedShape[2])); //important to cast to int for GUI stuff in JavaFX
+////		//FIXEM
+//		//add the interpolation at the end to make sure we get the expected shape. We were one bin out with right whales for the FFT length. 
+//		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECCROPINTERP, freq_min, freq_max, 
+//				(int) expectedShape[2])); //important to cast to int for GUI stuff in JavaFX
 
 		//		
 		//must order these in the correct way!l 

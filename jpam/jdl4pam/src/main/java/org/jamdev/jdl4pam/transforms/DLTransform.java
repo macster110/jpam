@@ -191,10 +191,19 @@ public interface DLTransform {
 		 * Remove isolated spots from the image.
 		 * 
 		 * <p>
-		 * One associated paramters. An int[][] array containing a structuring pattern
+		 * One associated paramter. An int[][] array containing a structuring pattern
 		 * that defines feature connections. Must be symmetric.
 		 */
-		FILTER_ISOLATED_SPOTS("Filter Isolated Spots", "filter_isolated_spots");
+		FILTER_ISOLATED_SPOTS("Filter Isolated Spots", "filter_isolated_spots"), 
+		
+		
+		/**
+		 * Normalises the waveform to zero mean and standard deviation of 1.
+		 * 
+		 * <p>
+		 * No parameters. 
+		 */
+		NORMALISE_WAV("Normalise Waveform", "normlize_wav");
 
 		/**
 		 * Then name of the transform.

@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import org.jamdev.jdl4pam.transforms.DLTransform;
 import org.jamdev.jdl4pam.transforms.DLTransformsFactory;
 import org.jamdev.jdl4pam.transforms.FreqTransform;
+import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
 import org.jamdev.jdl4pam.transforms.WaveTransform;
+import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 import org.jamdev.jdl4pam.transforms.jsonfile.DLTransformsParser;
 import org.jamdev.jdl4pam.utils.DLMatFile;
 import org.jamdev.jdl4pam.utils.DLUtils;
@@ -44,7 +46,7 @@ public class KetosModelTest  {
 		
 		//jasco_reduced - use for right whales hallo-kw-det_v1
 		String wavFilePath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Ketos/narw_2/hallo-kw-det_v1_test/audio/jasco_reduced.wav";
-		double[] timelims = new double[] {5.0, 10.0}; //5 second window
+		double[] timelims = new double[] {0., 5.0}; //5 second window
 		
 		
 		/****Output MAT file for diagnosis****/
@@ -60,15 +62,17 @@ public class KetosModelTest  {
 			//get the audio representation file. 
 			KetosParams ketosParams = new KetosParams(jsonString); 			
 
-			//System.out.println(ketosParams.toString());
+			System.out.println(ketosParams.toString());
 
 			//Open wav files. 
 			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
 			soundData = soundData.trim((int) (soundData.getSampleRate()*timelims[0]), (int) (soundData.getSampleRate()*timelims[1])); 
 
 			//generate the transforms. 
+			
 			ArrayList<DLTransform> transforms =	DLTransformsFactory.makeDLTransforms(ketosParams.dlTransforms); 
-
+						
+			ketosModel.setInputShape(ketosParams.defaultInputShape);
 
 			((WaveTransform) transforms.get(0)).setWaveData(soundData); 
 
@@ -76,7 +80,7 @@ public class KetosModelTest  {
 
 			DLTransform transform = transforms.get(0); 
 			for (int i=0; i<transforms.size(); i++) {
-				System.out.println(transform); 
+				System.out.println(transforms.get(i).getDLTransformType()); 
 				transform = transforms.get(i).transformData(transform); 
 				//				if (i==1) {
 				//					 transfromedData =  DLMatFile.array2Matrix(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
@@ -101,10 +105,13 @@ public class KetosModelTest  {
 				e.printStackTrace();
 			}
 			
-//			///import the transformed data from python and use that insead
-//
+//			/*****Import the transformed data from Python and use that instead*****/
+
 //			Matrix trueTransformedDataM = Mat5.readFromFile("/Users/au671271/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/ketos_classifier/pythontransfored4java.mat")
 //					.getMatrix("transformed_data_py");
+			
+//			Matrix trueTransformedDataM = Mat5.readFromFile("/Users/au671271/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/ketos_classifier/pythontransfored4java_hallo-kw-det_v1.mat").
+//					getMatrix("transformed_data_py");
 //			
 //			double[][] trueTransformedData = new double[trueTransformedDataM.getDimensions()[0]][trueTransformedDataM.getDimensions()[1]]; 
 //			for (int i=0; i<trueTransformedDataM.getDimensions()[0]; i++) {
@@ -113,6 +120,8 @@ public class KetosModelTest  {
 //				}
 //			}
 //			transformedData = trueTransformedData;
+			
+			/*********************************************************************/
 
 
 			float[] output = null; 
@@ -141,7 +150,7 @@ public class KetosModelTest  {
 
 				
 				prob[j] = DLUtils.softmax(output[j], output); 
-				System.out.println("The probability is: " + prob[j]); 
+				//System.out.println("The probability is: " + prob[j]); 
 			}
 
 
