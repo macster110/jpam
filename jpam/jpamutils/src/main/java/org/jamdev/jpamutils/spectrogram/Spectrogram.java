@@ -1,5 +1,7 @@
 package org.jamdev.jpamutils.spectrogram;
 
+import com.github.psambit9791.jdsp.windows.Hamming;
+import com.github.psambit9791.jdsp.windows._Window;
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
@@ -30,6 +32,9 @@ public class Spectrogram {
 	 * The hop size in samples.
 	 */
 	private int fftHop = 512;
+	private double window_duration;
+	private double freqMin;
+	private double freqMax;
 
 	/**
 	 * The total number of fft windows.
@@ -76,6 +81,15 @@ public class Spectrogram {
 		this.fftHop = fftHop;
 		this.buildSpectrogram(wave);
 	}
+	public Spectrogram(AudioData wave, int fftLength, int fftHop, double window_duration, double freqMin, double freqMax, Boolean ketosCalc) {
+		this.sR = wave.getSampleRate();
+		this.fftLength = fftLength;
+		this.fftHop = fftHop;
+		this.freqMin = freqMin;
+		this.freqMax = freqMax;
+		this.window_duration = window_duration;
+		this.buildSpectrogramKetos(wave);
+	}
 
 	// /**
 	// * Create a new spectrgram with new raw data.
@@ -98,6 +112,34 @@ public class Spectrogram {
 	 */
 	public double[][] getAbsoluteSpectrogram() {
 		return buildAbsoluteSpectram(complexSpectrogram);
+	}
+
+	/**
+	 * Convert time interval to number of samples. Same in DLUtils.java to avoid circular dependency.
+	 *
+	 *         If the time corresponds to a non-integer number of samples,
+	 *         round to the nearest larger integer value.
+	 *             time: float
+	 * @param time: float Timer interval in seconds
+	 * @param rate: float Sampling rate in Hz
+	 * @param even: Boolean Convert to nearest larger even integer.
+	 * @return n: int Number of samples
+	 */
+	public static int numSamplesKetos(double time, double rate, Boolean even){
+
+		double e = Math.ulp(1.0); //machine precision
+		double f = time * rate;
+		int n = (int) f;
+
+		if (f - n > e) {
+			n = (int) Math.ceil(f);
+		}
+
+		if ((even) && (n%2 == 1)){
+			n += 1;
+		}
+
+		return n;
 	}
 
 	/**
@@ -204,15 +246,83 @@ public class Spectrogram {
 	}
 
 	/**
+	 * Construct the spectrogram form the raw wave data.
+	 */
+	private void buildSpectrogramKetos(AudioData wave) {
+
+		double[] amplitudes = wave.getDoubleSampleAmplitudes();
+
+		numFrames = numSamplesKetos(window_duration, (double) sR/fftHop, Boolean.FALSE);
+		framesPerSecond = (int) (numFrames / wave.getLengthInSeconds());
+
+		_Window w1 = new Hamming(fftLength);
+		double[] win = w1.getWindow();
+
+		// Check segments and indices
+		double[][] segments = new double[numFrames][];
+		double[][] indices = new double[numFrames][fftLength];
+		for (int f = 0; f < numFrames; f++) {
+			segments[f] = new double[fftLength];
+			int startSample = f * fftHop;
+
+			for (int n = 0; n < fftLength; n++) {
+				segments[f][n] = amplitudes[startSample + n];
+				indices[f][n] = startSample + n;
+			}
+		}
+
+		double[][] signals = new double[numFrames][];
+		for (int f = 0; f < numFrames; f++) {
+			signals[f] = new double[fftLength];
+			int startSample = f * fftHop;
+
+			for (int n = 0; n < fftLength; n++) {
+				signals[f][n] = amplitudes[startSample + n] * win[n];
+			}
+		}
+
+		// for each frame in signals, do fft on it
+		//original way but could not handle FFT lengths not a power of 2.
+		//FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
+		complexSpectrogram = new ComplexArray[numFrames];
+
+		FastFFT fastFFT = new FastFFT();
+
+		//Complex[] specData;
+		for (int i = 0; i < numFrames; i++) {
+			complexSpectrogram[i] = fastFFT.rfftFull(signals[i], signals[i].length);
+		}
+
+		/**
+		 * Set some extra parameters
+		 */
+		numFrequencyUnit = complexSpectrogram[0].length() / 2;
+		frequencyBinSize = (double) wave.getSampleRate() / 2 / numFrequencyUnit; // frequency is half of
+
+		//System.out.println("Build spectrogram: specData: " + complexSpectrogram.length);
+
+	}
+
+
+	/**
 	 * Builds the absolute spectrogram from the complex array
 	 * 
 	 * @return the absolute spectrogram.
 	 */
 	public static double[][] buildAbsoluteSpectram(ComplexArray[] complexSpectrogram) {
 		double[][] absoluteSpectrogram = new double[complexSpectrogram.length][];
+		int npts = 0;
+		// Assume each segment have the same FFT length
+		if ((complexSpectrogram[0].length() / 2)%2 == 1){
+			npts = complexSpectrogram[0].length() / 2 + 1;
+		}
+		else {
+			npts = complexSpectrogram[0].length() / 2;
+		}
 
 		for (int i = 0; i < complexSpectrogram.length; i++) {
-			absoluteSpectrogram[i] = new double[complexSpectrogram[i].length() / 2];
+			absoluteSpectrogram[i] = new double[npts];
+
 			for (int j = 0; j < absoluteSpectrogram[i].length; j++) {
 				absoluteSpectrogram[i][j] = Math
 						.sqrt(complexSpectrogram[i].getReal(j) * complexSpectrogram[i].getReal(j)
@@ -304,6 +414,23 @@ public class Spectrogram {
 	 */
 	public int getFramesPerSecond() {
 		return framesPerSecond;
+	}
+
+	/**
+	 * Get the freq min of the spectrogram
+	 *
+	 * @return the number of FFT units per second
+	 */
+	public double getFreqMin() {
+		return freqMin;
+	}
+	/**
+	 * Get the freq max of the spectrogram
+	 *
+	 * @return the number of FFT units per second
+	 */
+	public double getFreqMax() {
+		return freqMax;
 	}
 
 	/**
