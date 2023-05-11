@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.jamdev.jdl4pam.genericmodel.GenericModelParams;
 import org.jamdev.jdl4pam.transforms.DLTransfromParams;
+import org.jamdev.jdl4pam.utils.DLUtils;
 import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
 import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 import org.jamdev.jdl4pam.transforms.jsonfile.DLTransformsParser;
@@ -37,7 +38,14 @@ public class KetosParams extends GenericModelParams {
 	 * The default segment length for the classifier (seconds). 
 	 */
 	public double seglen = 11.0; //seconds  
+	public double seglen_ori = 11.0; //seconds
+	public int num_pad_left = 0; //samples
+	public int num_pad_right = 0; //samples
 
+	public double freq_min;
+	public double freq_max;
+	public double offsetAudio = 0.; // to update each new time window
+	public double offsetExt;
 
 	//	/**
 	//	 * The numebr of output classes.
@@ -59,6 +67,15 @@ public class KetosParams extends GenericModelParams {
 	 */
 	public KetosParams(String rawString) {
 		parseRawString(rawString); 
+	}
+
+	public KetosParams(String rawString, double audioOffset) {
+		this.offsetAudio = audioOffset;
+		parseRawString(rawString);
+	}
+
+	public void setOffsetAudio(double new_value) {
+		this.offsetAudio = new_value;
 	}
 
 	/**
@@ -158,28 +175,61 @@ public class KetosParams extends GenericModelParams {
 		//first parse the transforms.
 		JSONObject jsonObject = new JSONObject(rawString);
 
+		//the spectrogram.
+		JSONObject specObject = jsonObject.getJSONObject("spectrogram");
+
 		//String[] jsonObjects = JSONObject.getNames(jsonObject); 
 		//		for (int i=0; i<jsonObjects.length; i++) {
 		//			System.out.println(jsonObjects[i]); 
 		//		}
 
+		// New sample rate.
+		double sampleRate = getKetosDouble(specObject, "rate");//very important
 
-		//the spectrogram. 		
-		JSONObject specObject = jsonObject.getJSONObject("spectrogram");
+		//set the segment length.
+		this.seglen_ori = getKetosDouble(specObject, "duration");
+		double total_duration = getKetosDouble(specObject, "duration");
 
-		//set the segment length. 
-		this.seglen = getKetosDouble(specObject, "duration"); 
+		System.out.println("WINDOW: " + getKetosDouble(specObject, "window") + " sampleRate: " + (getKetosDouble(specObject, "window") * sampleRate));
 
-		double sampleRate = getKetosDouble(specObject, "rate");//very important 
-		
-		System.out.println("WINDOW: " + getKetosDouble(specObject, "window") + " sampleRate: " + (getKetosDouble(specObject, "window") * sampleRate)); 
-
+		/******** Between these trails: from load_audio_for_spec.py in spectrogram.py ********/
 		//note- it is very important to round here when casting - otherwise the FFT length is set to it's floor (for example - 509 for a value of 509.99999999
-		int n_fft = (int) Math.round(getKetosDouble(specObject, "window") * sampleRate); 
-		int hop_length = (int)  Math.round(getKetosDouble(specObject, "step") * sampleRate); 
+//		int n_fft = (int) Math.round(getKetosDouble(specObject, "window") * sampleRate);
+//		int hop_length = (int)  Math.round(getKetosDouble(specObject, "step") * sampleRate);
+		// Window length from Ketos
+		int n_fft = DLUtils.numSamplesKetos(getKetosDouble(specObject, "window"), sampleRate, Boolean.TRUE);
+		int hop_length = DLUtils.numSamplesKetos(getKetosDouble(specObject, "step"), sampleRate, Boolean.TRUE);
+		int num_segs = DLUtils.numSamplesKetos(this.seglen_ori, sampleRate/hop_length, Boolean.FALSE);
+
+		int offset_len = DLUtils.numSamplesKetos(this.offsetAudio, sampleRate, Boolean.FALSE) - n_fft/2 + hop_length/2;
+
+		// TODO: to change with the time start of the file
+		double nominalOffset = this.offsetAudio;
+
+		// modify offset and duration to extend audio segment at both ends
+		double offset_ext = offset_len / sampleRate;
+		this.offsetExt = offset_ext;
 		
+		// if the offset is negative, pad with zeros on the left
+		int num_pad_left = Math.max(0, -offset_len);
+		double left_ext = nominalOffset - offset_ext;
+		double total_duration_ext = (num_segs * hop_length + n_fft) / sampleRate;
+		double right_ext = total_duration_ext - total_duration - left_ext;
+		// When loading several audio for different representations, you can have several durations in Ketos?
+		double duration_ext =  total_duration + left_ext;
+		duration_ext =  duration_ext + right_ext - left_ext;
+
+		if (total_duration_ext != duration_ext){
+			if (num_pad_left > 0){
+				this.num_pad_left = num_pad_left;
+			}
+		}
+		/*******************************************************/
+		this.seglen = duration_ext;
+
+		System.out.println("New WINDOW: " + n_fft + " new Hop: " + hop_length+ " new duration: " + this.seglen);
+
 		//normalise sample rate
-		
 		Boolean normaliseWav = false;
 		if (specObject.has("normalize_wav")) {
 			normaliseWav= specObject.getBoolean("normalize_wav"); 
@@ -188,7 +238,20 @@ public class KetosParams extends GenericModelParams {
 		//System.out.println("FFT: " + n_fft + " Hope length: " + hop_length);
 
 		double freq_min = getKetosDouble(specObject, "freq_min"); 
-		double freq_max = getKetosDouble(specObject, "freq_max"); 
+		double freq_max = getKetosDouble(specObject, "freq_max");
+
+		this.freq_min = freq_min;
+		this.freq_max = freq_max;
+		if(sampleRate/2 < this.freq_min){
+			this.freq_min = 0.;
+		}
+		if(sampleRate/2 < this.freq_max){
+			this.freq_max = sampleRate/2;
+		}
+		if(this.freq_max < this.freq_min){
+			this.freq_min = 0.;
+			this.freq_max = sampleRate/2;
+		}
 
 		JSONArray expectedShapeJSON = specObject.getJSONArray("input_shape"); 
 		int[] expectedShape = new int[expectedShapeJSON.length()];
@@ -212,7 +275,7 @@ public class KetosParams extends GenericModelParams {
 		if (normaliseWav!=null && normaliseWav.booleanValue()) {
 			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.NORMALISE_WAV, sampleRate)); 
 		}
-		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAM, n_fft, hop_length)); 
+		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAMKETOS, n_fft, hop_length, this.seglen_ori, this.freq_min, this.freq_max));
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPEC2DB)); 
 
 
@@ -287,6 +350,7 @@ public class KetosParams extends GenericModelParams {
 		this.dlTransforms = dlTransformParamsArr; 
 
 	}
+
 
 	/**
 	 * Get the ketos double value from a JSONObject. Ketos params are strings 
