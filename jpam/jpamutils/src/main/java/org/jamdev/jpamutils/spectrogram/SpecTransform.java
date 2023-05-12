@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import org.jamdev.jpamutils.JamArr;
 
-
 /**
  * Transforms spectrogram data.
  * 
@@ -13,7 +12,8 @@ import org.jamdev.jpamutils.JamArr;
  */
 public class SpecTransform {
 
-	private static final double DEFAULT_MIN_DB = 0;
+	// If you want to clip values at -200 dB, put 200 for min_db
+	private static final double DEFAULT_MIN_DB = 500;
 
 	/**
 	 * The transformed spectrogram data. 
@@ -298,12 +298,12 @@ public class SpecTransform {
 	 * Convert a spectrogram to dB. 
 	 * @param array - the absolute spectrogram array. 
 	 * @param power -true for power 10*log(X) or false for amplitude 20*log10(X).
-	 * @param mindB - the minimum dB i.e. if the 10/20*log10(value) in array is below this value, the value is st to mindB. 
+	 * @param mindB - the minimum dB i.e. if the 10/20*log10(value) in array is below this value, the value is set to mindB. Be careful about the sign when you set mindB
 	 * @return the normalised spectrogram. 
 	 */
-	public static double[][] dBSpec(double[][] array, boolean power, double minddB) {
-
-		double coeff = 20; 
+	public static double[][] dBSpec(double[][] array, boolean power, double mindB) {
+		double eps = 1.4210854715202004e-14;
+		double coeff = 20;
 		if (power) {
 			coeff = 10;
 		}
@@ -312,9 +312,14 @@ public class SpecTransform {
 
 		for (int i = 0; i < array.length; i++) {
 			for (int j = 0; j < array[i].length; j++) {
-				logSpectrgram[i][j] = coeff*Math.log10(array[i][j]);		
-				if (logSpectrgram[i][j]<-100) {
-					logSpectrgram[i][j] =-100; 
+				if (array[i][j] <= 0){
+					logSpectrgram[i][j] = coeff*Math.log10(eps);
+				}
+				else {
+					logSpectrgram[i][j] = coeff * Math.log10(array[i][j]);
+				}
+				if (logSpectrgram[i][j]<-mindB) {
+					logSpectrgram[i][j] =-mindB;
 				}
 			}
 		}
@@ -528,11 +533,10 @@ public class SpecTransform {
 		double[][] imgNew = new double[img.length][img[0].length];
 
 
-		double[] median = JamArr.median(img, 1); 
+		double[] median = JamArr.median(img, 1);
 
 		//each double is an fft. 
 		//System.out.println("specMatrix: " + median.length); 
-
 
 		for (int i = 0; i < img[0].length; i++) {
 			for (int j = 0; j < img.length; j++) {
