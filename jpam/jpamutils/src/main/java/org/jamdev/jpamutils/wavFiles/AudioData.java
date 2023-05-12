@@ -28,11 +28,6 @@ public class AudioData {
 	public int[] samples;
 
 	/**
-	 * Samples in amplitude units u.
-	 */
-	public double[] samples_double;
-
-	/**
 	 * The sample rate in samples per second
 	 */
 	public float sampleRate;
@@ -50,7 +45,6 @@ public class AudioData {
 	public AudioData(int[] samples, float sampleRate){
 		this.samples=samples;
 		this.sampleRate = sampleRate;
-		this.samples_double = this.getScaledSampleAmpliudes();
 		preEmphasisFilter = new PreEmphasisFilter();
 		wavInterpolator= new WavInterpolator();
 	}
@@ -76,7 +70,6 @@ public class AudioData {
 		}
 		this.samples = samples;
 		this.sampleRate = sampleRate;
-		this.samples_double = this.getScaledSampleAmpliudes();
 		preEmphasisFilter = new PreEmphasisFilter();
 		wavInterpolator= new WavInterpolator();
 	}
@@ -96,9 +89,6 @@ public class AudioData {
 	public int[] getSampleAmplitudes() {
 		return samples;
 	}
-	public double[] getDoubleSampleAmplitudes() {
-		return this.samples_double;
-	}
 
 	/**
 	 * Get the length in seconds.
@@ -106,13 +96,6 @@ public class AudioData {
 	 */
 	public double getLengthInSeconds() {
 		return samples.length / (double) sampleRate;
-	}
-	/**
-	 * Get the length in seconds.
-	 * @return the length of the file in seconds
-	 */
-	public double getDoubleLengthInSeconds() {
-		return samples_double.length / (double) sampleRate;
 	}
 
 	/**
@@ -170,7 +153,7 @@ public class AudioData {
 	 * Reverse array. Adapted from org/jamdev/jpamutilsfx/utilsfx/ColourArray.java public void reverseArray()
 	 * @param arr arrray to reverse
 	 *
-	 * @return <T> reversed array
+	 * @return reversed array
 	 */
 	public static double[] reverseArray(double[] arr) {
 		double[] reversed_arr = Arrays.copyOf(arr, arr.length);
@@ -274,7 +257,6 @@ public class AudioData {
 			x_padded = x;
 		}
 		else{
-			int pad_shape = x.length;
 			if (pad_left > 0){
 				double[] x_pad = new double[pad_left];
 				Arrays.fill(x_pad, 0);
@@ -290,8 +272,11 @@ public class AudioData {
 
 		return x_padded;
 	}
-	public void appendLeftRight(int num_pad_left, int num_pad_right) {
-		this.samples_double = pad_reflect(this.samples_double, num_pad_left, num_pad_right, Boolean.FALSE);
+	public AudioData appendLeftRight(int num_pad_left, int num_pad_right) {
+		double[] arr = getScaledSampleAmpliudes();
+		double[] arrPadded = pad_reflect(arr, num_pad_left, num_pad_right, Boolean.FALSE);
+
+		return new AudioData(arrPadded, sampleRate);
 	}
 
 
@@ -308,14 +293,6 @@ public class AudioData {
 		else {
 			return new AudioData(Arrays.copyOfRange(samples, sampleStart, samplEnd), sampleRate);
 		}
-	}
-
-	public void setSamplesDouble(double[] arr) {
-		this.samples_double = arr;
-	}
-
-	public void setSampleRate(float sr) {
-		this.sampleRate = sr;
 	}
 
 	/**
@@ -351,11 +328,8 @@ public class AudioData {
 
 		double[] wavArray_resampled = wavInterpolator.fourierResample(wavArray, n_samples);
 
-		this.setSamplesDouble(null);
-		this.setSamplesDouble(wavArray_resampled);
-		this.setSampleRate(target_sr);
-
-		return this;
+		// Convert back to int // Update the sample rate with constructor
+		return new AudioData(wavArray_resampled, target_sr);
 	}
 
 
@@ -385,31 +359,13 @@ public class AudioData {
 		int[] samplesNorm = new int[samples.length];
 
 		for (int i=0; i<samples.length; i++) {
-			samplesNorm[i] = (int) (stdSamples*(samples[i] - meanSamples) / (std+mean));
+//			samplesNorm[i] = (int) (stdSamples*(samples[i] - meanSamples) / (std+mean));
+			samplesNorm[i] = (int) (std * (samples[i] - meanSamples) / stdSamples + mean);
 		}
 
 		return new AudioData(samplesNorm, this.sampleRate);
 	}
 
-	public AudioData normalise_double(double mean, double std) {
-
-		double meanSamples = JamArr.mean(this.samples_double);
-		double stdSamples = JamArr.std(this.samples_double);
-
-		if (stdSamples > 0){
-			double[] samplesNorm = new double[this.samples_double.length];
-	//		int[] samplesNorm_int = new int[this.samples.length];
-
-			for (int i=0; i<this.samples_double.length; i++) {
-//				self.data = std * (self.data - np.mean(self.data)) / std_orig + mean
-				samplesNorm[i] = std * (this.samples_double[i] - meanSamples) / stdSamples + mean;
-	//			samplesNorm_int[i] = (int) (stdSamples*(this.samples[i] - meanSamples) / (std+mean));
-			}
-			this.setSamplesDouble(samplesNorm);
-		}
-
-		return this;
-	}
 	/**
 	 * Convert a short[] array to int[].
 	 * @param samples - the short samples

@@ -63,7 +63,7 @@ public class WavInterpolator {
 
 
 	/**
-	 * Decimate wave data including anti alisaing filter.
+	 * Decimate wave data including anti aliasing filter.
 	 * @param decimatorSr - the new lower samnple rate
 	 * @return the decimated data. 
 	 */
@@ -137,7 +137,7 @@ public class WavInterpolator {
 
 		double[] realOutput = new double[output.length / 2];
 		double realMultiplier = (double) targetNumSamples / input.length;
-//        System.out.println(realMultiplier);
+
 		for (int i = 0; i < realOutput.length; i++) {
 			realOutput[i] = output[i * 2] * realMultiplier;
 		}
