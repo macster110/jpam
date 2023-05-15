@@ -51,6 +51,12 @@
 			<version>0.5.6</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.github.psambit9791</groupId>
+			<artifactId>jdsp</artifactId>
+			<version>2.0.1</version>
+		</dependency>
+
 
 		<!-- <dependency> <groupId>com.google.protobuf</groupId> <artifactId>protobuf-java</artifactId> 
 			<version>3.8.0</version> </dependency> -->
