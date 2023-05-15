@@ -3,7 +3,6 @@ package org.jamdev.jdl4pam.utils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -202,6 +201,34 @@ public class DLUtils {
 		} else
 			throw new IllegalStateException("Unknown array opType"); //Should never happen
 		return shape;
+	}
+
+	/**
+	 * Convert time interval to number of samples.
+	 *
+	 *         If the time corresponds to a non-integer number of samples,
+	 *         round to the nearest larger integer value.
+	 *             time: float
+	 * @param time: float Timer interval in seconds
+	 * @param rate: float Sampling rate in Hz
+	 * @param even: Boolean Convert to nearest larger even integer.
+	 * @return n: int Number of samples
+	 */
+	public static int numSamplesKetos(double time, double rate, Boolean even){
+
+		double e = Math.ulp(1.0); //machine precision
+		double f = time * rate;
+		int n = (int) f;
+
+		if (f - n > e) {
+			n = (int) Math.ceil(f);
+		}
+
+		if ((even) && (n%2 == 1)){
+			n += 1;
+		}
+
+		return n;
 	}
 
 	/**

@@ -6,9 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.RealMatrix;
-
 public class JamArr {
 
 
@@ -466,7 +463,7 @@ public class JamArr {
 	 * @param data array of doubles
 	 * @return the variance
 	 */
-	public static double varience(double[] data)
+	public static double variance(double[] data)
 	{
 		double mean = mean(data);
 		double temp = 0;
@@ -482,7 +479,7 @@ public class JamArr {
 	 */
 	public static double std(double[] data)
 	{
-		return Math.sqrt(varience(data));
+		return Math.sqrt(variance(data));
 	}
 	
 	/**
