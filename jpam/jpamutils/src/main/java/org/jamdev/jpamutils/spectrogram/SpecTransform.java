@@ -1,8 +1,14 @@
 package org.jamdev.jpamutils.spectrogram;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.jamdev.jpamutils.JamArr;
+import us.hebi.matlab.mat.format.Mat5;
+import us.hebi.matlab.mat.types.MatFile;
+import us.hebi.matlab.mat.types.Matrix;
 
 
 /**
@@ -13,7 +19,8 @@ import org.jamdev.jpamutils.JamArr;
  */
 public class SpecTransform {
 
-	private static final double DEFAULT_MIN_DB = 0;
+	// If you want to clip values at -200 dB, put 200 for min_db
+	private static final double DEFAULT_MIN_DB = 500;
 
 	/**
 	 * The transformed spectrogram data. 
@@ -252,7 +259,7 @@ public class SpecTransform {
 	 */
 	public SpecTransform interpolate(double fMin, double fMax, int freqBins) {
 		if (this.specData==null) initialiseSpecData();  
-		this.specData = interpolate(this.specData, fMin, fMax, freqBins, spectrgram.getSampleRate()); 
+		this.specData = interpolate(this.specData, fMin, fMax, freqBins, spectrgram.getSampleRate());
 
 		//this is a little crazy for complex arrays...
 		if (maintainPhase) {
@@ -260,7 +267,6 @@ public class SpecTransform {
 		}
 		return this;
 	}
-
 
 	/**
 	 * Clamp the current spectrogram between two values.
@@ -298,12 +304,12 @@ public class SpecTransform {
 	 * Convert a spectrogram to dB. 
 	 * @param array - the absolute spectrogram array. 
 	 * @param power -true for power 10*log(X) or false for amplitude 20*log10(X).
-	 * @param mindB - the minimum dB i.e. if the 10/20*log10(value) in array is below this value, the value is st to mindB. 
+	 * @param mindB - the minimum dB i.e. if the 10/20*log10(value) in array is below this value, the value is set to mindB. Be careful about the sign when you set mindB
 	 * @return the normalised spectrogram. 
 	 */
-	public static double[][] dBSpec(double[][] array, boolean power, double minddB) {
-
-		double coeff = 20; 
+	public static double[][] dBSpec(double[][] array, boolean power, double mindB) {
+		double eps = 1.4210854715202004e-14;
+		double coeff = 20;
 		if (power) {
 			coeff = 10;
 		}
@@ -312,9 +318,14 @@ public class SpecTransform {
 
 		for (int i = 0; i < array.length; i++) {
 			for (int j = 0; j < array[i].length; j++) {
-				logSpectrgram[i][j] = coeff*Math.log10(array[i][j]);		
-				if (logSpectrgram[i][j]<-100) {
-					logSpectrgram[i][j] =-100; 
+				if (array[i][j] <= 0){
+					logSpectrgram[i][j] = coeff*Math.log10(eps);
+				}
+				else {
+					logSpectrgram[i][j] = coeff * Math.log10(array[i][j]);
+				}
+				if (logSpectrgram[i][j]<-mindB) {
+					logSpectrgram[i][j] =-mindB;
 				}
 			}
 		}
@@ -443,22 +454,31 @@ public class SpecTransform {
 
 		//find the minimum bin
 		int minIndex = (int) Math.max(0, fftlen*(fMin/(sR/2))); 
-		int maxIndex = (int) Math.min(fftlen-1, fftlen*(fMax/(sR/2))); 
+		int maxIndex = (int) Math.min(fftlen, fftlen*(fMax/(sR/2)));
 
 		double[][] specInterp = new double[array.length][]; 
 		double[] fftSliceInterp; 
 
 		//System.out.println("Min index: " +  minIndex + " max index: " + maxIndex + " FFT len: " + fftlen +  " f min Hz: " + fMin + " f max Hz: " + fMax + " sR: " + sR); 
-
-		for (int i = 0; i < array.length; i++) 	{		
-			fftSliceInterp = Arrays.copyOfRange(array[i], minIndex, maxIndex);
-			specInterp[i] = fftSliceInterp; 
-			fftSliceInterp = nearestNeighbourInterp(fftSliceInterp, freqBins); 
-			specInterp[i] = fftSliceInterp; 
-		} 
+		if (freqBins == fftlen){
+			// Crop only if same number of pts in the new freqBins
+			for (int i = 0; i < array.length; i++) 	{
+				fftSliceInterp = Arrays.copyOfRange(array[i], minIndex, maxIndex);
+				specInterp[i] = fftSliceInterp;
+			}
+		}
+		else {
+			for (int i = 0; i < array.length; i++) {
+				fftSliceInterp = Arrays.copyOfRange(array[i], minIndex, maxIndex);
+				specInterp[i] = fftSliceInterp;
+				fftSliceInterp = nearestNeighbourInterp(fftSliceInterp, freqBins);
+				specInterp[i] = fftSliceInterp;
+			}
+		}
 
 		return specInterp ; 
 	}
+
 
 	/**
 	 * Perform a nearest neighbour interpolation of a 1D array of evenly spaced values. 
@@ -528,11 +548,10 @@ public class SpecTransform {
 		double[][] imgNew = new double[img.length][img[0].length];
 
 
-		double[] median = JamArr.median(img, 1); 
+		double[] median = JamArr.median(img, 1);
 
 		//each double is an fft. 
 		//System.out.println("specMatrix: " + median.length); 
-
 
 		for (int i = 0; i < img[0].length; i++) {
 			for (int j = 0; j < img.length; j++) {

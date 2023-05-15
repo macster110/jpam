@@ -55,6 +55,8 @@ public interface DLTransform {
 		 */
 		SPECTROGRAM("Spectrogram", "spectrogram"),
 
+		SPECTROGRAMKETOS("Spectrogramketos", "spectrogramketos"),
+
 		/**
 		 * Crops a spectrogram image between two frequency values and interpolates the
 		 * image to be a specified pixel size.
