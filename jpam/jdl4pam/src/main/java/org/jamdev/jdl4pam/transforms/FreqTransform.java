@@ -89,7 +89,7 @@ public class FreqTransform extends SimpleTransform {
 			if (params[0].doubleValue() > freqLimsBfr[1]) params[0] = 0;
 			if (params[1].doubleValue() > freqLimsBfr[1]) params[1] = freqLimsBfr[1];
 
-			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().interpolate(params[0].doubleValue(),  params[1].doubleValue(), params[2].intValue()); 
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().interpolate(params[0].doubleValue(),  params[1].doubleValue(), params[2].intValue());
 			//frquency limits change for this transform.  
 			freqlims[0] = params[0].doubleValue(); 
 			freqlims[1] = params[1].doubleValue(); 
@@ -123,6 +123,19 @@ public class FreqTransform extends SimpleTransform {
 			//initialise freq
 			freqlims[0] = 0.0; 
 			freqlims[1] = ((WaveTransform) transform).getWaveData().getSampleRate()/2.0; 
+			break;
+		case SPECTROGRAMKETOS:
+			//make a spectrogram
+			Spectrogram spectrogramKetos = new Spectrogram(((WaveTransform) transform).getWaveData(), params[0].intValue(),
+					params[1].intValue(), (double) params[2], (double) params[3], (double) params[4], Boolean.TRUE);
+			specTransfrom = new SpecTransform(spectrogramKetos);
+			specTransfrom.setTransformedData(this.specTransfrom.getSpectrgram().getAbsoluteSpectrogram());
+
+			//initialise freq
+//			freqlims[0] = 0.0;
+//			freqlims[1] = ((WaveTransform) transform).getWaveData().getSampleRate()/2.0;
+			freqlims[0] = spectrogramKetos.getFreqMin();
+			freqlims[1] = spectrogramKetos.getFreqMax();
 			break;
 		case SPECCLAMP:
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().clamp(params[0].doubleValue(),  params[1].doubleValue()); 

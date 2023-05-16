@@ -32,6 +32,15 @@
 			<artifactId>iirj</artifactId>
 			<version>1.1</version>
 		</dependency>
+
+
+		<!-- Java FFT library -->
+		<dependency>
+			<groupId>com.github.wendykierp</groupId>
+			<artifactId>JTransforms</artifactId>
+			<version>3.1</version>
+			<classifier>with-dependencies</classifier>
+		</dependency>
 		
 		
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
