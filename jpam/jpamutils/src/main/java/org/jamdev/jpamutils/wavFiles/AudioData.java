@@ -130,7 +130,7 @@ public class AudioData {
 
 		double[] wavArray = new double[samples.length];
 		for (int i=0; i<wavArray.length; i++) {
-			wavArray[i] = samples[i]/bitSize;
+			wavArray[i] = ((double) samples[i])/bitSize;
 		}
 		return wavArray;
 	}
@@ -347,19 +347,20 @@ public class AudioData {
 	 * @return AudioData object containing interpolated data and sample rate.
 	 */
 	public AudioData interpolate_scipy(float target_sr) {
+		
 
 		double[] wavArray = getScaledSampleAmpliudes();
 		double ratio = target_sr / this.sampleRate;
 		int n_samples = (int) Math.ceil(wavArray.length * ratio);
 
 		double[] wavArrayResampled = wavInterpolator.fourierResample(wavArray, n_samples);
-
+		
+		
+		//System.out.println("Audio samples: " + wavArray.length + " "  +wavArrayResampled.length); 
+		
 		AudioData soundTmp = new AudioData(wavArrayResampled, target_sr);
-		this.setSampleAmplitudes(null);
-		this.setSampleAmplitudes(soundTmp.getSampleAmplitudes());
-		this.setSampleRate(target_sr);
 
-		return this;
+		return soundTmp;
 	}
 
 	private void setSampleRate(float targetSr) {

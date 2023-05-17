@@ -126,16 +126,16 @@ public class FreqTransform extends SimpleTransform {
 			break;
 		case SPECTROGRAMKETOS:
 			//make a spectrogram
-			Spectrogram spectrogramKetos = new Spectrogram(((WaveTransform) transform).getWaveData(), params[0].intValue(),
-					params[1].intValue(), (double) params[2], (double) params[3], (double) params[4], Boolean.TRUE);
+			Spectrogram spectrogramKetos = new Spectrogram(((WaveTransform) transform).getWaveData(), (int) params[0], (int) params[1], (double) params[2]);
 			specTransfrom = new SpecTransform(spectrogramKetos);
 			specTransfrom.setTransformedData(this.specTransfrom.getSpectrgram().getAbsoluteSpectrogram());
 
 			//initialise freq
 //			freqlims[0] = 0.0;
 //			freqlims[1] = ((WaveTransform) transform).getWaveData().getSampleRate()/2.0;
-			freqlims[0] = spectrogramKetos.getFreqMin();
-			freqlims[1] = spectrogramKetos.getFreqMax();
+			//initialise freq
+			freqlims[0] = 0.0; 
+			freqlims[1] = ((WaveTransform) transform).getWaveData().getSampleRate()/2.0; 
 			break;
 		case SPECCLAMP:
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().clamp(params[0].doubleValue(),  params[1].doubleValue()); 

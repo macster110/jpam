@@ -140,7 +140,7 @@ public class DLTransformsFactory {
 		ArrayList<DLTransform>  transforms = new  ArrayList<DLTransform>(); 
 		for (int i=0; i<dlTransfromParams.size(); i++) {
 			transforms.add(makeDLTransform(dlTransfromParams.get(i))); 
-			System.out.println("dlTransfromParams.get(i): " + dlTransfromParams.get(i)); 
+			//System.out.println("dlTransfromParams.get(i): " + dlTransfromParams.get(i)); 
 		}
 		return transforms; 
 	}

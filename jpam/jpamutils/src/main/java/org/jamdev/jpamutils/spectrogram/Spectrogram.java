@@ -2,16 +2,7 @@ package org.jamdev.jpamutils.spectrogram;
 
 import com.github.psambit9791.jdsp.windows.Hamming;
 import com.github.psambit9791.jdsp.windows._Window;
-import org.apache.commons.math3.complex.Complex;
-import org.apache.commons.math3.transform.DftNormalization;
-import org.apache.commons.math3.transform.FastFourierTransformer;
-import org.apache.commons.math3.transform.TransformType;
-
 import org.jamdev.jpamutils.wavFiles.AudioData;
-
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 
 /**
  * Class which converts raw wave data into a spectrgram and can perform some
@@ -37,9 +28,6 @@ public class Spectrogram {
 	 */
 	private int fftHop = 512;
 	private double window_duration;
-	private double freqMin;
-	private double freqMax;
-
 	/**
 	 * The total number of fft windows.
 	 */
@@ -85,12 +73,13 @@ public class Spectrogram {
 		this.fftHop = fftHop;
 		this.buildSpectrogram(wave);
 	}
-	public Spectrogram(AudioData wave, int fftLength, int fftHop, double window_duration, double freqMin, double freqMax, Boolean ketosCalc) {
+	
+	
+	public Spectrogram(AudioData wave, int fftLength, int fftHop, double window_duration) {
+		//System.out.println("FFTLength: " + fftLength + " FFTHop: " + fftHop + "  windowDuration " + window_duration); 
 		this.sR = wave.getSampleRate();
 		this.fftLength = fftLength;
 		this.fftHop = fftHop;
-		this.freqMin = freqMin;
-		this.freqMax = freqMax;
 		this.window_duration = window_duration;
 		this.buildSpectrogramKetos(wave);
 	}
@@ -255,22 +244,32 @@ public class Spectrogram {
 	private void buildSpectrogramKetos(AudioData wave) {
 
 		double[] amplitudes = wave.getScaledSampleAmpliudes();
+		
+		//note that w=the window duration here is the true segment length. i.e. it is NOT the "duration" paramter
+		//in the ketos JSON file but the caluclated segment length. See KetosParams for more info. 
 
-		numFrames = numSamplesKetos(window_duration, (double) sR/fftHop, Boolean.FALSE);
+		numFrames = numSamplesKetos(window_duration - ((double) fftLength)/sR, (double) sR/fftHop, Boolean.FALSE);
 		framesPerSecond = (int) (numFrames / wave.getLengthInSeconds());
 
 		_Window w1 = new Hamming(fftLength);
 		double[] win = w1.getWindow();
 
 		double[][] signals = new double[numFrames][];
+		
+		//System.out.println("Number of samples: " + amplitudes.length);
+				
+		int startSample;
 		for (int f = 0; f < numFrames; f++) {
 			signals[f] = new double[fftLength];
-			int startSample = f * fftHop;
+			startSample = f * fftHop;
 
 			for (int n = 0; n < fftLength; n++) {
-				signals[f][n] = amplitudes[startSample + n] * win[n];
+				signals[f][n] = (startSample + n) < amplitudes.length ? amplitudes[startSample + n] * win[n] : 0;
 			}
 		}
+		
+		//System.out.println("Number of spec samples: " + ((numFrames * fftHop) + fftLength) + " num Frames: " + numFrames + " window_duration: " + window_duration);
+
 
 		// for each frame in signals, do fft on it
 		//original way but could not handle FFT lengths not a power of 2.
@@ -405,23 +404,6 @@ public class Spectrogram {
 	 */
 	public int getFramesPerSecond() {
 		return framesPerSecond;
-	}
-
-	/**
-	 * Get the freq min of the spectrogram
-	 *
-	 * @return the number of FFT units per second
-	 */
-	public double getFreqMin() {
-		return freqMin;
-	}
-	/**
-	 * Get the freq max of the spectrogram
-	 *
-	 * @return the number of FFT units per second
-	 */
-	public double getFreqMax() {
-		return freqMax;
 	}
 
 	/**

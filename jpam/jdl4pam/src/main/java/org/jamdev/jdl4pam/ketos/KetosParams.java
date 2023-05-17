@@ -38,7 +38,13 @@ public class KetosParams extends GenericModelParams {
 	 * The default segment length for the classifier (seconds). 
 	 */
 	public double seglen = 11.0; //seconds
-	public double offsetAudio = 0.; // to update each new time window
+	
+	/**
+	 * The duration. Note this is NOT the segment length. It is the 
+	 * duration parameter that Ketos uses to coagulate a segment length (which is also
+	 * a function of the FFT and hop length). Can be null. 
+	 */
+	private Double duration;
 
 	//	/**
 	//	 * The numebr of output classes.
@@ -62,11 +68,6 @@ public class KetosParams extends GenericModelParams {
 		parseRawString(rawString); 
 	}
 
-	public KetosParams(String rawString, double audioOffset) {
-		this.offsetAudio = audioOffset;
-		parseRawString(rawString);
-	}
-
 	/**
 	 * From Ketos documentation:
 	 * <a href="https://docs.meridian.cs.dal.ca/ketos/_modules/ketos/audio/spectrogram.html#load_audio_for_spec">...</a>
@@ -84,7 +85,7 @@ public class KetosParams extends GenericModelParams {
 	 *  double[3] - number of samples to append on the left side of the audio [samples] (num_pad_left)
 	 *  double[4] - number of seconds of a spectrogram [seconds] (duration_ext)
 	 */
-	public double[] computeOffsets(String rawString){
+	public double[] parseSpectrogramInfo(String rawString){
 		// Parse JSON file to extract values
 		//first parse the transforms.
 		JSONObject jsonObject = new JSONObject(rawString);
@@ -96,47 +97,60 @@ public class KetosParams extends GenericModelParams {
 		double sampleRate = getKetosDouble(specObject, "rate");//very important
 
 		//set the segment length.
-		double total_duration = getKetosDouble(specObject, "duration");
+		duration = getKetosDouble(specObject, "duration");
 
 		int n_fft = DLUtils.numSamplesKetos(getKetosDouble(specObject, "window"), sampleRate, Boolean.TRUE);
 		int hop_length = DLUtils.numSamplesKetos(getKetosDouble(specObject, "step"), sampleRate, Boolean.TRUE);
+		
+		//Ketos duration is not the same as segment length. This is because the duration is a guide and the segment length 
+		//uses the duration to calculate a segment length based on the fft length and hop. 
+		
+		int num_segs = DLUtils.numSamplesKetos(duration, sampleRate/hop_length, Boolean.FALSE);
+		double seg_len_sec= ((double)(num_segs * hop_length + n_fft) ) / sampleRate;
+		
 
-		/******** Between these trails: from load_audio_for_spec.py in spectrogram.py ********/
-		// Compute specParamsOffsets
 		double[] specParamsOffsets = new double[5];
 		specParamsOffsets[0] = n_fft;
 		specParamsOffsets[1] = hop_length;
-
-		int num_segs = DLUtils.numSamplesKetos(total_duration, sampleRate/hop_length, Boolean.FALSE);
-
-		int offset_len = DLUtils.numSamplesKetos(this.offsetAudio, sampleRate, Boolean.FALSE) - n_fft/2 + hop_length/2;
-
-		double nominalOffset = this.offsetAudio;
-
-		// modify offset and duration to extend audio segment at both ends
-		double offset_ext = offset_len / sampleRate;
-		specParamsOffsets[2] = offset_ext;
-
-		// if the offset is negative, pad with zeros on the left
-		int num_pad_left = Math.max(0, -offset_len);
-		specParamsOffsets[3] = num_pad_left;
-		double left_ext = nominalOffset - offset_ext;
-		double total_duration_ext = (num_segs * hop_length + n_fft) / sampleRate;
-		double right_ext = total_duration_ext - total_duration - left_ext;
-		// When loading several audio for different representations, is it allowed to have multiple durations in Ketos?
-		double duration_ext =  total_duration + left_ext;
-		duration_ext =  duration_ext + right_ext - left_ext;
-
-		if (total_duration_ext != duration_ext){
-			if (num_pad_left > 0){
-				specParamsOffsets[3] = num_pad_left;
-			}
-		}
-		specParamsOffsets[4] = duration_ext;
-		/*******************************************************/
-
+		specParamsOffsets[2] = duration;
+		specParamsOffsets[3] = seg_len_sec;
+		
 		return specParamsOffsets;
 	}
+	
+	
+	
+	
+	
+	
+	
+//	public double computeSegLength(double sampleRate) {
+//		
+//		int offset_len = DLUtils.numSamplesKetos(this.offsetAudio, sampleRate, Boolean.FALSE) - n_fft/2 + hop_length/2;
+//		
+//		double nominalOffset = 0.;
+//
+//		// modify offset and duration to extend audio segment at both ends
+//		double offset_ext = offset_len / sampleRate;
+//		specParamsOffsets[2] = offset_ext;
+//
+//		// if the offset is negative, pad with zeros on the left
+//		int num_pad_left = Math.max(0, -offset_len);
+//		specParamsOffsets[3] = num_pad_left;
+//		double left_ext = nominalOffset - offset_ext;
+//		double total_duration_ext = (num_segs * hop_length + n_fft) / sampleRate;
+//		double right_ext = total_duration_ext - total_duration - left_ext;
+//		// When loading several audio for different representations, is it allowed to have multiple durations in Ketos?
+//		double duration_ext =  total_duration + left_ext;
+//		duration_ext =  duration_ext + right_ext - left_ext;
+//
+//		if (total_duration_ext != duration_ext){
+//			if (num_pad_left > 0){
+//				specParamsOffsets[3] = num_pad_left;
+//			}
+//		}
+//		specParamsOffsets[4] = duration_ext;
+//	}
 
 	/**
 	 * Get the parameters from a JSON string if the transform type is known.   
@@ -242,13 +256,17 @@ public class KetosParams extends GenericModelParams {
 		// New sample rate.
 		double sampleRate = getKetosDouble(specObject, "rate");//very important
 
-		//set the segment length.
-		double total_duration = getKetosDouble(specObject, "duration");
 
-		System.out.println("WINDOW: " + getKetosDouble(specObject, "window") + " sampleRate: " + (getKetosDouble(specObject, "window") * sampleRate));
+//		System.out.println("WINDOW: " + getKetosDouble(specObject, "window") + " sampleRate: " + (getKetosDouble(specObject, "window") * sampleRate));
 
-		double[] offsets = computeOffsets(rawString);
-		this.seglen = offsets[4];
+		double[] spectrogramInfo = parseSpectrogramInfo(rawString);
+		 /**
+		  * Note very important to use the calculated segment length and NOT the duration here. See comment in
+		  * parseSpectrogramInfo fro more info. 
+		  */
+		this.seglen = spectrogramInfo[3];
+		
+		System.out.println("Segment length: " +  seglen + " samples: " +  this.seglen*sampleRate); 
 
 		//normalise sample rate
 		Boolean normaliseWav = false;
@@ -288,7 +306,7 @@ public class KetosParams extends GenericModelParams {
 		if (normaliseWav!=null && normaliseWav.booleanValue()) {
 			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.NORMALISE_WAV, sampleRate, 1)); // one for ketos version
 		}
-		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAMKETOS, offsets[0], offsets[1], total_duration, freq_min, freq_max));
+		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAMKETOS,  (int) spectrogramInfo[0], (int) spectrogramInfo[1] , this.seglen  ));
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECCROPINTERP, freq_min, freq_max, expectedShape[2]));
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPEC2DB));
 
@@ -365,7 +383,7 @@ public class KetosParams extends GenericModelParams {
 	 * @param key
 	 * @return
 	 */
-	private Double getKetosDouble(JSONObject jsonObject, String key) {
+	public static Double getKetosDouble(JSONObject jsonObject, String key) {
 
 		String paramS = jsonObject.getString(key); 
 
@@ -380,7 +398,7 @@ public class KetosParams extends GenericModelParams {
 	 * @param key - the json key. 
 	 * @return
 	 */
-	private Integer getKetosInt(JSONObject jsonObject, String key) {
+	public static Integer getKetosInt(JSONObject jsonObject, String key) {
 
 		String paramS = jsonObject.getString(key); 
 
@@ -526,6 +544,18 @@ public class KetosParams extends GenericModelParams {
 
 		this.dlTransforms = dlTransformParamsArr; 
 
+	}
+
+
+	/**
+	 * Get the duration. Note this is NOT the segment length. It is the 
+	 * duration parameter that Ketos uses to coagulate a segment length (which is also
+	 * a function of the FFT and hop length). Can be null. 
+	 *
+	 * @return the duration. 
+	 */
+	public Double getDuration() {
+		return duration;
 	}
 
 
