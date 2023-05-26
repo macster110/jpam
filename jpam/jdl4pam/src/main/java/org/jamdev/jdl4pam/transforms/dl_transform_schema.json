@@ -1,0 +1,468 @@
+{
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Root Schema",
+    "required": [
+        "version_info",
+        "model_info",
+        "class_info",
+        "seg_size",
+        "species",
+        "transforms"
+    ],
+    "properties": {
+        "version_info": {
+            "type": "object",
+            "default": {},
+            "title": "The version_info Schema",
+            "required": [
+                "version"
+            ],
+            "properties": {
+                "version": {
+                    "type": "number",
+                    "default": 0.0,
+                    "title": "The version Schema",
+                    "examples": [
+                        1.0
+                    ]
+                }
+            },
+            "examples": [{
+                "version": 1.0
+            }]
+        },
+        "model_info": {
+            "type": "object",
+            "default": {},
+            "title": "The model_info Schema",
+            "required": [
+                "output_shape",
+                "input_shape"
+            ],
+            "properties": {
+                "output_shape": {
+                    "type": "array",
+                    "default": [],
+                    "title": "The output_shape Schema",
+                    "items": {
+                        "type": "integer",
+                        "title": "A Schema",
+                        "examples": [
+                            1,
+                            2
+                        ]
+                    },
+                    "examples": [
+                        [1,
+                            2]
+                    ]
+                },
+                "input_shape": {
+                    "type": "array",
+                    "default": [],
+                    "title": "The input_shape Schema",
+                    "items": {
+                        "type": "integer",
+                        "title": "A Schema",
+                        "examples": [
+                            1,
+                            40
+                        ]
+                    },
+                    "examples": [
+                        [1, 40,
+                            40,
+                            1
+                        ]
+                    ]
+                }
+            },
+            "examples": [{
+                "output_shape": [
+                    1,
+                    2
+                ],
+                "input_shape": [
+                    1,
+                    40,
+                    40,
+                    1
+                ]
+            }]
+        },
+        "class_info": {
+            "type": "object",
+            "default": {},
+            "title": "The class_info Schema",
+            "required": [
+                "name_class",
+                "num_class"
+            ],
+            "properties": {
+                "name_class": {
+                    "type": "array",
+                    "default": [],
+                    "title": "The name_class Schema",
+                    "items": {
+                        "type": "string",
+                        "title": "A Schema",
+                        "examples": [
+                            "Noise",
+                            "Right Whale"
+                        ]
+                    },
+                    "examples": [
+                        ["Noise",
+                            "Right Whale"
+                        ]
+                    ]
+                },
+                "num_class": {
+                    "type": "integer",
+                    "default": 0,
+                    "title": "The num_class Schema",
+                    "examples": [
+                        2
+                    ]
+                }
+            },
+            "examples": [{
+                "name_class": [
+                    "Noise",
+                    "Right Whale"
+                ],
+                "num_class": 2
+            }]
+        },
+        "seg_size": {
+            "type": "object",
+            "default": {},
+            "title": "The seg_size Schema",
+            "required": [
+                "size_ms"
+            ],
+            "properties": {
+                "size_ms": {
+                    "type": "integer",
+                    "default": 0,
+                    "title": "The size_ms Schema",
+                    "examples": [
+                        2000
+                    ]
+                }
+            },
+            "examples": [{
+                "size_ms": 2000
+            }]
+        },
+        "species": {
+            "type": "object",
+            "default": {},
+            "title": "The target species or sound",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "array",
+                    "default": [],
+                    "title": "The name Schema",
+                    "items": {
+                        "type": "string",
+                        "default": "",
+                        "title": "A Schema",
+                        "examples": [
+                            "Eubalaena glacialis"
+                        ]
+                    },
+                    "examples": [
+                        [
+                            "Eubalaena glacialis"]
+                    ]
+                }
+            },
+            "examples": [{
+                "name": [
+                    "Eubalaena glacialis"
+                ]
+            }]
+        },
+        "transforms": {
+            "type": "array",
+            "default": [],
+            "title": "A deep learning model goes through a series of transforms. Transforms is a list of objects which will generate a series of transform objects in Java. An audio segment will be passed sequentially through each transform object before being passed to the deep learning model. Transforms are defined by their \u003cname\u003e with \u003cparams\u003e an object containing the required settings for the transform. ",
+            "items": {
+                "type": "object",
+                "title": "A Schema",
+                "required": [
+                    "name",
+                    "params"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "The name of the transform",
+                        "examples": [
+                            "load_audio",
+                            "spectrogram",
+                            "reduce_tonal_noise",
+                            "normalize",
+                            "pre_emph",
+                            "trim",
+                            "spectrogramketos",
+                            "freq_compression",
+                            "normalize",
+                            "normalize_min_max",
+                            "norm_row_sum",
+                            "amplitude_to_decibel",
+                            "clamp",
+                            "normalisestd",
+                            "reduce_tonal_noise_median",
+                            "reduce_tonal_noise_mean",
+                            "medianfilter",
+                            "enhance_signal",
+                            "guassian_filter",
+                            "normlize_wav"
+                        ]
+                    },
+                    "params": {
+                        "type": "object",
+                        "title": "params contain the settings for each transform. Transforms are unique and have unique params objects. ",
+                        "required": [],
+                        "properties": {
+                            "samplerate": {
+                                "type": "integer",
+                                "default": 0,
+                                "title": "The samplerate Schema",
+                                "examples": [
+                                    10000
+                                ]
+                            },
+                            "fft": {
+                                "type": "integer",
+                                "default": 0,
+                                "title": "The fft Schema",
+                                "examples": [
+                                    256
+                                ]
+                            },
+                            "hop": {
+                                "type": "integer",
+                                "default": 0,
+                                "title": "The hop Schema",
+                                "examples": [
+                                    100
+                                ]
+                            },
+                            "window": {
+                                "type": "string",
+                                "default": "",
+                                "title": "The window Schema",
+                                "examples": [
+                                    "hamming"
+                                ]
+                            },
+                            "mean": {
+                                "type": "number",
+                                "default": 0.0,
+                                "title": "The mean Schema",
+                                "examples": [
+                                    0.0
+                                ]
+                            },
+                            "std": {
+                                "type": "number",
+                                "default": 0.0,
+                                "title": "The std Schema",
+                                "examples": [
+                                    1.0
+                                ]
+                            }
+                        },
+                        "examples": [{
+                            "samplerate": 10000
+                        },
+                        {
+                            "fft": 256,
+                            "hop": 100,
+                            "window": "hamming"
+                        },
+                        {},
+                        {
+                            "mean": 0.0,
+                            "std": 1.0
+                        }]
+                    }
+                },
+                "examples": [{
+                    "name": "load_audio",
+                    "params": {
+                        "samplerate": 10000
+                    }
+                },
+                {
+                    "name": "spectrogram",
+                    "params": {
+                        "fft": 256,
+                        "hop": 100,
+                        "window": "hamming"
+                    }
+                },
+                {
+                    "name": "reduce_tonal_noise",
+                    "params": {}
+                },
+                {
+                    "name": "normalize",
+                    "params": {
+                        "mean": 0.0,
+                        "std": 1.0
+                    }
+                },
+                {
+                    "name": "amplitude_to_decibel",
+                    "params": {
+                        "min_db": 10
+                    }
+                },
+                {
+                    "name": "trim",
+                    "params": {
+                        "min": 10,
+                        "max": 450
+                    }
+                },
+                {
+                    "name": "freq_compression",
+                    "params": {
+                        "fmin": 10,
+                        "fmax": 500,
+                        "bins": 100
+                    }
+                },
+                {
+                    "name": "enhance_signal",
+                    "params": {
+                        "enhancement": 1.2
+                    }
+                },
+                {
+                    "name": "guassian_filter",
+                    "params": {
+                        "sigma": 0.3
+                    }
+                },
+                {
+                    "name": "reduce_tonal_noise_mean",
+                    "params": {
+                        "time_const_len": 10
+                    }
+                },
+                {
+                    "name": "filter_isolated_spots",
+                    "params": {}
+                },
+                {
+                    "name": "normalisestd",
+                    "params": {
+                        "mean": 6,
+                        "std": 8
+                    }
+                }]
+            },
+            "examples": [
+                [{
+                    "name": "load_audio",
+                    "params": {
+                        "sr": 10000
+                    }
+                },
+                {
+                    "name": "spectrogram",
+                    "params": {
+                        "fft": 256,
+                        "hop": 100,
+                        "window": "hamming"
+                    }
+                },
+                {
+                    "name": "reduce_tonal_noise",
+                    "params": {}
+                },
+                {
+                    "name": "normalize",
+                    "params": {
+                        "mean": 0.0,
+                        "std": 1.0
+                    }
+                },
+                {
+                    "name": "pre_emph",
+                    "params": {
+                        "pre_empf_factor": 0.1
+                    }
+                }]
+            ]
+        }
+    },
+    "examples": [{
+        "version_info": {
+            "version": 1.0
+        },
+        "model_info": {
+            "output_shape": [
+                1,
+                2
+            ],
+            "input_shape": [
+                1,
+                40,
+                40,
+                1
+            ]
+        },
+        "class_info": {
+            "name_class": [
+                "Noise",
+                "Right Whale"
+            ],
+            "num_class": 2
+        },
+        "seg_size": {
+            "size_ms": 2000
+        },
+        "species": {
+            "name": [
+                "Eubalaena glacialis"
+            ]
+        },
+        "transforms": [{
+            "name": "load_audio",
+            "params": {
+                "samplerate": 10000
+            }
+        },
+        {
+            "name": "spectrogram",
+            "params": {
+                "fft": 256,
+                "hop": 100,
+                "window": "hamming"
+            }
+        },
+        {
+            "name": "reduce_tonal_noise",
+            "params": {}
+        },
+        {
+            "name": "normalize",
+            "params": {
+                "mean": 0.0,
+                "std": 1.0
+            }
+        }]
+    }]
+}

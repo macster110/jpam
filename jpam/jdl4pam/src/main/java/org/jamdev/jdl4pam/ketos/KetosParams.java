@@ -96,7 +96,7 @@ public class KetosParams extends GenericModelParams {
 		// New sample rate.
 		double sampleRate = getKetosDouble(specObject, "rate");//very important
 
-		//set the segment length.
+		//get the segment length.
 		duration = getKetosDouble(specObject, "duration");
 
 		int n_fft = DLUtils.numSamplesKetos(getKetosDouble(specObject, "window"), sampleRate, Boolean.TRUE);
