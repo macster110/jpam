@@ -585,7 +585,7 @@ public class DLTransformsParser {
 	 * Get strings sorted in the order that they appear in the raw JSON string
 	 * @return the sorted list of strings. 
 	 */
-	private static String[] getSortedJSonStrings(String rawString) {
+	public static String[] getSortedJSonStrings(String rawString) {
 
 		JSONObject jsonObject = new JSONObject(rawString);
 

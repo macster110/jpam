@@ -94,7 +94,9 @@ public class AnimalSpotParams extends GenericModelParams {
 	 * Parse a parameters string from the SoundSpotModel. 
 	 * @param rawString - the raw string. 
 	 */ 
+	@Deprecated
 	private void parseRawString(String rawString) {
+		
 		System.out.println(rawString); 
 
 		//load the transfroms from the string metadata

@@ -45,6 +45,7 @@ public class RightWhaleTest {
 		for (int j = 0; j<output.length; j++) {
 			System.out.println("Output: " + j + " : " + output[j]);
 		}
+	
 		
 		//the wav file contains a right whale detection at 181.2 seconds into the file. 
 		
