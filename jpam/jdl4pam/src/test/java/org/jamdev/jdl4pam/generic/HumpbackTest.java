@@ -15,7 +15,7 @@ public class HumpbackTest {
 	 * Test a right whale classifier from Marie Roch's group. 
 	 */
 	@Test
-	public void rightWhaleTest()
+	public void humpbackWhale()
 	{
 		
     	//relative paths to the resource folders.

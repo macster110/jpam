@@ -28,6 +28,28 @@ public abstract class SimpleTransform implements DLTransform {
 		this.params = params;
 	}
 	
+	@Override
+	public boolean equals(Object o) {
+
+		SimpleTransform transform = (SimpleTransform) o; 
+
+		if (params ==null && transform.params!=null) return false;
+		if (transform.params ==null && params!=null) return false;
+
+		if (params!=null) {
+
+			if (params.length != transform.params.length) return false; 
+
+			for (int i=0; i<params.length; i++) {
+				if (!params[i].equals(transform.params[i])) {
+					return false;  
+				}
+			}
+		}
+		
+		return transform.getDLTransformType().equals(this.getDLTransformType()); 
+	}
+
 	
 
 }

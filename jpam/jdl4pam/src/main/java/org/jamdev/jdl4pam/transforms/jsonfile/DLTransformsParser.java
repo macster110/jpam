@@ -74,7 +74,7 @@ public class DLTransformsParser {
 			for (int j=0; j<jsonStrings.length; j++) {
 				if (jsonStrings[j].contains(jsonName)) {
 					if (j==0) {
-						//do not want the extra " for the furst be, 
+						//do not want the extra " for the first be, 
 						orderedJSONString += jsonStrings[j]+"\"," ; 
 					}
 					else {
@@ -253,7 +253,7 @@ public class DLTransformsParser {
 	 * Get the parameters from a JSOn string if the transform type is known.   
 	 * @param dlTransformType - the transform type.
 	 * @param jsonObjectParams - JSON object containing the parameters.  
-	 * @return
+	 * @return a DLTransform object. 
 	 */	
 	public static DLTransfromParams parseDLTransformParams(DLTransformType dlTransformType, JSONObject jsonObjectParams) {
 

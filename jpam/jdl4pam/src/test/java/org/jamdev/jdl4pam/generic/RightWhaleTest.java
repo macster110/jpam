@@ -24,7 +24,6 @@ public class RightWhaleTest {
 	@Test
 	public void rightWhaleTest()
 	{
-		
     	//relative paths to the resource folders.
     	String relModelPath  =	"./src/main/java/org/jamdev/jdl4pam/resources/generic/rightwhale/model_lenet_dropout_input_conv_all/saved_model.pb";
 		String relWavPath  =	"./src/main/java/org/jamdev/jdl4pam/resources/generic/rightwhale/sar98_trk3_8000.wav";
@@ -46,9 +45,7 @@ public class RightWhaleTest {
 			System.out.println("Output: " + j + " : " + output[j]);
 		}
 	
-		
 		//the wav file contains a right whale detection at 181.2 seconds into the file. 
-		
 		assertTrue( output[0]<0.01 ); //noise
 		assertTrue( output[1]>0.98 ); //right whale
 

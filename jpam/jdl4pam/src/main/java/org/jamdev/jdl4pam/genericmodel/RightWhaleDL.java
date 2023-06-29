@@ -36,7 +36,7 @@ public class RightWhaleDL {
 	 * Run the right whale model. 
 	 * @param modelPath - the path the saved_model.pb file
 	 * @param wavFilePath - path to a wav file. 
-	 * @param startChunck - the locatation to start form in the file (in seconds). 
+	 * @param startChunck - the location to start form in the file (in samples). 
 	 * @return predicitons. 
 	 */
 	public static float[] runRightWhaleDL(String modelPath, String wavFilePath, int startChunck) {

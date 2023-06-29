@@ -69,6 +69,7 @@ public class KetosModel {
 		
 		String zipFolder = System.getProperty("user.home") + "/ketos_models/" + getFileNameWithoutExtension(file);
 
+
 		File outFile = new File(zipFolder);
 		
 		//Creating the directory

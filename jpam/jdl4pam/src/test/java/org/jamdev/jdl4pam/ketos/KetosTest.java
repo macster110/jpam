@@ -1,29 +1,152 @@
 package org.jamdev.jdl4pam.ketos;
 
+import org.jamdev.jdl4pam.ketos.KetosAudioProcess.KetosResult;
+import org.jamdev.jdl4pam.utils.DLUtils;
+import org.jamdev.jpamutils.wavFiles.AudioData;
 import org.junit.Test;
 
 import static org.jamdev.jdl4pam.utils.DLUtils.numSamplesKetos;
 import static org.jamdev.jpamutils.wavFiles.AudioData.pad_zero;
 import static org.jamdev.jpamutils.wavFiles.AudioData.pad_reflect;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import com.github.psambit9791.jdsp.windows.*;
 
+import ai.djl.MalformedModelException;
+
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 /**
- * Test the Ketos algorothm. 
- * @author au671271
+ * Test the Ketos models and algorthms. . 
+ *
+ * @author Jamie Macaulay 
  *
  */
 public class KetosTest {
+	
+//	/**
+//	 * Test a model which required quite a few alterations to sort out. This particular model is quite overtained and 
+//	 * so an excellent test case at it will respond to very small changes in the transforms. 
+//	 * <p>
+//	 * Note: this is base don old JSON recipe format
+//	 */
+//	@Test
+//	public void KetosRightWhale2() {
+//		
+//		//relative paths to the resource folders.
+//    	String relModelPath  =	"./src/main/java/org/jamdev/jdl4pam/resources/generic/rightwhale/model_lenet_dropout_input_conv_all/saved_model.pb";
+//		String relWavPath  =	"./src/main/java/org/jamdev/jdl4pam/resources/generic/rightwhale/sar98_trk3_8000.wav";
+//		
+//		Path path = Paths.get(relModelPath);
+//		//note that normalize gets rid of all the redundant elements (e.g. .)
+//		String modelPath = path.toAbsolutePath().normalize().toString();
+//		
+//		path = Paths.get(relWavPath);
+//		String wavFilePath = path.toAbsolutePath().normalize().toString();
+//
+//       
+//		//set the sizxe of the chunk - note this uses the specific segment size required by Ketos models. 
+//		double[] chunk = new double[]{44.9843, 50.05290000000001}; 
+//
+//		KetosModelTest.simpleModelTest(modelPath, wavFilePath, null); 
+//		
+//        assertTrue(chunk[0] > 0.8);
+//
+//    }
+	
+	/**
+	 * Test batch processing a sound file using a Ketos model
+	 * <p>
+	 * Note: this is base don old JSON recipe format
+	 */
+	@Test
+	public void KetosRightWhaleTestBatch() {
+		
+		/**
+		 * List of the predicitons
+		 * Start time (seconds), Length of the segment (seconds), prediciton
+		 */
+		double[][] ketosPredicitons = {
+				{0,	5.0176,	0.1565524},
+				{5,	5.0176,	0.99999917},
+				{10,	5.0176,	0.99999917},
+				{15, 5.0176,	0.97594243},
+				{20,	5.0176,	0.8802458},
+				{25,	5.0176,	0.9999999},
+				{30,	5.0176,	0.999993},
+				{35,	5.0176,	0.9998863},
+				{40,	5.0176,	0.99998367},
+				{45,	5.0176,	0.21531366},
+				{50,	5.0176,	0.9999987},
+				{55,	5.0176,	1},
+				{60,	5.0176,	0.9999989},
+				{65,	5.0176,	0.9999993},
+				{70,	5.0176,	0.99999845},
+				{75,	5.0176,	1},
+				{80,	5.0176,	0.20126265},
+				{85,	5.0176,	0.9797412},
+				{90,	5.0176,	1}}; 
+		/** 
+		 * Example running Ketos model on a wav file. 
+		 */
+		
+		String relModelPath = 	"./src/main/java/org/jamdev/jdl4pam/resources/Ketos/right_whale/hallo-kw-det_v1/hallo-kw-det_v1.ktpb";
 
-    /**
-     * Test animal spot on a pipistrellus. The 4th class prediction (counting from 0) should be >90% and all other classes should <1%.
-     */
+		/****Wav files*****/
+		//jasco_reduced - use for right whales hallo-kw-det_v1
+		String relWavFilePath = "./src/main/java/org/jamdev/jdl4pam/resources/Ketos/right_whale/hallo-kw-det_v1/jasco_reduced.wav";
+	
+		
+		Path path = Paths.get(relModelPath);
+		//note that normalize gets rid of all the redundant elements (e.g. .)
+		String modelPath = path.toAbsolutePath().normalize().toString();
+		
+		path = Paths.get(relWavFilePath);
+		String wavFilePath = path.toAbsolutePath().normalize().toString();
+		
+		System.out.println(modelPath);
+
+		//Open wav files.
+		AudioData soundData;
+		try {
+			soundData = DLUtils.loadWavFile(wavFilePath);
+
+			//the ketos model.
+			KetosModel ketosModel = new KetosModel(new File(modelPath));
+
+			ArrayList<KetosResult> results = KetosAudioProcess.processSoundData( ketosModel,  soundData, 5., KetosAudioProcess.VERBOSITY_MEDIUM); 
+			
+			//check prediction results are within 10%
+			//Note we forget the weird edge cases (start and end of file) here for Ketos
+			for (int i=1; i<results.size()-1; i++) {
+				//System.out.println(i + ": " + results.get(i).prediction[1]);
+				assertTrue(results.get(i).prediction[1]> ketosPredicitons[i][2]-0.1 && results.get(i).prediction[1]< ketosPredicitons[i][2]+0.1); 
+			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedAudioFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+
+  
     @Test
     public void numSamplesTest() {
         // Meridian Ketos Tests

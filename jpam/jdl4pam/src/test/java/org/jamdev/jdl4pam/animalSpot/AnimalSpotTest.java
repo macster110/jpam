@@ -21,7 +21,6 @@ public class AnimalSpotTest {
 		String relWavPath  ="./src/main/java/org/jamdev/jdl4pam/resources/animalSpot/bat_multi_species/20200817_011424.wav";
  
 	
-		
 		Path path = Paths.get(relModelPath);
 		//note that normalize gets rid of all the redundant elements (e.g. .)
 		String modelPath = path.toAbsolutePath().normalize().toString();

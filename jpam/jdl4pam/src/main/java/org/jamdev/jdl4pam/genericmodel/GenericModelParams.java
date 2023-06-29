@@ -1,6 +1,7 @@
 package org.jamdev.jdl4pam.genericmodel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.jamdev.jdl4pam.transforms.DLTransfromParams;
 import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
@@ -78,6 +79,51 @@ public class GenericModelParams {
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECCLAMP, 0, 1)); 
 		
 		this.dlTransforms = dlTransformParamsArr; 
+		
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		
+		GenericModelParams params = (GenericModelParams) o;
+		
+
+		//check the transforms are the same. 		
+		if (this.dlTransforms!=null && params.dlTransforms == null) {
+			return false; 
+		}
+		if (params.dlTransforms!=null && this.dlTransforms == null) {
+			return false; 
+		}
+		
+		//iterate through the transofrms and check each one is equal. 
+		if (this.dlTransforms!=null) {
+			
+			if (this.dlTransforms.size()!=dlTransforms.size()) {
+				return false; 
+			}
+				
+			for (int i=0; i<this.dlTransforms.size();i++) {
+				if (!this.dlTransforms.get(i).equals(params.dlTransforms.get(i))) {
+					return false; 
+				}
+			}
+		}
+		else {
+			//both transforms must be null and so can still be equal
+		}
+		
+		
+		//check the rest. 
+		
+		boolean isEqual = 
+				this.segLen == params.segLen &&
+				this.defaultOutputShape.equals(params.defaultOutputShape) && 
+				this.defaultInputShape.equals(params.defaultInputShape) &&
+				Arrays.equals(	this.classNames, params.classNames); 
+		
+		
+		return isEqual; 
 		
 	}
 

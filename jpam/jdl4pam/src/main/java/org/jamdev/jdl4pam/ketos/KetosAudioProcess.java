@@ -188,7 +188,7 @@ public class KetosAudioProcess {
 				//softmax function
 				if (verbosity>0) System.out.print(String.format("%.4f", output[j]) + "  "); 
 
-				prob[j] = DLUtils.softmax(output[j], output); 
+				prob[j] = output[j]; 
 				//System.out.println("The probability is: " + prob[j]); 
 
 			}
