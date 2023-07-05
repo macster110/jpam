@@ -12,7 +12,10 @@ import org.junit.Test;
 public class HumpbackTest {
 	
 	/**
-	 * Test a right whale classifier from Marie Roch's group. 
+	 * Test a humpback whale classifier from Google.
+	 * <p>
+	 * Note that this test uses lower level code from the ai.djl library and some functions 
+	 * jdl4pam. 
 	 */
 	@Test
 	public void humpbackWhale()
@@ -35,8 +38,7 @@ public class HumpbackTest {
 		//int startchunk =  (int) (190.2*sr); 
 
 		int chunkSize = (int) (3.92*10000); 
-		
-
+	
 		//run the right whale model. 
 		float[] output  = HumpbackGoogle.runHumpbackWhaledl(modelPath, wavFilePath, startChunk, chunkSize); 
 

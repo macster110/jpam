@@ -14,7 +14,7 @@ import ai.djl.translate.TranslateException;
 
 
 /**
- * The generic model. 
+ * The generic model. Generic models are for running bespoke models. 
  * 
  * @author Jamie Macaulay
  *
@@ -53,10 +53,21 @@ public class GenericModel {
 	private SpectrogramTranslator specTranslator;
 
 	private WaveformTranslator waveTranslator;
+	
+	/**
+	 * The index of the audio input shape. 
+	 */
+	private Integer inputShapeIndex = null; 
+	
+	
+	public GenericModel(String modelPath) throws MalformedModelException, IOException {
+		this(modelPath, null); 
+	}
 
 
 
-	public GenericModel(String modelPath) throws MalformedModelException, IOException{
+
+	public GenericModel(String modelPath, Integer inputShapeIndex) throws MalformedModelException, IOException{
 
 		File file = new File(modelPath); 
 
@@ -102,8 +113,11 @@ public class GenericModel {
 			this.model=model; 
 
 			specTranslator = new SpectrogramTranslator(inputShape); 
+			specTranslator.setAudioShapeIndex(inputShapeIndex); //usually null or zero. 
+
 			
 			waveTranslator = new WaveformTranslator(model.describeInput()); 
+			waveTranslator.setAudioShapeIndex(inputShapeIndex); //usually null or zero. 
 			
 			//predictor for the model if using images as input
 			specPredictor = model.newPredictor(specTranslator);

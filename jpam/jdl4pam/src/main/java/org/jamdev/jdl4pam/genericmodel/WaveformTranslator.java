@@ -37,46 +37,70 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 	 */
 	private PairList<String, Shape> shapes;
 	
+	private Integer shapeIndex = null; 
+	
+	
 	/**
-	 * Constructor for the waveform translator. The translator is essentially gets the data
-	 * into a format ready for the mdoel 
+	 * Constructor for the waveform translator. The translator gets the data
+	 * into a format ready for the model 
 	 * @param shape -the shape to set. 
 	 */
 	public WaveformTranslator(PairList<String, Shape> shapes) {
-		this.shapes = shapes; 
+		this.shapes = shapes; 		
 	}
 	
 
 
-	/**
-	 * Constructor for the waveform translator. The translator is essentially 
-	 * @param shape -the shape to set. 
-	 */
-	public WaveformTranslator(PairList<String, Shape> shapes, long hop) {
-		this.shapes = shapes; 
-		this.hop=hop; 
-	}
+//	/**
+//	 * Constructor for the waveform translator. The translator gets the data
+//	 * @param shapes
+//	 * @param hop
+//	 */
+//	public WaveformTranslator(PairList<String, Shape> shapes, long hop) {
+//		this.shapes = shapes; 
+//	}
+//	
 	
 	
 	@Override
 	public NDList processInput(TranslatorContext ctx, float[][] data) {
 		//System.out.println("Hello: 1 " ); 
 		NDManager manager = ctx.getNDManager();
+		
+		//We need to find the index of the shape that is for audio. If there is more than one shape pick the 
+		//one the largesst number of dimensions unless explicitly set. 
+		int shapeAudioIndex = 0; 
+		if (this.shapeIndex==null) {
+			if (shapes.size()>1){
+				int shapeDim = 0; 
+				for (int i =0; i<shapes.size(); i++) {
+					if (shapes.get(i).getValue().dimension()>shapeDim) {
+						shapeDim = shapes.get(i).getValue().dimension();
+						shapeAudioIndex = i; 
+					}
+				}
+			}
+		}
+		else {
+			shapeAudioIndex = this.shapeIndex;
+		}
+		
+		
+		long[] shapeL = new long[shapes.get(shapeAudioIndex).getValue().dimension()]; 
+		
+		for (int i=0; i<shapeL.length; i++) {
+			shapeL[i] =1L;
+		}
+		
+		shapeL[0] = data.length;
+		shapeL[1] = data[0].length; 
 
+		shape = new Shape(shapeL); 
 		
-		Shape shape; 
-		
-		//this is the most liekly shape of waveform information but this may need to be changed in the future. 
-		shape = new Shape(data.length, data[0].length, 1L); 
-	
-		
-		//System.out.println("NDArray shape: " + shape); 
-
 		float[] specgramFlat = DLUtils.flattenDoubleArrayF(data); 
 		
 		NDArray array = manager.create(specgramFlat, shape); 
 		
-		NDArray hoparray = manager.create(hop);
 
 //		NDArray array = manager.create(data); 
 		//System.out.println("NDArray size: " + array.size()); 
@@ -85,15 +109,37 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 		
 		//System.out.println("Shape size: " + shapes.size());
 		
-		if (shapes.size()>1) {
-			arrays.add(hoparray); //add the hop
+		
+//		//this is a little bit of a weird one 
+//		if (shapes.size()>1) {
+//			NDArray hoparray = manager.create(-1);
+//			arrays.add(hoparray); //add the hop
+//		}
+		
+		int n=0; 
+		while (n<shapeAudioIndex) {
+			//we cross our fingers here and hope that the extra data are not needed. Otherwise
+			//this will have be subclassed. 
+			arrays.add(generateExtraData(manager, n)); //add the hop
+			n++; 
 		}
-		arrays.add(array); //add the waveform information. 
+		arrays.add(shapeAudioIndex, array); //add the waveform information. 
 		
 		//System.out.println("NDArray size: " + dummy.size()); 
 		//System.out.println("NDArray size: " + arrays.size()); 
 
 		return new NDList (arrays);
+	}
+	
+	
+	/**
+	 * Add non-audio data to the output data list. Note this is intended to be subclassed for more complex models. 
+	 * @param shapeIndex - the index of the input shape. 
+	 * @return the data. 
+	 */
+	public NDArray generateExtraData(NDManager manager , int shapeIndex) {
+		return manager.create(1000L); //add the hop
+
 	}
 
 	@Override
@@ -147,6 +193,28 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 	public double[] getWaveform() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+	/**
+	 * Get the audio shape index. This can be null in which case the shape with the largest
+	 * dimensions will be assumed to be the input data. Note that often only one input shape 
+	 * is retrieved from the model in which case this index is redundant. 
+	 * @param shapeIndex - the shape index. 
+	 */
+	public Integer getAudioShapeIndex() {
+		return shapeIndex;
+	}
+
+
+	/**
+	 * Set the audio shape index.  This can be null in which case the shape with the largest
+	 * dimensions will be assumed to be the input data.  Note that often only one input shape 
+	 * is retrieved from the model in which case this index is redundant. 
+	 * @param shapeIndex - the shape index. 
+	 */
+	public void setAudioShapeIndex(Integer shapeIndex) {
+		this.shapeIndex = shapeIndex;
 	}
 };
 

@@ -50,7 +50,7 @@ public class JSONParseTest {
 	 * @param params - the input paramters. The returned object should be equal to the input params. 
 	 * @return a new params object after converting from params -> JSON -> params. 
 	 */
-	public GenericModelParams jsonParseTest(GenericModelParams params) {
+	public static GenericModelParams jsonParseTest(GenericModelParams params) {
 		
 		/****Write the JSON Object****/
 		
@@ -61,7 +61,7 @@ public class JSONParseTest {
 		/**
 		 * Write the target species.
 		 */
-		String[] targetSpecies = new String[] { "Eubalaena glacialis", "Noise" };
+		String[] targetSpecies = new String[] { "Noise", "Eubalaena glacialis" };
 
 		DLTransformParser2.writeJSONTargetSpecies(targetSpecies, mainObject);
 

@@ -40,12 +40,19 @@ public class HumpbackGoogle {
 			System.out.println("Output: " + model.describeOutput().values()); 
 			System.out.println("DataType: " + model.getDataType()); 
 			
-			Shape shape = model.describeInput().get(1).getValue(); 
 			
-			System.out.println("Shape dim: " + model.describeInput().get(1).getKey() + "  " + shape.dimension() + " nInput: " + model.describeInput().size());
-			System.out.println("Shape 0: " + shape.get(0)); 
-			System.out.println("Shape 1: " + shape.get(1)); 
-			System.out.println("Shape 2: " + shape.get(2)); 
+			for (int i=0;i<model.describeInput().size(); i++) {
+					Shape shape = model.describeInput().get(i).getValue(); 
+					
+					System.out.println("Shape dim: " + model.describeInput().get(i).getKey() + "  " + shape.dimension() + " nInput: " + model.describeInput().size());
+					
+					System.out.print("Shape " + i + " : " ); 
+					for (int j=0; j<shape.dimension(); j++) {
+					System.out.print(shape.get(j) + "  "); 
+				}
+					System.out.println("" ); 
+
+			}
 
 
 			WaveformTranslator translator = new WaveformTranslator(model.describeInput()); 
@@ -127,17 +134,23 @@ public class HumpbackGoogle {
 	 */
 	public static void main(String[] args) {
 
-		// let's test on some right whale data. 
-
-		//the second  class is humpback whale. class 0 = noise, Class 1= right whale. 
-		String wavFilePath = "/Volumes/GoogleDrive-108005893101854397430/My Drive/Programming/Python/humpback_google/sound.wav";
-
-
-		//String modelPath = "/Users/au671271/Google Drive/PAMGuard_dev/Deep_Learning/Right_whales_DG/model_lenet_dropout_input_conv_all.hdf5"; 
-		String modelPath = "/Volumes/GoogleDrive-108005893101854397430/My Drive/PAMGuard_dev/Deep_Learning/Google/humpback_whale_1/saved_model.pb";
+		// let's test on some right whale data.
 		
-	
-		//String outMatlabPath = "/Users/au671271/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/google_humpback/humpbackspecJ.mat";
+//		/****Google's original HumpBack whale classifier*****/
+//		//the second  class is humpback whale. class 0 = noise, Class 1= right whale. 
+//		String wavFilePath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Google/humpback_whale/sound.wav";
+//		//String modelPath = "/Users/au671271/Google Drive/PAMGuard_dev/Deep_Learning/Right_whales_DG/model_lenet_dropout_input_conv_all.hdf5"; 
+//		String modelPath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Google/humpback_whale/humpback_whale_1/saved_model.pb";
+
+		/****Vincent HumpBack whale classifier*****/
+		//the second  class is humpback whale. class 0 = noise, Class 1= right whale. 
+		String wavFilePath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Google/humpback_whale/sound.wav";
+
+		//the model
+		String modelPath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Google/humpback_whale_atlantic/FlatHBNA/saved_model.pb";
+
+		
+
 
 		int startChunk =  0; //humpback whale call
 		
@@ -147,6 +160,9 @@ public class HumpbackGoogle {
 		
 		//run the humpback whale classifier. 
 		runHumpbackWhaledl( modelPath,  wavFilePath,  startChunk,  chunkSize);
+		
+		
+		
 	
 	}
 

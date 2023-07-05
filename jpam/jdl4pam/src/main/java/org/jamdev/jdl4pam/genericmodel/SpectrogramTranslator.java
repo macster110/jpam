@@ -12,8 +12,8 @@ import ai.djl.translate.Translator;
 import ai.djl.translate.TranslatorContext;
 
 /**
- * The translator for the model. Ensure the input data is compatible for the model and the output  data 
- * is properly organised. 
+ * The translator for generic image based models. Note that bespoke version of this are 
+ * used for some frameowrks. 
  * 
  * @author Jamie Macaulay 
  *
@@ -24,6 +24,11 @@ public class SpectrogramTranslator implements Translator<float[][][], float[]> {
 	 * Create the shape 
 	 */
 	private Shape shape;
+	
+	/**
+	 * The audio shape index
+	 */
+	private Integer shapeIndex;
 
 
 	/**
@@ -48,6 +53,8 @@ public class SpectrogramTranslator implements Translator<float[][][], float[]> {
 		//Shape shape = new Shape(data.length, data[0].length, data[0][0].length, 1L); 
 		Shape shape; 
 		
+		
+		
 		if (this.shape!=null) {
 			
 			if (this.shape.dimension()==4) {
@@ -60,7 +67,7 @@ public class SpectrogramTranslator implements Translator<float[][][], float[]> {
 			}
 		}
 		else {
-			//try this shape. 
+			//try this shape just for a punt.
 			 shape = new Shape(data.length, data[0].length, data[0][0].length, 1L); 
 		}
 		
@@ -115,6 +122,27 @@ public class SpectrogramTranslator implements Translator<float[][][], float[]> {
 	 */
 	public void setShape(Shape shape) {
 		this.shape = shape;
+	}
+	
+	/**
+	 * Get the audio shape index. This can be null in which case the shape with the largest
+	 * dimensions will be assumed to be the input data. Note that often only one input shape 
+	 * is retrieved from the model in which case this index is redundant. 
+	 * @param shapeIndex - the shape index. 
+	 */
+	public Integer getAudioShapeIndex() {
+		return shapeIndex;
+	}
+
+
+	/**
+	 * Set the audio shape index.  This can be null in which case the shape with the largest
+	 * dimensions will be assumed to be the input data.  Note that often only one input shape 
+	 * is retrieved from the model in which case this index is redundant. 
+	 * @param shapeIndex - the shape index. 
+	 */
+	public void setAudioShapeIndex(Integer shapeIndex) {
+		this.shapeIndex = shapeIndex;
 	}
 };
 

@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import org.jamdev.jdl4pam.genericmodel.SpectrogramTranslator;
+import org.jamdev.jdl4pam.genericmodel.WaveformTranslator;
 import org.jamdev.jdl4pam.transforms.DLTransform;
 import org.jamdev.jdl4pam.transforms.DLTransformsFactory;
 import org.jamdev.jdl4pam.transforms.DLTransfromParams;
@@ -16,11 +16,16 @@ import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 import org.jamdev.jdl4pam.utils.DLUtils;
 import org.jamdev.jpamutils.wavFiles.AudioData;
 
+
+
+
 import ai.djl.Model;
 import ai.djl.engine.Engine;
 import ai.djl.inference.Predictor;
 
-public class KooguTest {
+public class KooguDLTest {
+	
+	
 	
 	/**
 	 * Run the right whale model. 
@@ -29,9 +34,9 @@ public class KooguTest {
 	 * @param startChunck - the locatation to start form in the file (in seconds). 
 	 * @return predicitons. 
 	 */
-	public static float[] runRightWhaleDL(String modelPath, String wavFilePath, int startChunck) {
+	public static float[] runKooguDL(String modelPath, String wavFilePath, int startChunck) {
 		float sr = 1000; 
-		int startchunk =  (int) (181.2*sr); //right whale call
+		
 		int nRuns = 5; 
 		//int startchunk =  (int) (190.2*sr); 
 
@@ -53,25 +58,22 @@ public class KooguTest {
 			System.out.println("Input: " + model.describeInput().values()); 
 			System.out.println("Output: " + model.describeOutput().values()); 
 
-			SpectrogramTranslator translator = new SpectrogramTranslator( model.describeInput().get(0).getValue()); 
+			WaveformTranslator translator = new WaveformTranslator(model.describeInput()); 
+			
 			//predictor for the model
-			Predictor<float[][][], float[]> predictor = model.newPredictor(translator);
+			Predictor<float[][], float[]> predictor = model.newPredictor(translator);
 
 
 			///load the wave data. 
 			//Open wav files. 
-			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
-			
-			
-			int[] samplesChunk = new int[] {0, 4000}; // the sample chunk to use. 
-
+			AudioData soundData = DLUtils.loadWavFile(wavFilePath);		
 
 			//create the transforms. 
 			ArrayList<DLTransfromParams> dlTransformParamsArr = new ArrayList<DLTransfromParams>();
 
 			//waveform transforms. 
 			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.DECIMATE, sr)); 
-			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.TRIM, startchunk, startchunk+chunkSize)); 
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.TRIM, startChunck, startChunck+chunkSize)); 
 			//			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.PREEMPHSIS, preemphases)); 
 //			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAM, 256, 100)); 
 //			//in the python code they have an sfft of 129xN where N is the number of chunks. They then
@@ -89,38 +91,40 @@ public class KooguTest {
 			for (int i=0; i<transforms.size(); i++) {
 				transform = transforms.get(i).transformData(transform); 
 			}
-			float[][] dataF =  DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
-			System.out.println("Data input size: " + dataF.length + "   " + dataF[0].length);
 			
-//			Matrix matrixSpec=  DLMatFile.array2Matrix(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
-//
-//			MatFile matFile = Mat5.newMatFile()
-//					.addArray("spectrogram", matrixSpec); 
-//
-//			try {
-//				Mat5.writeToFile(matFile, outMatlabPath);
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-
+			
+			double[] dataD = ((WaveTransform) transform).getWaveData().getScaledSampleAmpliudes();
+			
+			float[] dataF = new float[dataD.length]; 
+			for (int i=0; i<dataF.length; i++) {
+				dataF[i]= (float) dataD[i];
+			}
+			
+			
+			System.out.println("Data input size: " + dataF.length);
+			
+			int nBatch = 5; //the number of batches. 
 			float[] output = null; 
-			float[][][] data;
-			for (int i=0; i<nRuns; i++) {
+			long totaltime1 = System.currentTimeMillis();
+			
+			float[][] batchData = new float[nBatch][]; 
+			for (int j=0; j<nBatch; j++) {
+				batchData[j] = dataF; 
+			}
+			
+			for (int j=0; j<nRuns; j++) {
 				long time1 = System.currentTimeMillis();
-				//				data = DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
-				//				System.out.println("Data input size: " + data.length + "   " + data[0].length);
-				int nSpec = 1;
-				data = new float[nSpec][][]; 
-				for (int j=0; j<nSpec; j++) {
-					//data[j]=  DLUtils.makeDummySpectrogram(40, 40); 
-					data[j]=  dataF; 
-				}
-
-				output = predictor.predict(data); 
+				output = predictor.predict(batchData); 
 				long time2 = System.currentTimeMillis();
 				System.out.println("Time to run model: " + (time2-time1) + " ms"); 
-
+	
+				long totaltime2 = System.currentTimeMillis();
+	
+				System.out.println("Total time to run model: " + (totaltime2-totaltime1) + " ms"); 
+			}
+			
+			for (int i=0; i<output.length ; i++) {
+				System.out.println(output[i]);
 			}
 
 			//			Criteria criteria = Criteria.builder().
@@ -151,20 +155,16 @@ public class KooguTest {
 
 		//right whale at 3.01.201 - 181 seconds. 
 		//the second  class is right whale. class 0 = noise, Class 1= right whale. 
-		String wavFilePath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Right_whales_DG/SouthernRightWhale001-v1/sar98_trk3_8000.wav";
+		String wavFilePath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Koogu/right_whale/right_whale_koogu.wav";
 
 		//		String modelPath = "/Users/au671271/Google Drive/PAMGuard_dev/Deep_Learning/Right_whales_DG/model_lenet_dropout_input_conv_all.hdf5"; 
-		String modelPath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Koogu/model/koogu_narw_model/saved_model.pb";
-		
+		String modelPath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Koogu/right_whale/model/koogu_narw_model/saved_model.pb";
+		float sr = 1000; 
+		int startchunk =  0; //(int) (2.25*sr); //right whale call
 	
 //		String outMatlabPath = "/Users/au671271/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/generic_classifier/rightwhaespec.mat";
 		
-
-
-		float sr = 2000; 
-		int startchunk =  (int) (181.2*sr); //right whale call
-		
-		float[] output  = runRightWhaleDL(modelPath, wavFilePath, startchunk); 
+		float[] output  = runKooguDL(modelPath, wavFilePath, startchunk); 
 		
 
 		for (int j = 0; j<output.length; j++) {

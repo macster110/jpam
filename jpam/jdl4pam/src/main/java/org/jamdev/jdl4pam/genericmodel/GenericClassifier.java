@@ -67,14 +67,12 @@ public class GenericClassifier {
 		} 
 	}
 
-
-
 	/**
 	 * Run the currently loaded model on a chunk of sound data. 
 	 * @param rawWaveData - a raw chunk of sound data with peak levels between -1 and 1. 
 	 * @return the probability of each class in the model. 
 	 */
-	public double[] runModel(double[] rawWaveData, float sR) {
+	public double[] runModel(double[] rawWaveData, float sR, boolean softMax) {
 
 		//wav file 
 		try {			
@@ -110,7 +108,12 @@ public class GenericClassifier {
 				//				    	prob = torch.nn.functional.softmax(out).numpy()[n, 1]
 				//			                    pred = int(prob >= ARGS.threshold)		    	
 				//softmax function
-				prob[j] = DLUtils.softmax(output[j], output); 
+				if (softMax) {
+					prob[j] = DLUtils.softmax(output[j], output); 
+				}
+				else {
+					prob[j] = output[j]; 
+				}
 				//System.out.println("The probability is: " + prob[j]); 
 			}
 
