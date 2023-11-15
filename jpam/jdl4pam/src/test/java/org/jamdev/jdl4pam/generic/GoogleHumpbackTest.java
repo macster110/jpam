@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import ai.djl.Model;
 
+
 public class GoogleHumpbackTest {
 	
 	/**
@@ -34,8 +35,8 @@ public class GoogleHumpbackTest {
 
 		
     	//relative paths to the resource folders.
-    	String relModelPath  =	"./src/main/java/org/jamdev/jdl4pam/resources/generic/ghumpback/humpback_whale_1/saved_model.pb";
-		String relWavPath  =	"./src/main/java/org/jamdev/jdl4pam/resources/generic/ghumpback/humpback.wav";
+    	String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/ghumpback/humpback_whale_1/saved_model.pb";
+		String relWavPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/ghumpback/humpback.wav";
  
 		Path path = Paths.get(relModelPath);
 		//note that normalize gets rid of all the redundant elements (e.g. .)
@@ -67,7 +68,7 @@ public class GoogleHumpbackTest {
 	
 	
 	/**
-	 * Test a humpback whale classifier from Vincent. no publication yet/ 
+	 * Test a humpback whale classifier from Vincent. no publication yet. 
 	 * <p>
 	 * Note that this test uses lower level code from the ai.djl library and some functions 
 	 * jdl4pam. 
@@ -78,9 +79,9 @@ public class GoogleHumpbackTest {
 		
 		System.out.println("Humpback Atlantic test:");
     	//relative paths to the resource folders.
-    	String relModelPath  =	"./src/main/java/org/jamdev/jdl4pam/resources/generic/ghumpback_atlantic/FlatHBNA/saved_model.pb";
-		String relWavPath  =	"./src/main/java/org/jamdev/jdl4pam/resources/generic/ghumpback_atlantic/Challenger_sample_humpback_detector.wav";
-		String resultsPath  =	"./src/main/java/org/jamdev/jdl4pam/resources/generic/ghumpback_atlantic/Challenger_sample_humpback_detector_annotations.txt";
+    	String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/ghumpback_atlantic/FlatHBNA/saved_model.pb";
+		String relWavPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/ghumpback_atlantic/Challenger_sample_humpback_detector.wav";
+		String resultsPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/ghumpback_atlantic/Challenger_sample_humpback_detector_annotations.txt";
 
 		Path path = Paths.get(relModelPath);
 		//note that normalize gets rid of all the redundant elements (e.g. .)
@@ -129,7 +130,7 @@ public class GoogleHumpbackTest {
 				  
 				  //allow 10% scrumph to take account of slight differences in Java input. 
 //				  assertTrue(output[0]>prediction*0.9 && output[0]<prediction*1.1); //humpback whale detection
-				  assertTrue(true); //humpback whale detection
+				  assertTrue(true); //humpback whale detection //FIXME
 
   
 			  }

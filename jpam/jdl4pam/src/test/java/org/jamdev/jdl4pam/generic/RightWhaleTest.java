@@ -25,8 +25,8 @@ public class RightWhaleTest {
 	public void rightWhaleTest()
 	{
     	//relative paths to the resource folders.
-    	String relModelPath  =	"./src/main/java/org/jamdev/jdl4pam/resources/generic/rightwhale/model_lenet_dropout_input_conv_all/saved_model.pb";
-		String relWavPath  =	"./src/main/java/org/jamdev/jdl4pam/resources/generic/rightwhale/sar98_trk3_8000.wav";
+    	String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/rightwhale/model_lenet_dropout_input_conv_all/saved_model.pb";
+		String relWavPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/rightwhale/sar98_trk3_8000.wav";
  
 		Path path = Paths.get(relModelPath);
 		//note that normalize gets rid of all the redundant elements (e.g. .)

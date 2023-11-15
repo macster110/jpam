@@ -97,11 +97,11 @@ public class KetosTest {
 		 * Example running Ketos model on a wav file. 
 		 */
 		
-		String relModelPath = 	"./src/main/java/org/jamdev/jdl4pam/resources/Ketos/right_whale/hallo-kw-det_v1/hallo-kw-det_v1.ktpb";
+		String relModelPath = 	"./src/test/java/org/jamdev/jdl4pam/resources/Ketos/right_whale/hallo-kw-det_v1/hallo-kw-det_v1.ktpb";
 
 		/****Wav files*****/
 		//jasco_reduced - use for right whales hallo-kw-det_v1
-		String relWavFilePath = "./src/main/java/org/jamdev/jdl4pam/resources/Ketos/right_whale/hallo-kw-det_v1/jasco_reduced.wav";
+		String relWavFilePath = "./src/test/java/org/jamdev/jdl4pam/resources/Ketos/right_whale/hallo-kw-det_v1/jasco_reduced.wav";
 	
 		
 		Path path = Paths.get(relModelPath);

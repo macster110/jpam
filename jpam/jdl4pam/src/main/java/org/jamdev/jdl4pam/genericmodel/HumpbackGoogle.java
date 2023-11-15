@@ -79,7 +79,7 @@ public class HumpbackGoogle {
 		return model;
 
 	}
-
+	
 	/**
 	 * Run some wav data through Google's humpback whale deep learning model. Note that this runs five batches - that means the model is 
 	 * 
@@ -94,11 +94,6 @@ public class HumpbackGoogle {
 	 * @return the prediction outputs for the selected audio chunk.
 	 */
 	public static float[] runHumpbackWhaledl(Model model, AudioData soundData, int startChunk, int chunkSize, int nRuns) {
-		WaveformTranslator translator = new WaveformTranslator(model.describeInput());
-
-		// predictor for the model
-		Predictor<float[][], float[]> predictor = model.newPredictor(translator);
-
 		// create the transforms - here the google model accepts a waveform and does all
 		// the
 		// transoforms itself.
@@ -106,6 +101,29 @@ public class HumpbackGoogle {
 
 		// waveform transforms.
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.TRIM, startChunk, startChunk + chunkSize));
+		
+		return runGenericWaveModel( model,  soundData,  dlTransformParamsArr, startChunk,  chunkSize,  nRuns); 
+	}
+
+	/**
+	 * Run some wav data through Google's humpback whale deep learning model. Note that this only supports the input of raw wave data, not spectrograms. 
+	 * 
+	 * @param model      - model object which has loaded Google's humpback model.
+	 * @param soundData  - sound data to process.
+	 * @param startChunk - the start of the audio chunk to process in SAMPLES from
+	 *                   start of file.
+	 * @param chunkSize  - the end of the audio chunk to process in SAMPLES from the
+	 *                   start of the file. Note that the audio chunk size must
+	 *                   correspond to the sixe expect by the model.
+	 * @param nRuns - the number of times to process the data - 1 means the model is called once. 
+	 * @return the prediction outputs for the selected audio chunk.
+	 */
+	public static float[] runGenericWaveModel(Model model, AudioData soundData, ArrayList<DLTransfromParams> dlTransformParamsArr, int startChunk, int chunkSize, int nRuns) {
+		WaveformTranslator translator = new WaveformTranslator(model.describeInput());
+
+		// predictor for the model
+		Predictor<float[][], float[]> predictor = model.newPredictor(translator);
+		
 		// dlTransformParamsArr.add(new
 		// SimpleTransformParams(DLTransformType.PREEMPHSIS, preemphases));
 
@@ -126,7 +144,7 @@ public class HumpbackGoogle {
 		for (int i = 0; i < dataF.length; i++) {
 			dataF[i] = (float) dataD[i];
 		}
-		System.out.println("Data input size: " + dataF.length + "   " + dataF.length);
+//		System.out.println("Data input size: " + dataF.length);
 
 		int nBatch = 5; // the number of batches.
 		float[] output = null;
@@ -146,11 +164,11 @@ public class HumpbackGoogle {
 				e.printStackTrace();
 			}
 			long time2 = System.currentTimeMillis();
-			System.out.println("Time to run model: " + (time2 - time1) + " ms");
+//			System.out.println("Time to run model: " + (time2 - time1) + " ms");
 
 			long totaltime2 = System.currentTimeMillis();
 
-			System.out.println("Total time to run model: " + (totaltime2 - totaltime1) + " ms");
+//			System.out.println("Total time to run model: " + (totaltime2 - totaltime1) + " ms");
 		}
 
 //		for (int i = 0; i < output.length; i++) {

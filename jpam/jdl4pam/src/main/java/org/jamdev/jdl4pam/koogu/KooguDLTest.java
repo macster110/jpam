@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import org.jamdev.jdl4pam.genericmodel.GenericModel;
 import org.jamdev.jdl4pam.genericmodel.WaveformTranslator;
 import org.jamdev.jdl4pam.transforms.DLTransform;
 import org.jamdev.jdl4pam.transforms.DLTransformsFactory;
@@ -22,11 +23,75 @@ import org.jamdev.jpamutils.wavFiles.AudioData;
 import ai.djl.Model;
 import ai.djl.engine.Engine;
 import ai.djl.inference.Predictor;
+import ai.djl.translate.TranslateException;
 
 public class KooguDLTest {
 	
 	
+	/**
+	 * Run some wav data through a Koogu deep learning model. Note that this only supports the input of raw wave data, not spectrograms. 
+	 * 
+	 * @param model      - model object which has a loaded Koogu Model. 
+	 * @param soundData  - sound data to process.
+	 * @param startChunk - the start of the audio chunk to process in SAMPLES from
+	 *                   start of file.
+	 * @param chunkSize  - the end of the audio chunk to process in SAMPLES from the
+	 *                   start of the file. Note that the audio chunk size must
+	 *                   correspond to the sixe expect by the model.
+	 * @param nRuns - the number of times to process the data - 1 means the model is called once. 
+	 * @return the prediction outputs for the selected audio chunk.
+	 */
+	public static float[] runGenericWaveModel(GenericModel model, AudioData soundData, ArrayList<DLTransfromParams> dlTransformParamsArr, int nRuns) {
+		
+		
+		ArrayList<DLTransform> transforms =	DLTransformsFactory.makeDLTransforms(dlTransformParamsArr); 
 	
+		((WaveTransform) transforms.get(0)).setWaveData(soundData); 
+
+		//run the tansforms. 
+		DLTransform transform = transforms.get(0); 
+		for (int i=0; i<transforms.size(); i++) {
+			transform = transforms.get(i).transformData(transform); 
+		}
+
+		double[] dataD = ((WaveTransform) transform).getWaveData().getScaledSampleAmplitudes();
+
+		float[] dataF = new float[dataD.length]; 
+		for (int i=0; i<dataF.length; i++) {
+			dataF[i]= (float) dataD[i];
+		}
+
+
+		System.out.println("Data input size: " + dataF.length);
+
+		int nBatch = 5; //the number of batches. 
+		float[] output = null; 
+		long totaltime1 = System.currentTimeMillis();
+
+		float[][] batchData = new float[nBatch][]; 
+		for (int j=0; j<nBatch; j++) {
+			batchData[j] = dataF; 
+		}
+
+		for (int j=0; j<nRuns; j++) {
+			long time1 = System.currentTimeMillis();
+
+			output = model.runModel(batchData);
+			long time2 = System.currentTimeMillis();
+//			System.out.println("Time to run model: " + (time2-time1) + " ms"); 
+
+			long totaltime2 = System.currentTimeMillis();
+
+//			System.out.println("Total time to run model: " + (totaltime2-totaltime1) + " ms"); 
+		}
+		
+		return output;
+	}
+
+	
+	
+	
+
 	/**
 	 * Run the right whale model. 
 	 * @param modelPath - the path the saved_model.pb file
