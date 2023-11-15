@@ -169,7 +169,7 @@ public class AnimalSpotClassifier {
 			
 			AnimalSpotClassifier soundSpotClassifier = new AnimalSpotClassifier(modelPath); 
 
-			double[] result = soundSpotClassifier.runModel(soundData.getScaledSampleAmpliudes(), soundData.sampleRate); 
+			double[] result = soundSpotClassifier.runModel(soundData.getScaledSampleAmplitudes(), soundData.sampleRate); 
 			
 		    for (int j=0; j<result.length; j++) {
 		    	System.out.println("The probability of class " + j + " is "  + result[j]); 

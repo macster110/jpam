@@ -140,7 +140,7 @@ public class Spectrogram {
 	 */
 	private void buildSpectrogram(AudioData wave) {
 
-		double[] amplitudes = wave.getScaledSampleAmpliudes();
+		double[] amplitudes = wave.getScaledSampleAmplitudes();
 		int pointer = 0;
 
 		// System.out.println("Build spectrogram: sR: " + wave.sampleRate + " FFTHop: "
@@ -243,7 +243,7 @@ public class Spectrogram {
 	 */
 	private void buildSpectrogramKetos(AudioData wave) {
 
-		double[] amplitudes = wave.getScaledSampleAmpliudes();
+		double[] amplitudes = wave.getScaledSampleAmplitudes();
 		
 		//note that w=the window duration here is the true segment length. i.e. it is NOT the "duration" paramter
 		//in the ketos JSON file but the caluclated segment length. See KetosParams for more info. 

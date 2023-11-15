@@ -2,8 +2,6 @@ package org.jamdev.jdl4pam.transforms.jsonfile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Iterator;
-
 import org.jamdev.jdl4pam.FrameWork;
 import org.jamdev.jdl4pam.genericmodel.DefaultGenericParams;
 import org.jamdev.jdl4pam.genericmodel.DefaultGenericParams.GenericModel;
@@ -14,7 +12,6 @@ import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import ai.djl.ndarray.types.LayoutType;
 import ai.djl.ndarray.types.Shape;
 
 /**
@@ -29,7 +26,10 @@ public class DLTransformParser2 {
 	/**
 	 * The version of the metadata. 
 	 */
-	public static final double DL_JSON_VERSION = 1.0; 
+	public static final double DL_JSON_VERSION = 1.0;
+	
+	
+	private static final String DL_JSON_DESCRIPTION = "Metadata for acoustic deep learning"; 
 
 
 	/**
@@ -112,11 +112,10 @@ public class DLTransformParser2 {
 		}
 
 		if (classNames!=null) {
-			modelParams.classNames = null; 
+			modelParams.classNames = classNames; 
 		}
 
 		return modelParams; 
-
 	}
 
 
@@ -301,6 +300,8 @@ public class DLTransformParser2 {
 		versionObject.put("version", version);
 
 		mainObject.put("version_info", versionObject);
+		mainObject.put("description", DL_JSON_DESCRIPTION);
+
 
 		return mainObject;
 	}
@@ -375,7 +376,7 @@ public class DLTransformParser2 {
 			if (modelObject.has("input_shape")) {
 				info.inputShape =  readJSONShapeObject(modelObject, "input_shape"); 
 			}
-			if (modelObject.has("v")) {
+			if (modelObject.has("output_shape")) {
 				info.outputShape =  readJSONShapeObject(modelObject, "output_shape"); 
 			}
 

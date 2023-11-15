@@ -118,8 +118,8 @@ public class SpectrogramTests {
 			
 			
 			//save the sound file
-			System.out.println("Sound data length: " + soundData.getScaledSampleAmpliudes().length);
-			Matrix rawSoundData =  DLMatFile.array2Matrix(soundData.getScaledSampleAmpliudes());
+			System.out.println("Sound data length: " + soundData.getScaledSampleAmplitudes().length);
+			Matrix rawSoundData =  DLMatFile.array2Matrix(soundData.getScaledSampleAmplitudes());
 			Matrix sampleschnk =  DLMatFile.array2Matrix(samplesChunk);
 
 

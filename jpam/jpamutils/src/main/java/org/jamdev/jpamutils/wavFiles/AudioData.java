@@ -124,7 +124,7 @@ public class AudioData {
 	 * Get the sample amplitudes as a double scaled between -1 and 1.
 	 * @return the scaled amplitude samples.
 	 */
-	public double[] getScaledSampleAmpliudes() {
+	public double[] getScaledSampleAmplitudes() {
 		//must divide the bitsize by because we are scaling between -1 and 1 i.e a range of 2.
 		double bitSize = Math.pow(2, bitRate)/2;
 
@@ -295,7 +295,7 @@ public class AudioData {
 		return x_padded;
 	}
 	public void appendLeftRight(int num_pad_left, int num_pad_right) {
-		double[] wavArray = getScaledSampleAmpliudes();
+		double[] wavArray = getScaledSampleAmplitudes();
 
 		double[] wavArrayPadded = pad_reflect(wavArray, num_pad_left, num_pad_right, Boolean.FALSE);
 
@@ -327,7 +327,7 @@ public class AudioData {
 	 * @return AudioData object containing interpolated data and sample rate.
 	 */
 	public AudioData interpolate(float interpSr) {
-		double[] wavArray = getScaledSampleAmpliudes();
+		double[] wavArray = getScaledSampleAmplitudes();
 
 		double[] intperarr = wavInterpolator.interpolate(wavArray, this.sampleRate, interpSr);
 
@@ -349,7 +349,7 @@ public class AudioData {
 	public AudioData interpolate_scipy(float target_sr) {
 		
 
-		double[] wavArray = getScaledSampleAmpliudes();
+		double[] wavArray = getScaledSampleAmplitudes();
 		double ratio = target_sr / this.sampleRate;
 		int n_samples = (int) Math.ceil(wavArray.length * ratio);
 

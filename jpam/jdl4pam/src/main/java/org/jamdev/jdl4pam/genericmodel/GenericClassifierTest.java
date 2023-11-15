@@ -119,7 +119,7 @@ public class GenericClassifierTest {
 			GenericClassifier genericClassifier = new GenericClassifier(modelPath); 
 			genericClassifier.getGenericModelParams().dlTransforms = dlTransformParamsArr;
 
-			double[] output = genericClassifier.runModel(soundData.getScaledSampleAmpliudes() , soundData.getSampleRate(), true); 
+			double[] output = genericClassifier.runModel(soundData.getScaledSampleAmplitudes() , soundData.getSampleRate(), true); 
 
 			for (int j = 0; j<output.length; j++) {
 				System.out.println("Output: " + j + " : " + output[j]);

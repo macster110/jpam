@@ -47,7 +47,7 @@ public class KetosTransformsTest {
 			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
 			System.out.println( "Open sound file: No. samples: "+ soundData.samples.length + " sample rate: " + soundData.sampleRate);
 
-			double[] minmax = JamArr.minmax(soundData.getScaledSampleAmpliudes());
+			double[] minmax = JamArr.minmax(soundData.getScaledSampleAmplitudes());
 			System.out.println("sound amplutude: min " + minmax[0] + " max " + minmax[1]);
 			
 			
@@ -110,8 +110,8 @@ public class KetosTransformsTest {
 			//export to MATLAB
 			//Matrix matrixSpec=  DLMatFile.array2Matrix(spec);
 			//save the sound file
-			System.out.println("Sound data length: " + soundData.getScaledSampleAmpliudes().length);
-			Matrix rawSoundData =  DLMatFile.array2Matrix(soundData.getScaledSampleAmpliudes());
+			System.out.println("Sound data length: " + soundData.getScaledSampleAmplitudes().length);
+			Matrix rawSoundData =  DLMatFile.array2Matrix(soundData.getScaledSampleAmplitudes());
 
 
 			MatFile matFile = Mat5.newMatFile()

@@ -26,7 +26,7 @@ public class JSONParseTest {
 		
 		GenericModelParams params = jsonParseTest(inputParams);
 		
-		assertTrue(inputParams.equals(params) ); 
+		assertTrue(inputParams.equals(params)); 
 	}
 	
 	

@@ -43,8 +43,6 @@ public class GenericModelParams {
 	 */
 	public Shape defaultOutputShape = null;
 	
-
-	
 	/**
 	 * The target segment length in milliseconds. The segment
 	 * length is the duration of sound sent to the model. 

@@ -30,9 +30,12 @@ public abstract class SimpleTransform implements DLTransform {
 	
 	@Override
 	public boolean equals(Object o) {
+		
+		if (o==null) return false; 
 
 		SimpleTransform transform = (SimpleTransform) o; 
 
+		
 		if (params ==null && transform.params!=null) return false;
 		if (transform.params ==null && params!=null) return false;
 

@@ -93,7 +93,7 @@ public class KooguDLTest {
 			}
 			
 			
-			double[] dataD = ((WaveTransform) transform).getWaveData().getScaledSampleAmpliudes();
+			double[] dataD = ((WaveTransform) transform).getWaveData().getScaledSampleAmplitudes();
 			
 			float[] dataF = new float[dataD.length]; 
 			for (int i=0; i<dataF.length; i++) {
