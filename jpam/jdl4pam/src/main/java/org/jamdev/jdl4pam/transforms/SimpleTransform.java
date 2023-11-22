@@ -31,7 +31,10 @@ public abstract class SimpleTransform implements DLTransform {
 	@Override
 	public boolean equals(Object o) {
 		
-		if (o==null) return false; 
+		if (o==null) {
+//			System.out.println("Simple transform not equal null ");
+			return false; 
+		}
 
 		SimpleTransform transform = (SimpleTransform) o; 
 
@@ -41,10 +44,14 @@ public abstract class SimpleTransform implements DLTransform {
 
 		if (params!=null) {
 
-			if (params.length != transform.params.length) return false; 
+			if (params.length != transform.params.length) {
+//				System.out.println("Simple transform not same length ");
+				return false; 
+			}
 
 			for (int i=0; i<params.length; i++) {
 				if (!params[i].equals(transform.params[i])) {
+//					System.out.println("Simple transform not equal: " + i + "  " +  params[i] + "  " + transform.params[i]);
 					return false;  
 				}
 			}

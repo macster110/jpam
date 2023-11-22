@@ -47,7 +47,7 @@ public class KooguTest {
 		GenericModelParams params;
 		try {
 			params = JSONParseTest.jsonParseTest(genericModelParams);
-
+			
 			assertTrue(genericModelParams.equals(params) ); 
 
 		} catch (Exception e) {
@@ -69,7 +69,7 @@ public class KooguTest {
 		String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/blue_whale/BmD_23_tf_model/koogu/saved_model.pb";
 		String relWavPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/blue_whale/20190527_190000.wav";
 
-		double[][] predictions = new double[][] {{0,1},{1,0},{1,0}, {1,0}, {1,0}, {1,0}, {1,0}, {1,0},{1,0}}; //right whale in second chunk. 
+		double[][] predictions = new double[][] {{0,1},{1,0},{1,0}, {1,0}, {1,0}, {1,0}, {1,0}, {1,0},{1,0},{1,0}}; //right whale in second chunk. 
 
 		Path path = Paths.get(relModelPath);
 		//note that normalize gets rid of all the redundant elements (e.g. .)
@@ -81,7 +81,7 @@ public class KooguTest {
 		//the target sample rate
 		float sr = 1000; 
 
-		int chunkSize  =  (int) (2.25*sr); //blue whale call
+		int chunkSize  =  (int) (5*sr); //blue whale call
 		
 		//run the Koogu test. 
 //		kooguTest(modelPath,  wavFilePath,  predictions,  sr,  chunkSize); 

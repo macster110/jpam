@@ -27,7 +27,12 @@ public class Spectrogram {
 	 * The hop size in samples.
 	 */
 	private int fftHop = 512;
+	
+	/**
+	 * The winow duration in seconds. 
+	 */
 	private double window_duration;
+	
 	/**
 	 * The total number of fft windows.
 	 */
@@ -74,7 +79,13 @@ public class Spectrogram {
 		this.buildSpectrogram(wave);
 	}
 	
-	
+	/**
+	 * Create a spectrogram which is compatible with Ketos models. 
+	 * @param wave      - the clip of sound data
+	 * @param fftLength - the FFT length in samples
+	 * @param fftHop    - the spectrogram hop size to use in samples.
+	 * @param window_duration - the duration of the sound window to use in seconds. 
+	 */
 	public Spectrogram(AudioData wave, int fftLength, int fftHop, double window_duration) {
 		//System.out.println("FFTLength: " + fftLength + " FFTHop: " + fftHop + "  windowDuration " + window_duration); 
 		this.sR = wave.getSampleRate();

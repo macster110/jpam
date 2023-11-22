@@ -23,7 +23,7 @@ import ai.djl.MalformedModelException;
  * <p>
  * Ketos has a slightly weird way of analysing wav files. It creates a sample
  * offset in the file, zero pads this and then processes the rest of the data
- * with that offset. So, for example, it migth offset the start of the file by a
+ * with that offset. So, for example, it mnight offset the start of the file by a
  * few hundred samples, and then create consecutive time windows. This can make
  * it hard to compare Ketos models in JPam to those in Python. KetosProcess
  * provides functions to run Ketos models in the same way the Ketos Python
@@ -92,7 +92,7 @@ public class KetosAudioProcess {
 			duration = ketosParams.getDuration(); 
 		}
 		else {
-			duration = ketosParams.seglen;
+			duration = ketosParams.segLen;
 		}
 
 		if (hop == null) {
@@ -122,7 +122,7 @@ public class KetosAudioProcess {
 			}
 
 			// Time limits of the audio would be after the new duration computed in the KetosParams function
-			double[] timelims = new double[]{startTime, startTime + ketosParams.seglen}; //5 second window
+			double[] timelims = new double[]{startTime, startTime + ketosParams.segLen}; //5 second window
 
 
 			int[] timelims_samples = new int[]{(int) (DLUtils.numSamplesKetos(startTime,
@@ -196,7 +196,7 @@ public class KetosAudioProcess {
 		
 
 
-			ketosResults.add(new KetosResult(prob, timelims[0], ketosParams.seglen)); 	
+			ketosResults.add(new KetosResult(prob, timelims[0], ketosParams.segLen)); 	
 
 			/**************************************************************/
 		}
@@ -235,14 +235,14 @@ public class KetosAudioProcess {
 		JSONObject specObject = jsonObject.getJSONObject("spectrogram");
 
 		// New sample rate.
-		double sampleRate = KetosParams.getKetosDouble(specObject, "rate");//very important
+		double sampleRate = KetosTransformParser.getKetosDouble(specObject, "rate");//very important
 
 		//set the segment length.
-		double total_duration = KetosParams.getKetosDouble(specObject, "duration");
+		double total_duration = KetosTransformParser.getKetosDouble(specObject, "duration");
 
 
-		int n_fft = DLUtils.numSamplesKetos(KetosParams.getKetosDouble(specObject, "window"), sampleRate, Boolean.TRUE);
-		int hop_length = DLUtils.numSamplesKetos(KetosParams.getKetosDouble(specObject, "step"), sampleRate, Boolean.TRUE);
+		int n_fft = DLUtils.numSamplesKetos(KetosTransformParser.getKetosDouble(specObject, "window"), sampleRate, Boolean.TRUE);
+		int hop_length = DLUtils.numSamplesKetos(KetosTransformParser.getKetosDouble(specObject, "step"), sampleRate, Boolean.TRUE);
 
 		/******** Between these trails: from load_audio_for_spec.py in spectrogram.py ********/
 		// Compute specParamsOffsets

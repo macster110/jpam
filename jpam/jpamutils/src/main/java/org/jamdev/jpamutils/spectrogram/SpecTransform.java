@@ -123,6 +123,7 @@ public class SpecTransform {
 	public SpecTransform normaliseMinMax() {
 		if (this.specData==null) initialiseSpecData(); 
 		this.specData = normaliseMinMax(this.specData);
+//		System.out.println("Min max: 2" + JamArr.min(specData)); 
 		if (maintainPhase) absSpec2Complex(); //set the new data in the complex spectrogram
 		return this;
 	}
@@ -308,6 +309,9 @@ public class SpecTransform {
 	 * @return the normalised spectrogram. 
 	 */
 	public static double[][] dBSpec(double[][] array, boolean power, double mindB) {
+		
+		System.out.println("MINDB: " +  mindB + "  " +power); 
+		
 		double eps = 1.4210854715202004e-14;
 		double coeff = 20;
 		if (power) {
@@ -324,8 +328,8 @@ public class SpecTransform {
 				else {
 					logSpectrgram[i][j] = coeff * Math.log10(array[i][j]);
 				}
-				if (logSpectrgram[i][j]<-mindB) {
-					logSpectrgram[i][j] =-mindB;
+				if (logSpectrgram[i][j]<mindB) {
+					logSpectrgram[i][j] =mindB;
 				}
 			}
 		}
@@ -363,12 +367,12 @@ public class SpecTransform {
 		double[][] array = copyArr(img); 
 		
 		double min = JamArr.min(array);
-
-		array = JamArr.subtract(array, min);
 		
 		double max = JamArr.max(array);
 
-		array = JamArr.divide(array, max);
+		array = JamArr.subtract(array, min);
+		
+		array = JamArr.divide(array, max-min);
 
 		return array; 
 	}

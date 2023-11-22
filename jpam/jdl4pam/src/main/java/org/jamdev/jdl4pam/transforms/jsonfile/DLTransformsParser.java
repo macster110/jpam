@@ -337,6 +337,7 @@ public class DLTransformsParser {
 			number[0] = jsonObjectParams.getInt("min"); 
 			number[1] = jsonObjectParams.getInt("max"); 
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
+			break;
 		case SPECNORMALISESTD:
 			number = new Number[2]; 
 			//may need to add defaults. 

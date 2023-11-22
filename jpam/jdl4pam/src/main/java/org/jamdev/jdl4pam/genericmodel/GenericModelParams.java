@@ -90,9 +90,11 @@ public class GenericModelParams {
 
 		//check the transforms are the same. 		
 		if (this.dlTransforms!=null && params.dlTransforms == null) {
+//			System.out.println("Transforms are null this"); 
 			return false; 
 		}
 		if (params.dlTransforms!=null && this.dlTransforms == null) {
+//			System.out.println("Transforms are null test"); 
 			return false; 
 		}
 		
@@ -100,11 +102,13 @@ public class GenericModelParams {
 		if (this.dlTransforms!=null) {
 			
 			if (this.dlTransforms.size()!=dlTransforms.size()) {
+//				System.out.println("Transforms size not the same"); 
 				return false; 
 			}
 				
 			for (int i=0; i<this.dlTransforms.size();i++) {
 				if (!this.dlTransforms.get(i).equals(params.dlTransforms.get(i))) {
+//					System.out.println(dlTransforms.get(i) + " not equal to "  + params.dlTransforms.get(i)); 
 					return false; 
 				}
 			}
@@ -114,19 +118,33 @@ public class GenericModelParams {
 		}
 		
 		
+//		System.out.println("Basic params seglen: " + this.segLen  + "  " + params.segLen);
+//		System.out.println("Basic params defaultOutputShape: " + this.defaultOutputShape  + "  " + params.defaultOutputShape);
+//		System.out.println("Basic params defaultInputShape: " + this.defaultInputShape  + "  " + params.defaultInputShape);
+		
 		//check the rest. 
-		
 		boolean isEqual = 
-				this.segLen == params.segLen &&
-				this.defaultOutputShape.equals(params.defaultOutputShape) && 
-				this.defaultInputShape.equals(params.defaultInputShape) &&
-				Arrays.equals(	this.classNames, params.classNames); 
-		
-		
+				this.segLen.equals(params.segLen) && 
+				shapeEquals(this.defaultOutputShape, params.defaultOutputShape) &&
+				shapeEquals(this.defaultOutputShape, params.defaultInputShape) &&
+				Arrays.equals(this.classNames, params.classNames); 
+
 		return isEqual; 
 		
 	}
 
+	/**
+	 * Test whether two shapes are equal. 
+	 * @param shape1 - the first shape to compare
+	 * @param shape2 - the second shape to compare
+	 */
+	private boolean shapeEquals(Shape shape1, Shape shape2) {
+		if (shape1==null && shape2==null) return true;
+		if (shape1==null && shape2!=null) return false;
+		if (shape1!=null && shape2==null) return false;
+		
+		return shape1.equals(shape2); 
+	}
 
 
 	

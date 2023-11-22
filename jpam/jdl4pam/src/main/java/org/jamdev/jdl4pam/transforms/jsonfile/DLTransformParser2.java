@@ -468,6 +468,29 @@ public class DLTransformParser2 {
 		return dlTransformParamsArr; 
 
 	}
+	
+	
+	/**
+	 * Check whether a JOSNObject is a V2+ version of paramters. If so the functions in DLtransforParser2 will
+	 * work for converting the file. 
+	 * @param jsonObject - the JSON object. 
+	 * @return true if JSON metadata format is V2+. 
+	 */
+	public static boolean isParamsV2(JSONObject jsonObject){
+		boolean isParamsV2 =false; 
+		
+		//does the object have a version
+		if (jsonObject.has("version_info") ) {
+			JSONObject versionObject = jsonObject.getJSONObject("version_info"); 
+			
+			//lots of JSON metadata might have a version number so to be absolutely sure...
+			if (versionObject.has("version")) {
+				isParamsV2=true;
+			}
+		}
+		
+		return isParamsV2;
+	}
 
 
 	public static void main(String[] args) {

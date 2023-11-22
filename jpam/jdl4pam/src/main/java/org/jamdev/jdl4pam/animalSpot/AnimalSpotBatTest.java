@@ -57,8 +57,8 @@ public class AnimalSpotBatTest {
 		
 		 
 		 //String modelPath = "/Users/au671271/git/jpam2/jpam/jdl4pam/src/main/java/org/jamdev/jdl4pam/resources/animalSpot/bat_multi_species/1_BAT_MULTI_JAMIE_5ms_256fft_10hop_MM_0_100_128_256_AUG_LN_WITHJAMIEDATA_AUGMENTATION_V1.pk"; 
-		String relModelPath  ="./src/main/java/org/jamdev/jdl4pam/resources/animalSpot/bat_multi_species/1_BAT_MULTI_JAMIE_5ms_256fft_10hop_MM_0_100_128_256_AUG_LN_WITHJAMIEDATA_AUGMENTATION_V1.pk";
-		String relWavPath  ="./src/main/java/org/jamdev/jdl4pam/resources/animalSpot/bat_multi_species/20200817_011424.wav";
+		String relModelPath  ="./src/test/java/org/jamdev/jdl4pam/resources/animalSpot/bat_multi_species/1_BAT_MULTI_JAMIE_5ms_256fft_10hop_MM_0_100_128_256_AUG_LN_WITHJAMIEDATA_AUGMENTATION_V1.pk";
+		String relWavPath  ="./src/test/java/org/jamdev/jdl4pam/resources/animalSpot/bat_multi_species/20200817_011424.wav";
 		
 		System.out.println(CudaUtils.getGpuCount()); // 0
 		System.out.println(CudaUtils.hasCuda()); // false
@@ -106,6 +106,12 @@ public class AnimalSpotBatTest {
 			for (int i=0; i<transforms.size(); i++) {
 				//System.out.println(transform.toString()); 
 				transform = transforms.get(i).transformData(transform); 
+				
+				if (i>1) {
+				double[][] dataTest = ((FreqTransform) transform).getSpecTransfrom().getTransformedData(); 
+					System.out.println(transform.getDLTransformType() + "Data min:  " + JamArr.min(dataTest) +  " max:  " +  JamArr.max(dataTest));
+				}
+
 			}
 			
 			double[][] dataTest = ((FreqTransform) transform).getSpecTransfrom().getTransformedData(); 
