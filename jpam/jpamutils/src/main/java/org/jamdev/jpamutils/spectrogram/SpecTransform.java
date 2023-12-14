@@ -1,14 +1,8 @@
 package org.jamdev.jpamutils.spectrogram;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Arrays;
 
 import org.jamdev.jpamutils.JamArr;
-import us.hebi.matlab.mat.format.Mat5;
-import us.hebi.matlab.mat.types.MatFile;
-import us.hebi.matlab.mat.types.Matrix;
 
 
 /**
@@ -309,9 +303,7 @@ public class SpecTransform {
 	 * @return the normalised spectrogram. 
 	 */
 	public static double[][] dBSpec(double[][] array, boolean power, double mindB) {
-		
-		System.out.println("MINDB: " +  mindB + "  " +power); 
-		
+				
 		double eps = 1.4210854715202004e-14;
 		double coeff = 20;
 		if (power) {

@@ -35,16 +35,22 @@ public class AnimalSpotTransfromsTest {
 		try {
 
 			//the wav file path
-			String wavFilePath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/example_wav/call_393_2019_S4U05619MOL2-20180917-051012_2525_2534.wav";
-			int[] samplesChunk = new int[] {0, 1274}; // the sample chunk to use. 
+//			String wavFilePath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/example_wav/call_393_2019_S4U05619MOL2-20180917-051012_2525_2534.wav";
+//			int[] samplesChunk = new int[] {0, 1274}; // the sample chunk to use. 
+		
+			
+			String wavFilePath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/AnimalSpot/Blue_whale/2019-09-04T09-30-06.wav";
+			int[] samplesChunk = new int[] {129*48000, 131*48000}; // the sample chunk to use. 
 
 			//the model path
 //			String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JIT.pk"; 
-			String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/BAT_MODEL_3/BAT_JAMIE_4ms_256fft_8hop_-100_20_15_60_128_256_NOJIT_BAT_DATA_NAUG_V1_JIT.pk"; 
+//			String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/BAT_MODEL_3/BAT_JAMIE_4ms_256fft_8hop_-100_20_15_60_128_256_NOJIT_BAT_DATA_NAUG_V1_JIT.pk"; 
+			String modelPath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/AnimalSpot/Blue_whale/ANIMAL-SPOT.pk";
 
 			//output file path to test what the java spectrgram transforms look like. 
-			String outputMatfile = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/DLTransformTest.mat"; 
-			
+//			String outputMatfile = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/DLTransformTest.mat"; 
+			String outputMatfile = "/Users/au671271/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/animalspot/java_transforms_blue_whale.mat"; 
+
 			
 			//first open the model and get the correct parameters. 
 			AnimalSpotModel soundSpotModel;
@@ -67,12 +73,13 @@ public class AnimalSpotTransfromsTest {
 
 			//generate the transforms. 
 			ArrayList<DLTransform> transforms =	DLTransformsFactory.makeDLTransforms(dlParams.dlTransforms); 
-
+			
+			System.out.println(dlParams); 
 
 			((WaveTransform) transforms.get(0)).setWaveData(soundData); 
 
 			DLTransform transform = transforms.get(0); 
-			for (int i=0; i<transforms.size(); i++) {
+			for (int i=0; i<transforms.size()-3; i++) {
 				transform = transforms.get(i).transformData(transform); 
 			}
 
@@ -84,7 +91,10 @@ public class AnimalSpotTransfromsTest {
 
 
 			MatFile matFile = Mat5.newMatFile()
-					.addArray("SpecDLTransform", matrixSpec); 
+					.addArray("specdltransform", matrixSpec);
+			
+			matFile.addArray("waveform", DLMatFile.array2Matrix(soundData.getScaledSampleAmplitudes())); 
+			matFile.addArray("sample_chunk", DLMatFile.array2Matrix(samplesChunk)); 
 
 
 			Mat5.writeToFile(matFile, outputMatfile);

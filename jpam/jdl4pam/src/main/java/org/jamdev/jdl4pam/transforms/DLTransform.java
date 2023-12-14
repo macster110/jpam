@@ -28,6 +28,15 @@ public interface DLTransform {
 		 * defines the degree of filtering.
 		 */
 		PREEMPHSIS("Pre-emphasis", "pre_emph"),
+		
+		/**
+		 * Decimates the signal to a high or lower amplitude including anti-aliasing
+		 * filters. Note this uses a method of decimation similar to scipy. 
+		 * <p>
+		 * One associated parameter- the sample-rate in samples per second to decimate
+		 * or interpolate to.
+		 */
+		DECIMATE_SCIPY("Decimate wave scipy", "load_audio_scipy"),
 
 		/**
 		 * Decimates the signal to a high or lower amplitude including anti-aliasing

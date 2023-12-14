@@ -929,7 +929,7 @@ public class JamArr {
 	}
 
 	/**
-	 * Print an array to the console. 
+	 * Print a double array to the console. 
 	 * @param array to print
 	 */
 	public static void printArray(double[] array) {
@@ -938,7 +938,21 @@ public class JamArr {
 		}
 	}
 
+	/**
+	 * Print an int array to the console. 
+	 * @param array to print
+	 */
 	public static void printArray(int[] array) {
+		for (int i=0; i<array.length; i++) {
+			System.out.println(i + ": " + array[i]);
+		}
+	}
+	
+	/**
+	 * Print a float array to the console. 
+	 * @param array to print
+	 */
+	public static void printArray(float[] array) {
 		for (int i=0; i<array.length; i++) {
 			System.out.println(i + ": " + array[i]);
 		}
@@ -1531,6 +1545,7 @@ public class JamArr {
 		}
 		return aux; 
 	}
+
 
 
 }

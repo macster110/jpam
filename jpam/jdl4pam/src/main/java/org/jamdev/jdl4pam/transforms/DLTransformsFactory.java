@@ -25,6 +25,9 @@ public class DLTransformsFactory {
 		case DECIMATE:
 			dlTransform = new WaveTransform(dlTransformType, new Number[] {sR}); 
 			break;
+		case DECIMATE_SCIPY:
+			dlTransform = new WaveTransform(dlTransformType, new Number[] {sR}); 
+			break;
 		case PREEMPHSIS:
 			dlTransform = new WaveTransform(dlTransformType, new Number[] {0.98}); 
 			break;
@@ -96,6 +99,9 @@ public class DLTransformsFactory {
 		switch (dlTransfromParams.dltransfromType) {
 		case DECIMATE:
 			dlTransform = new WaveTransform(DLTransformType.DECIMATE, ((SimpleTransformParams) dlTransfromParams).params); 
+			break;
+		case DECIMATE_SCIPY:
+			dlTransform = new WaveTransform(dlTransfromParams.dltransfromType, ((SimpleTransformParams) dlTransfromParams).params); 
 			break;
 		case PREEMPHSIS:
 			dlTransform = new WaveTransform(DLTransformType.PREEMPHSIS, ((SimpleTransformParams) dlTransfromParams).params); 

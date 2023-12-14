@@ -79,9 +79,14 @@ public class GoogleHumpbackTest {
 		
 		System.out.println("Humpback Atlantic test:");
     	//relative paths to the resource folders.
-    	String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/ghumpback_atlantic/FlatHBNA/saved_model.pb";
-		String relWavPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/ghumpback_atlantic/Challenger_sample_humpback_detector.wav";
-		String resultsPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/ghumpback_atlantic/Challenger_sample_humpback_detector_annotations.txt";
+//    	String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/ghumpback_atlantic/FlatHBNA/saved_model.pb";
+//		String relWavPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/ghumpback_atlantic/Challenger_sample_humpback_detector.wav";
+//		String resultsPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/ghumpback_atlantic/Challenger_sample_humpback_detector_annotations.txt";
+
+		
+		String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/ghumpback_atlantic/FlatHBNA/saved_model.pb";
+		String relWavPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/ghumpback_atlantic/SAMOSAS_EL1_humpback.wav";
+		String resultsPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/ghumpback_atlantic/SAMOSAS_EL1_humpback_annotations.txt";
 
 		Path path = Paths.get(relModelPath);
 		//note that normalize gets rid of all the redundant elements (e.g. .)
@@ -121,8 +126,11 @@ public class GoogleHumpbackTest {
 			      double prediction = Double.valueOf(data[5]);
 
 				  int startChunk = (int) (soundData.sampleRate*startTimeS); //humpback whale call
-				  int chunkSize = (int) ((endTimeS-startTimeS)*soundData.sampleRate); 
-
+				  int chunkSize = (int) Math.ceil((endTimeS-startTimeS)*soundData.sampleRate); 
+				  
+				  
+				  System.out.println("ChunkSie: " + chunkSize);
+				  
 				  float[] output = HumpbackGoogle.runHumpbackWhaledl(model,  soundData,  startChunk,  chunkSize, 1);
 				  
 				  System.out.println(String.format("Chunk %d %d Predicted output: %.2f true output: %.2f passed: %b", chunkID, startChunk,
@@ -132,7 +140,7 @@ public class GoogleHumpbackTest {
 //				  assertTrue(output[0]>prediction*0.9 && output[0]<prediction*1.1); //humpback whale detection
 				  assertTrue(true); //humpback whale detection //FIXME
 
-  
+ 
 			  }
 			  ind++;
 			}

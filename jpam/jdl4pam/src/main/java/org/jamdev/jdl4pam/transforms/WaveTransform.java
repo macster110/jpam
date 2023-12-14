@@ -69,6 +69,9 @@ public class WaveTransform extends SimpleTransform {
 		WaveTransform waveTransform = (WaveTransform) transfrom; 
 		switch (flag) {
 			case DECIMATE:
+				soundData = waveTransform.getWaveData().interpolate(params[0].floatValue());
+				break;
+			case DECIMATE_SCIPY:
 				soundData = waveTransform.getWaveData().interpolate_scipy(params[0].floatValue());
 				break;
 			case PREEMPHSIS:

@@ -87,6 +87,8 @@ public class AnimalSpotParams extends GenericModelParams {
 			 }
 		 }
 		 
+		 
+		 
 		 return params; 
 	}
 

@@ -15,6 +15,7 @@ import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
 import org.jamdev.jdl4pam.transforms.WaveTransform;
 import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 import org.jamdev.jdl4pam.utils.DLUtils;
+import org.jamdev.jpamutils.JamArr;
 import org.jamdev.jpamutils.wavFiles.AudioData;
 
 
@@ -43,30 +44,36 @@ public class KooguDLTest {
 	 */
 	public static float[] runGenericWaveModel(GenericModel model, AudioData soundData, ArrayList<DLTransfromParams> dlTransformParamsArr, int nRuns) {
 		
-		
+
 		ArrayList<DLTransform> transforms =	DLTransformsFactory.makeDLTransforms(dlTransformParamsArr); 
 	
 		((WaveTransform) transforms.get(0)).setWaveData(soundData); 
 
+		long totaltime1 = System.currentTimeMillis();
+
 		//run the tansforms. 
 		DLTransform transform = transforms.get(0); 
 		for (int i=0; i<transforms.size(); i++) {
+			long trandformtime1 = System.currentTimeMillis();
+
 			transform = transforms.get(i).transformData(transform); 
+			long trandformtime2 = System.currentTimeMillis();
+//			System.out.println("Total time for transform: " + (trandformtime2-trandformtime1) + " ms"); 
 		}
 
+
 		double[] dataD = ((WaveTransform) transform).getWaveData().getScaledSampleAmplitudes();
+//		int[] dataD = ((WaveTransform) transform).getWaveData().getSampleAmplitudes();
 
 		float[] dataF = new float[dataD.length]; 
 		for (int i=0; i<dataF.length; i++) {
 			dataF[i]= (float) dataD[i];
 		}
 
+//		System.out.println("Data input size: " + dataF.length + " " + dataF[0]);
 
-		System.out.println("Data input size: " + dataF.length);
-
-		int nBatch = 5; //the number of batches. 
+		int nBatch = 1; //the number of batches. 
 		float[] output = null; 
-		long totaltime1 = System.currentTimeMillis();
 
 		float[][] batchData = new float[nBatch][]; 
 		for (int j=0; j<nBatch; j++) {

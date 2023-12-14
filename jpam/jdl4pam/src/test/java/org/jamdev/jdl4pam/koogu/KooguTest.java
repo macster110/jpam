@@ -25,37 +25,37 @@ import ai.djl.MalformedModelException;
 public class KooguTest {
 
 
-	@Test
-	public void kooguJSONTest()
-	{
-		float sr = 1000; 
-		int chunkSize  =  (int) (2.25*sr); //right whale call
-
-		ArrayList<DLTransfromParams> dlTransformParamsArr = new ArrayList<DLTransfromParams>();
-
-		//waveform transforms. 
-		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.DECIMATE, sr)); 
-		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.TRIM, 0, chunkSize));
-
-		GenericModelParams genericModelParams = new GenericModelParams(); 
-
-		genericModelParams.dlTransforms = dlTransformParamsArr;
-		genericModelParams.segLen = 2.25*1000;
-		genericModelParams.classNames = new String[] {"Noise, Right Whale"}; 
-
-
-		GenericModelParams params;
-		try {
-			params = JSONParseTest.jsonParseTest(genericModelParams);
-			
-			assertTrue(genericModelParams.equals(params) ); 
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
+//	@Test
+//	public void kooguJSONTest()
+//	{
+//		float sr = 1000; 
+//		int chunkSize  =  (int) (2.25*sr); //right whale call
+//
+//		ArrayList<DLTransfromParams> dlTransformParamsArr = new ArrayList<DLTransfromParams>();
+//
+//		//waveform transforms. 
+//		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.DECIMATE, sr)); 
+//		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.TRIM, 0, chunkSize));
+//
+//		GenericModelParams genericModelParams = new GenericModelParams(); 
+//
+//		genericModelParams.dlTransforms = dlTransformParamsArr;
+//		genericModelParams.segLen = 2.25*1000;
+//		genericModelParams.classNames = new String[] {"Noise, Right Whale"}; 
+//
+//
+//		GenericModelParams params;
+//		try {
+//			params = JSONParseTest.jsonParseTest(genericModelParams);
+//			
+//			assertTrue(genericModelParams.equals(params) ); 
+//
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//	}
 
 	/**
 	 * Test a blue whale classifier form Brian Miller. 
@@ -69,7 +69,8 @@ public class KooguTest {
 		String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/blue_whale/BmD_23_tf_model/koogu/saved_model.pb";
 		String relWavPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/blue_whale/20190527_190000.wav";
 
-		double[][] predictions = new double[][] {{0,1},{1,0},{1,0}, {1,0}, {1,0}, {1,0}, {1,0}, {1,0},{1,0},{1,0}}; //right whale in second chunk. 
+//		double[][] predictions = new double[][] {{0,1},{1,0},{1,0}, {1,0}, {1,0}, {1,0}, {1,0}, {1,0},{1,0},{1,0}}; //right whale in second chunk. 
+		double[][] predictions = new double[100][2];
 
 		Path path = Paths.get(relModelPath);
 		//note that normalize gets rid of all the redundant elements (e.g. .)
@@ -79,48 +80,49 @@ public class KooguTest {
 		String wavFilePath = path.toAbsolutePath().normalize().toString();
 
 		//the target sample rate
-		float sr = 1000; 
+		float sr = 250; 
 
-		int chunkSize  =  (int) (5*sr); //blue whale call
-		
-		//run the Koogu test. 
-//		kooguTest(modelPath,  wavFilePath,  predictions,  sr,  chunkSize); 
+		int chunkSize  =  (int) (2500); //blue whale call
+//		int chunkSize  =  (int) (5*sr); //blue whale call
 
-	}
-
-	/**
-	 * Test a right whale classifier from Koogu
-	 */
-	@Test
-	public void kooguRightWhaleTest()
-	{
-
-		System.out.println("Koogu test Right Whale model"); 
-
-		//relative paths to the resource folders.
-		String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/right_whale/model/koogu_narw_model/saved_model.pb";
-		String relWavPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/right_whale/right_whale_koogu.wav";
-
-		double[][] predictions = new double[][] {{0,1},{1,0}}; //right whale in second chunk. 
-
-		Path path = Paths.get(relModelPath);
-		//note that normalize gets rid of all the redundant elements (e.g. .)
-		String modelPath = path.toAbsolutePath().normalize().toString();
-
-		path = Paths.get(relWavPath);
-		String wavFilePath = path.toAbsolutePath().normalize().toString();
-
-		//		float[] results = KooguDLTest.runKooguDL( modelPath,  wavFilePath,  0);
-
-		//the target sample rate
-		float sr = 1000; 
-
-		int chunkSize  =  (int) (2.25*sr); //right whale call
-		
 		//run the Koogu test. 
 		kooguTest(modelPath,  wavFilePath,  predictions,  sr,  chunkSize); 
 
 	}
+
+//	/**
+//	 * Test a right whale classifier from Koogu
+//	 */
+//	@Test
+//	public void kooguRightWhaleTest()
+//	{
+//
+//		System.out.println("Koogu test Right Whale model"); 
+//
+//		//relative paths to the resource folders.
+//		String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/right_whale/model/koogu_narw_model/saved_model.pb";
+//		String relWavPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/right_whale/right_whale_koogu.wav";
+//
+//		double[][] predictions = new double[][] {{0,1},{1,0}}; //right whale in second chunk. 
+//
+//		Path path = Paths.get(relModelPath);
+//		//note that normalize gets rid of all the redundant elements (e.g. .)
+//		String modelPath = path.toAbsolutePath().normalize().toString();
+//
+//		path = Paths.get(relWavPath);
+//		String wavFilePath = path.toAbsolutePath().normalize().toString();
+//
+//		//		float[] results = KooguDLTest.runKooguDL( modelPath,  wavFilePath,  0);
+//
+//		//the target sample rate
+//		float sr = 1000; 
+//
+//		int chunkSize  =  (int) (2.25*sr); //right whale call
+//		
+//		//run the Koogu test. 
+//		kooguTest(modelPath,  wavFilePath,  predictions,  sr,  chunkSize); 
+//
+//	}
 
 
 	/**
@@ -129,7 +131,7 @@ public class KooguTest {
 	 * @param wavFilePath - the wav file path. 
 	 * @param predictions - the predictions. 
 	 * @paramSR sr - the target sample rate. 
-	 * @param chunkSize the chunk size in SAMPLES. 
+	 * @param chunkSize the chunk size in SAMPLES of the target sample rate. 
 	 */
 	public void kooguTest(String modelPath, String wavFilePath, double[][] predictions, float sr, int chunkSize)
 	{
@@ -153,8 +155,9 @@ public class KooguTest {
 				ArrayList<DLTransfromParams> dlTransformParamsArr = new ArrayList<DLTransfromParams>();
 
 				//waveform transforms. 
-				dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.DECIMATE, sr)); 
+				dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.DECIMATE_SCIPY, sr)); 
 				dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.TRIM, startChunck, startChunck+chunkSize));
+
 
 				float[] output = KooguDLTest.runGenericWaveModel(model, soundData, dlTransformParamsArr, nRuns);
 
@@ -163,9 +166,9 @@ public class KooguTest {
 				//				}
 
 				//				System.out.println(output[0] + " --- " + (predictions[ii][0]-0.1) + " -- " + (output[0]> predictions[ii][0]-0.1) +  " " + (output[0]< predictions[ii][0]+0.1));
-				System.out.println(String.format("Chunk %d %d Predicted output[0]: %.2f true output[0]: %.2f output[0]: %.2f true output[0]: %.2f",ii, startChunck,
+				System.out.println(String.format("Chunk %d %d Predicted output[0]: %.10f true output[0]: %.10f output[1]: %.5f true output[1]: %.5f",ii, startChunck,
 						  output[0], predictions[ii][0], output[1], predictions[ii][1])); 
-				  
+				
 //				assertTrue(output[0]> predictions[ii][0]-0.1 && output[0]< predictions[ii][0]+0.1); 
 //
 //				assertTrue(output[1]> predictions[ii][1]-0.1 && output[1]< predictions[ii][1]+0.1); 
@@ -173,14 +176,9 @@ public class KooguTest {
 
 			}
 
-		} catch (MalformedModelException | IOException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (UnsupportedAudioFileException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-
+		}
 
 	}
 

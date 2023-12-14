@@ -342,7 +342,7 @@ public class AudioData {
 	}
 
 	/**
-	 * Interpolate the audio data (e..g up sample or down sample) using FFT similarly to scipy
+	 * Interpolate the audio data (e.g. up sample or down sample) using FFT similarly to scipy
 	 * @param target_sr - the new sample rate.
 	 * @return AudioData object containing interpolated data and sample rate.
 	 */
@@ -354,7 +354,6 @@ public class AudioData {
 		int n_samples = (int) Math.ceil(wavArray.length * ratio);
 
 		double[] wavArrayResampled = wavInterpolator.fourierResample(wavArray, n_samples);
-		
 		
 		//System.out.println("Audio samples: " + wavArray.length + " "  +wavArrayResampled.length); 
 		
