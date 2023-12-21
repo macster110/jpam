@@ -212,9 +212,29 @@ public interface DLTransform {
 		 * Normalises the waveform to zero mean and standard deviation of 1.
 		 * 
 		 * <p>
-		 * No parameters. 
+		 * Three associated parameters - the target mean and std for the nomralization e.g. 0 and 1 are often used. 
+		 * Parameter 3 is an integer which defines which type of normalisation to use. 
+		 * KETOSNORM is the ketos method.
+		 * PGNORM is the PAMGuard method.
+		 * MEANNORM is a standard subtract the mean and divide by absolute value. 
 		 */
-		NORMALISE_WAV("Normalise Waveform", "normlize_wav");
+		NORMALISE_WAV("Normalise Waveform", "normlize_wav"), 
+		
+		/**
+		 * Filter a waveform. 
+		 * 
+		 * <p>
+		 * Five associated parameters 
+		 *  <ul>
+			  <li>Filter type (int) - low pass = 0, high pass = 1, band pass = 2  </li>
+			  <li>Filter order(int) - the filter order.	</li>
+			  <li>Filter type (int) - Butterworth = 0, Chebyshev = 1</li>
+			  <li>Low cut frequency - ignored when using low pass</li>
+			  <li>High cut frequency - ignored when using high pass</li>
+			</ul> 
+		 * 
+		 */
+		FILTER("Filter", "filter_wav");
 
 		/**
 		 * Then name of the transform.

@@ -26,13 +26,13 @@
 			  <version>5.8.2</version>
 			  <scope>test</scope>
 		</dependency>
-		<!-- filter library -->
+		
+				<!-- filter library -->
 		<dependency>
-			<groupId>uk.me.berndporr</groupId>
-			<artifactId>iirj</artifactId>
-			<version>1.1</version>
+		    <groupId>uk.me.berndporr</groupId>
+		    <artifactId>iirj</artifactId>
+		    <version>1.7</version>
 		</dependency>
-
 
 		<!-- Java FFT library -->
 		<dependency>

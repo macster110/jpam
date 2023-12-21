@@ -68,7 +68,7 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 		NDManager manager = ctx.getNDManager();
 		
 		//We need to find the index of the shape that is for audio. If there is more than one shape pick the 
-		//one the largesst number of dimensions unless explicitly set. 
+		//one the largest number of dimensions unless explicitly set. 
 		int shapeAudioIndex = 0; 
 		if (this.shapeIndex==null) {
 			if (shapes.size()>1){
@@ -103,11 +103,11 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 		
 
 //		NDArray array = manager.create(data); 
-		//System.out.println("NDArray size: " + array.size()); 
+//		System.out.println("NDArray size: " + array.size()); 
 		
 		ArrayList<NDArray> arrays = new ArrayList<NDArray>();
 		
-		//System.out.println("Shape size: " + shapes.size());
+//		System.out.println("Shape size: " + shapes.size());
 		
 		
 //		//this is a little bit of a weird one 

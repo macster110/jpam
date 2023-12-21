@@ -4,6 +4,11 @@ import java.util.Arrays;
 
 import org.jamdev.jpamutils.JamArr;
 
+import uk.me.berndporr.iirj.Butterworth;
+import uk.me.berndporr.iirj.Cascade;
+import uk.me.berndporr.iirj.ChebyshevII;
+import uk.me.berndporr.iirj.DirectFormAbstract;
+
 /**
  * Holds .wav file data.
  *
@@ -66,9 +71,9 @@ public class AudioData {
 	public AudioData(double[] wavArray, float sampleRate){
 		double bitSize = Math.pow(2, bitRate)/2;
 		int[] samples = new int[wavArray.length];
-//		for (int i=0; i<wavArray.length; i++) {
-//			samples[i] = (int) (wavArray[i]*Math.pow(2, bitRate)/2);
-//		}
+		//		for (int i=0; i<wavArray.length; i++) {
+		//			samples[i] = (int) (wavArray[i]*Math.pow(2, bitRate)/2);
+		//		}
 
 		for (int i=0; i<wavArray.length; i++) {
 			double valInd = wavArray[i];
@@ -225,16 +230,16 @@ public class AudioData {
 					// Python starts at 0 similarly to Java, 1 is really 1 here
 					double[] x_pad = reverseArray(Arrays.copyOfRange(x, 1, pad_left + 1));
 
-//				if (invert){
-//					x_pad = 2 * x[0] - x_pad;
-//				}
+					//				if (invert){
+					//					x_pad = 2 * x[0] - x_pad;
+					//				}
 
 					pad_left_residual = Math.max(0, pad_left - x_pad.length);
 					x_padded_tmp = concat(x_pad, x);
 				}
 				if (pad_right > 0) {
 					// In Python but to thoroughly test
-//				x_pad = np.flip(x[-pad_right - 1:-1],axis = 0)
+					//				x_pad = np.flip(x[-pad_right - 1:-1],axis = 0)
 					double[] x_pad;
 					if (x.length < pad_right) {
 						x_pad = reverseArray(Arrays.copyOfRange(x, 0, x.length - 1));
@@ -242,9 +247,9 @@ public class AudioData {
 					} else {
 						x_pad = reverseArray(Arrays.copyOfRange(x, x.length - pad_right - 1, x.length - 1));
 					}
-//				if (invert) {
-//					x_pad = 2 * x[-1] - x_pad
-//				}
+					//				if (invert) {
+					//					x_pad = 2 * x[-1] - x_pad
+					//				}
 					x_padded_tmp = concat(x, x_pad);
 				}
 			}
@@ -347,16 +352,16 @@ public class AudioData {
 	 * @return AudioData object containing interpolated data and sample rate.
 	 */
 	public AudioData interpolate_scipy(float target_sr) {
-		
+
 
 		double[] wavArray = getScaledSampleAmplitudes();
 		double ratio = target_sr / this.sampleRate;
 		int n_samples = (int) Math.ceil(wavArray.length * ratio);
 
 		double[] wavArrayResampled = wavInterpolator.fourierResample(wavArray, n_samples);
-		
+
 		//System.out.println("Audio samples: " + wavArray.length + " "  +wavArrayResampled.length); 
-		
+
 		AudioData soundTmp = new AudioData(wavArrayResampled, target_sr);
 
 		return soundTmp;
@@ -376,13 +381,26 @@ public class AudioData {
 	}
 
 
+	public final static int PGNORM = 0;
+
+	/**
+	 * Subtract the mean and then divide by the target mean and multiply target standard deviation. 
+	 */
+	public final static int KETOSNORM = 1;
+
+	/**
+	 * Subtract the mean and divide by absolute value. Ignores mean and std values
+	 */
+	public final static int MEANNORM = 2;
+
 	/**
 	 * Normalise the audio data.
 	 * @param mean - the target mean for the normalised data
-	 * @param std = the target standard deviation for the normalised audio data
+	 * @param std - the target standard deviation for the normalised audio data
+	 * @param - the transform type 
 	 * @return AudioData object containing normalised data.
 	 */
-	public AudioData normalise(double mean, double std, boolean ketosNorm) {
+	public AudioData normalise(double mean, double std, int type) {
 
 		// self.data = std * (self.data - np.mean(self.data)) / std_orig + mean
 
@@ -390,17 +408,27 @@ public class AudioData {
 		double stdSamples = JamArr.std(this.samples);
 
 		int[] samplesNorm = new int[samples.length];
-		if (ketosNorm){
+		if (type == KETOSNORM){
 			for (int i = 0; i < samples.length; i++) {
 				// Ketos version of normalising
 				samplesNorm[i] = (int) (std * (this.samples[i] - meanSamples) / stdSamples + mean);
 			}
 		}
-		else {
+		else if (type==PGNORM) {
 			for (int i = 0; i < samples.length; i++) {
 				// PAMGuard version
 				samplesNorm[i] = (int) (stdSamples*(samples[i] - meanSamples) / (std+mean));
 			}
+		}
+		else {
+			for (int i = 0; i < samples.length; i++) {
+				// PAMGuard version
+				samplesNorm[i] = (int) (samples[i] - meanSamples);
+
+			}
+//			System.out.println("Max: " + JamArr.max(samplesNorm));
+			double[] samplesNormD =  JamArr.divide(samplesNorm, JamArr.max(samplesNorm)); 
+			return new AudioData(samplesNormD, this.sampleRate);
 		}
 
 		return new AudioData(samplesNorm, this.sampleRate);
@@ -417,6 +445,156 @@ public class AudioData {
 			arr[i]=samples[i];
 		}
 		return arr;
+	}
+
+	/**
+	 * Filter audio data using a Butterworth or Chebyshev filter. 
+	 * @param type - the type if filter e.g. AudioData.BUTTERWORTH
+	 * @param passType - the pass type e.g. AudioData.LOWPASS
+	 * @param order - the filter order. 
+	 * @param lowCut - the low cut frequency in Hz (not used for LOWPASS).
+	 * @param highCut - the high cut frequency in Hz (not used for HIGHPASS). 
+	 * @return filtered audio data. 
+	 */
+	public AudioData filter(int type, int passType, int order, double lowCut, double highCut) {
+		
+//		System.out.println("Create filter: type: " + type + " passType: " + passType + " order: " +  order + " lowCut: " + lowCut + " highCut: " + highCut + " sr " + this.sampleRate); 
+
+		Cascade filter = null;
+		switch (passType) {
+		case LOWPASS: 
+			filter = createLowPassFilter( type,  order,   highCut); 
+			break;
+		case HIGHPASS: 
+			filter = createHighPassFilter( type,  order,   lowCut); 
+			break;
+		case BANDPASS: 
+			filter = createBandPassFilter( type,  order,   lowCut, highCut); 
+			break;
+		}
+
+		double[] amps = this.getScaledSampleAmplitudes();
+		double[] ampsFilt = new double[amps.length];
+		for (int i=0; i<amps.length; i++) {
+			ampsFilt[i]=filter.filter(amps[i]);
+		}		
+//		System.out.println("New audio data: " + ampsFilt.length);
+		return new AudioData(ampsFilt, this.sampleRate);
+
+	}
+
+	/**
+	 * Flag for a Butterworth filter
+	 */
+	public static final int BUTTERWORTH = 0; 
+
+	/**
+	 * Flag for a Chebyshev filter
+	 */
+	public static final int CHEBYSHEV = 1; 
+
+	/**
+	 * Flag for a low pass filter
+	 */
+	public static final int LOWPASS = 0; 
+
+	/**
+	 * Flag for a high pass filter
+	 */
+	public static final int HIGHPASS = 1; 
+
+	/**
+	 * Flag for a band pass filter
+	 */
+	public static final int BANDPASS = 2; 
+
+
+	/**
+	 * Create a low pass filter. 
+	 * @param type - the filter type e.g. AudioData.BUTTERWORTH
+	 * @param order - the filter order.
+	 * @param highCut - the high cut frequency in Hz.
+	 * @return a filter object. 
+	 */
+	private Cascade createLowPassFilter(int type, int order,  double highCut) {
+
+		Cascade filter = null;
+		switch (type) {
+
+		case CHEBYSHEV:
+			ChebyshevII filterC = new ChebyshevII(); 
+			filterC.lowPass(order, this.sampleRate, highCut,  10);
+			filter=filterC;
+			break;
+
+		case BUTTERWORTH:
+			Butterworth filterB = new Butterworth(); 
+			filterB.lowPass(order, this.sampleRate, highCut, DirectFormAbstract.DIRECT_FORM_I);
+			filter=filterB;
+			break;
+		}
+
+		return filter;
+	}
+
+	/**
+	 * Create a high pass filter. 
+	 * @param type - the filter type e.g. AudioData.BUTTERWORTH
+	 * @param order - the filter order.
+	 * @param lowCut - the low cut frequency in Hz.
+	 * @return a filter object. 
+	 */
+	private Cascade createHighPassFilter(int type, int order, double lowCut) {
+
+		Cascade filter = null;
+		switch (type) {
+
+		case CHEBYSHEV:
+			ChebyshevII filterC = new ChebyshevII(); 
+			filterC.highPass(order, this.sampleRate, lowCut, 10);
+			filter=filterC;
+			break;
+
+		case BUTTERWORTH:
+			Butterworth filterB = new Butterworth(); 
+			filterB.highPass(order, this.sampleRate, lowCut, DirectFormAbstract.DIRECT_FORM_I);
+			filter=filterB;
+			break;
+		}
+
+		return filter;
+	}
+
+	/**
+	 * Create a band pass filter. 
+	 * @param type - the filter type e.g. AudioData.BUTTERWORTH
+	 * @param order - the filter order.
+	 * @param lowCut - the low cut frequency in Hz.
+	 * @param highCut - the low cut frequency in Hz.
+	 * @return a filter object. 
+	 */
+	private Cascade createBandPassFilter(int type, int order, double lowCut, double highCut) {
+		Cascade filter = null;
+
+		double width = (highCut-lowCut);
+		double center = (highCut+lowCut)/2;
+
+		switch (type) {
+
+		case CHEBYSHEV:
+			ChebyshevII filterC = new ChebyshevII(); 
+			filterC.bandPass(order, this.sampleRate, center, width, 10);
+			filter=filterC;
+			break;
+
+		case BUTTERWORTH:
+			Butterworth filterB = new Butterworth(); 
+			filterB.bandPass(order, this.sampleRate, center, width, DirectFormAbstract.DIRECT_FORM_I);
+			filter=filterB;
+			break;
+		}
+
+		return filter;
 	}
 
 }

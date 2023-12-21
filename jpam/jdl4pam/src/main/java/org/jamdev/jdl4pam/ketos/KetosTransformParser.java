@@ -280,11 +280,9 @@ public class KetosTransformParser {
 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.DECIMATE, sampleRate));
 		if (normaliseWav != null && normaliseWav.booleanValue()) {
-			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.NORMALISE_WAV, sampleRate, 1)); // one
-																												// for
-																												// ketos
-																												// version
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.NORMALISE_WAV, 1)); // one																		// version
 		}
+		
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAMKETOS, (int) spectrogramInfo[0],
 				(int) spectrogramInfo[1], ketosParams.segLen));
 		dlTransformParamsArr

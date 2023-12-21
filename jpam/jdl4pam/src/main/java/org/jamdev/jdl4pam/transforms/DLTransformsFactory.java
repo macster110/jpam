@@ -124,6 +124,9 @@ public class DLTransformsFactory {
 //		case SPECTROGRAM:
 //			dlTransform = new FreqTransform(DLTransformType.SPECTROGRAM, ((SimpleTransformParams) dlTransfromParams).params); 
 //			break;
+		case FILTER:
+			dlTransform = new WaveTransform(DLTransformType.FILTER, ((SimpleTransformParams) dlTransfromParams).params); 
+			break;
 		case TRIM:
 			dlTransform = new WaveTransform(DLTransformType.TRIM, ((SimpleTransformParams) dlTransfromParams).params); 
 			break;

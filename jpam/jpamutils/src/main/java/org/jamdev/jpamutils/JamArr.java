@@ -1044,6 +1044,15 @@ public class JamArr {
 		}
 		return arrayD;
 	}
+	
+	public static double[] divide(int[] array, int divisor) {
+		double[] arrayD = new double[array.length]; 
+		for (int j=0;j<array.length;j++) {
+			arrayD[j]=(double) array[j]/(double) divisor; 
+		}
+		return arrayD;
+	}
+
 
 	/**
 	 * Divide each element in a 2D array by a number
@@ -1545,6 +1554,7 @@ public class JamArr {
 		}
 		return aux; 
 	}
+
 
 
 

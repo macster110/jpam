@@ -80,8 +80,14 @@ public class WaveTransform extends SimpleTransform {
 			case TRIM:
 				soundData = waveTransform.getWaveData().trim(params[0].intValue(), params[1].intValue());
 				break;
+			case FILTER:
+				soundData = waveTransform.getWaveData().filter(params[2].intValue(), params[0].intValue(), 
+						params[1].intValue(), params[3].doubleValue(), params[4].doubleValue());
+				break;
 			case NORMALISE_WAV:
-				soundData = waveTransform.getWaveData().normalise(0, 1, (params[0].intValue() == 1));
+				if (params.length==0) soundData = waveTransform.getWaveData().normalise(0,1, AudioData.MEANNORM);
+				else if (params.length==2) soundData = waveTransform.getWaveData().normalise(params[0].floatValue(), params[1].floatValue(), AudioData.PGNORM);
+				else soundData = waveTransform.getWaveData().normalise(params[0].floatValue(), params[1].floatValue(), params[2].intValue());
 				break;
 		default:
 			break;

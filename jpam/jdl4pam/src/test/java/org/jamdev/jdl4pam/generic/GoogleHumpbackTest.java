@@ -137,8 +137,7 @@ public class GoogleHumpbackTest {
 						  output[0], prediction, output[0]>prediction*0.9 && output[0]<prediction*1.1)); 
 				  
 				  //allow 10% scrumph to take account of slight differences in Java input. 
-//				  assertTrue(output[0]>prediction*0.9 && output[0]<prediction*1.1); //humpback whale detection
-				  assertTrue(true); //humpback whale detection //FIXME
+				  assertTrue(output[0]>prediction*0.9 && output[0]<prediction*1.1); //humpback whale detection
 
  
 			  }
