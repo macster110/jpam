@@ -11,6 +11,7 @@ import org.jamdev.jdl4pam.transforms.WaveTransform;
 import org.jamdev.jdl4pam.transforms.jsonfile.DLTransformsParser;
 import org.jamdev.jdl4pam.utils.DLMatFile;
 import org.jamdev.jdl4pam.utils.DLUtils;
+import org.jamdev.jpamutils.JamArr;
 import org.jamdev.jpamutils.wavFiles.AudioData;
 
 import us.hebi.matlab.mat.format.Mat5;
@@ -48,6 +49,8 @@ public class KetosModelTest  {
 
 			//get the audio representation file.
 			KetosParams ketosParams = new KetosParams(jsonString);
+			
+			System.out.println(ketosParams);
 
 			/******* Trim the sound file to correct size ******/
 
@@ -66,8 +69,15 @@ public class KetosModelTest  {
 			DLTransform specTransform = transforms.get(0);
 			DLTransform transform = transforms.get(0);
 			for (int i = 0; i < transforms.size(); i++) {
-				//System.out.println(transforms.get(i).getDLTransformType());
 				transform = transforms.get(i).transformData(transform);
+				
+				if (transforms.get(i) instanceof FreqTransform) {
+					System.out.println(transforms.get(i).getDLTransformType() + "  " + + JamArr.min(((FreqTransform) transforms.get(i)).getSpecTransfrom().getTransformedData()));
+				}
+				if (transforms.get(i) instanceof WaveTransform) {
+					System.out.println(transforms.get(i).getDLTransformType() + "  " + + JamArr.min(((WaveTransform) transforms.get(i)).getWaveData().getSampleAmplitudes()));
+				}
+				
 				if (transforms.get(i).getDLTransformType().name().equals("SPECTROGRAMKETOS")) {
 					specTransform = transform;
 				} 

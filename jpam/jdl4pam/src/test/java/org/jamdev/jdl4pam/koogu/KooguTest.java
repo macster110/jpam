@@ -65,7 +65,7 @@ public class KooguTest {
 	@Test
 	public void kooguTestBlueWhale() {
 
-		System.out.println("Koogu test Blue Whale model"); 
+		System.out.println("Koogu - test Blue Whale model"); 
 
 		//relative paths to the resource folders.
 		String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/blue_whale/BmD_23_tf_model/koogu/saved_model.pb";
@@ -102,6 +102,11 @@ public class KooguTest {
 
 	}
 	
+	/**
+	 * Export a MATLAB file of prediction results
+	 * @param results - the results to export to MAT file
+	 * @param filename - the name of the file to export to - shoulds end in .mat
+	 */
 	private void exportMatFile(float[][] results, String filename) {
 		
 		Path path = Paths.get(filename);
@@ -130,7 +135,7 @@ public class KooguTest {
 	/**
 	 * Read a Koogu rawScroes_XXx.csv file. Should handle different number of output classes. 
 	 * @param resultsPath - the path to the file
-	 * @return the raw scores - first columns is the sample start - other columns are the prediciton scores.
+	 * @return the raw scores - first columns is the sample start - other columns are the prediction scores.
 	 */
 	private double[][] getPredictions(String resultsPath) {
 		//run the humpback whale classifier. 
@@ -191,39 +196,40 @@ public class KooguTest {
 	}
 
 
-	//	/**
-	//	 * Test a right whale classifier from Koogu
-	//	 */
-	//	@Test
-	//	public void kooguRightWhaleTest()
-	//	{
-	//
-	//		System.out.println("Koogu test Right Whale model"); 
-	//
-	//		//relative paths to the resource folders.
-	//		String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/right_whale/model/koogu_narw_model/saved_model.pb";
-	//		String relWavPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/right_whale/right_whale_koogu.wav";
-	//
-	//		double[][] predictions = new double[][] {{0,1},{1,0}}; //right whale in second chunk. 
-	//
-	//		Path path = Paths.get(relModelPath);
-	//		//note that normalize gets rid of all the redundant elements (e.g. .)
-	//		String modelPath = path.toAbsolutePath().normalize().toString();
-	//
-	//		path = Paths.get(relWavPath);
-	//		String wavFilePath = path.toAbsolutePath().normalize().toString();
-	//
-	//		//		float[] results = KooguDLTest.runKooguDL( modelPath,  wavFilePath,  0);
-	//
-	//		//the target sample rate
-	//		float sr = 1000; 
-	//
-	//		int chunkSize  =  (int) (2.25*sr); //right whale call
-	//		
-	//		//run the Koogu test. 
-	//		kooguTest(modelPath,  wavFilePath,  predictions,  sr,  chunkSize); 
-	//
-	//	}
+		/**
+		 * Test a right whale classifier from Koogu
+		 */
+		@Test
+		public void kooguRightWhaleTest()
+		{
+	
+			System.out.println("Koogu - test Right Whale model"); 
+	
+			//relative paths to the resource folders.
+			String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/right_whale/model/koogu_narw_model/saved_model.pb";
+			String relWavPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/right_whale/right_whale_koogu.wav";
+			
+			//the target sample rate
+			float sr = 1000; 
+	
+			int chunkSize  =  (int) (2.25*sr); //right whale call
+	
+			double[][] predictions = new double[][] {{0, 0,1},{chunkSize, 1,0}}; //right whale in second chunk. 
+	
+			Path path = Paths.get(relModelPath);
+			//note that normalize gets rid of all the redundant elements (e.g. .)
+			String modelPath = path.toAbsolutePath().normalize().toString();
+	
+			path = Paths.get(relWavPath);
+			String wavFilePath = path.toAbsolutePath().normalize().toString();
+	
+			//		float[] results = KooguDLTest.runKooguDL( modelPath,  wavFilePath,  0);
+	
+			
+			//run the Koogu test. 
+			kooguTest(modelPath,  wavFilePath,  predictions,  sr,  chunkSize); 
+	
+		}
 
 
 	/**
@@ -249,10 +255,11 @@ public class KooguTest {
 
 			//cheat here a bit - we don't want to keep interpolating the file. 
 //			soundData = soundData.interpolate(sr);
-			soundData = soundData.interpolate(sr);
+			soundData = soundData.interpolate_scipy(sr);
 			
 			float[][] results = new float[predictions.length][];
 
+			int truecount=0;
 			for (int ii=0; ii<predictions.length; ii++) {
 
 				startChunck = (int) predictions[ii][0]; //the start sample. 
@@ -278,13 +285,27 @@ public class KooguTest {
 				System.out.println(String.format("Chunk %d %d output[0]: predicted %.5f true %.5f ; output[1]: predicted %.5f true %.5f",ii, startChunck,
 						output[0], predictions[ii][1], output[1], predictions[ii][2])); 
 
-				//				assertTrue(output[0]> predictions[ii][0]-0.1 && output[0]< predictions[ii][0]+0.1); 
+				boolean out0 = output[0]> predictions[ii][1]-0.1 && output[0]<predictions[ii][1]+0.1; 
 				//
-				//				assertTrue(output[1]> predictions[ii][1]-0.1 && output[1]< predictions[ii][1]+0.1); 
-
+				boolean out1 = output[1]> predictions[ii][2]-0.1 && output[1]<predictions[ii][2]+0.1; 
 
 				results[ii]=output;
+				
+//				System.out.println("out0: " + out0 + " out1: " + out1);
+				
+				if (out0 && out1) {
+					truecount++;
+				}
 			}
+			
+			double percTrue = 100*((double) truecount)/predictions.length; 
+			
+			System.out.println(String.format("Precentage results true: %.2f  count %d", percTrue, truecount));
+			
+			//ramp this number up when we figure out why Kooguy and PG sometimes give quite different results. 
+			// Precentage results true: 83.31  count 1498 - without scipy
+
+			assertTrue(percTrue>0.8);
 			
 			return results; 
 

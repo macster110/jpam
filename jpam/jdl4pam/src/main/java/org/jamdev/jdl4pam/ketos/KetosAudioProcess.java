@@ -86,6 +86,8 @@ public class KetosAudioProcess {
 
 		//get the audio representation file.
 		KetosParams ketosParams = new KetosParams(jsonString);
+		
+		System.out.println(ketosParams); 
 
 		double duration;
 		if (ketosParams.getDuration() != null) {
@@ -147,7 +149,7 @@ public class KetosAudioProcess {
 			DLTransform specTransform = transforms.get(0);
 			DLTransform transform = transforms.get(0);
 			for (int i = 0; i < transforms.size(); i++) {
-				//System.out.println(transforms.get(i).getDLTransformType());
+//				System.out.println(transforms.get(i).getDLTransformType());
 				transform = transforms.get(i).transformData(transform);
 				if (transforms.get(i).getDLTransformType().name().equals("SPECTROGRAMKETOS")) {
 					specTransform = transform;

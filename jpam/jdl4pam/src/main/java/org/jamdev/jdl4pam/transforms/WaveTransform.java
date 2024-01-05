@@ -27,7 +27,7 @@ public class WaveTransform extends SimpleTransform {
 	 * <p>
 	 * See WaveTransform.WaveTransformType for a description of each transform. 
 	 * <p>
-	 * Each transform type has a unique set of parameters. These are
+	 * Each transform type has a unique set of parameters. Examples are
 	 * <ul>
 	 *<li>PREEMPHSIS: The pre-emphasis factor (between 0 and 1)</li>
 	 *<li>DECIMATE: the sample rate in samples per second</li>
@@ -48,7 +48,7 @@ public class WaveTransform extends SimpleTransform {
 	 * <p>
 	 * See WaveTransform.WaveTransformType for a description of each transform. 
 	 * <p>
-	 * Each transform type has a unique set of parameters. These are
+	 * Each transform type has a unique set of parameters. Examples are
 	 * <ul>
 	 *<li>PREEMPHSIS: The pre-emphasis factor (between 0 and 1)</li>
 	 *<li>DECIMATE: the sample rate in samples per second</li>

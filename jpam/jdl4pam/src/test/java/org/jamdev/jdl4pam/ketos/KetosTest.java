@@ -126,7 +126,7 @@ public class KetosTest {
 			//check prediction results are within 10%
 			//Note we forget the weird edge cases (start and end of file) here for Ketos
 			for (int i=1; i<results.size()-1; i++) {
-				//System.out.println(i + ": " + results.get(i).prediction[1]);
+//				System.out.println(i + ": prediction: " + results.get(i).prediction[1] + " true: " + ketosPredicitons[i][2]);
 				assertTrue(results.get(i).prediction[1]> ketosPredicitons[i][2]-0.1 && results.get(i).prediction[1]< ketosPredicitons[i][2]+0.1); 
 			}
 

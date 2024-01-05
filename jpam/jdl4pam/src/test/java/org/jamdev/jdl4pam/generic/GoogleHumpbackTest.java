@@ -32,7 +32,6 @@ public class GoogleHumpbackTest {
 	{
 		
 		System.out.println("Humpback Pacific test:");
-
 		
     	//relative paths to the resource folders.
     	String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/ghumpback/humpback_whale_1/saved_model.pb";

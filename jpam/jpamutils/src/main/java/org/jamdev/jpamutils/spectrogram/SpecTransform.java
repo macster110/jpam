@@ -13,8 +13,8 @@ import org.jamdev.jpamutils.JamArr;
  */
 public class SpecTransform {
 
-	// If you want to clip values at -200 dB, put 200 for min_db
-	private static final double DEFAULT_MIN_DB = 500;
+	// If you want to clip values at -200 dB, put -200 for min_db
+	private static final double DEFAULT_MIN_DB = -500;
 
 	/**
 	 * The transformed spectrogram data. 
@@ -574,12 +574,15 @@ public class SpecTransform {
 	 * @return the normalised array
 	 */
 	public static double[][] normaliseStd(double[][] img, double mean, double std) {
+		
+//		System.out.println("Normalise Std: " + mean + "  " + std + "  " + JamArr.max(img));
 
 		double std_orig =JamArr.std(img); 
 
 		return JamArr.add(JamArr.product(JamArr.divide(JamArr.subtract(img, JamArr.mean(img)), std_orig), std ), mean); 
 	}
 
+	
 	/**
 	 * Discard pixels that are lower than the median threshold. 
 

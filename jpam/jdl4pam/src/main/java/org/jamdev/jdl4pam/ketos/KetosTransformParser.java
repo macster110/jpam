@@ -9,6 +9,7 @@ import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 import org.jamdev.jdl4pam.transforms.jsonfile.DLTransformParser2;
 import org.jamdev.jdl4pam.transforms.jsonfile.DLTransformsParser;
 import org.jamdev.jdl4pam.utils.DLUtils;
+import org.jamdev.jpamutils.wavFiles.AudioData;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -278,9 +279,12 @@ public class KetosTransformParser {
 		ArrayList<DLTransfromParams> dlTransformParamsArr = new ArrayList<DLTransfromParams>();
 		// we are assiming a mag spectrogram here.
 
-		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.DECIMATE, sampleRate));
+		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.DECIMATE_SCIPY, sampleRate));
 		if (normaliseWav != null && normaliseWav.booleanValue()) {
-			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.NORMALISE_WAV, 1)); // one																		// version
+			//FIXME
+			// I have absolutely no idea why the sample rate is used to normalise but it seems to make the unit testing work - this 
+			//needs to be clarified with KETOS folks. This will not work for a sample rate higher than the bit rate? 
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.NORMALISE_WAV, 0, sampleRate, AudioData.KETOSNORM)); // one																		// version
 		}
 		
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAMKETOS, (int) spectrogramInfo[0],
