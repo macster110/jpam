@@ -80,7 +80,7 @@ public class FreqTransform extends SimpleTransform {
 
 	@Override
 	public DLTransform transformData(DLTransform transform) {
-
+//		this.setError(null); //clear any error
 		switch (flag) {
 		case SPECCROPINTERP:
 			//need to be careful here that the frequency limits applied are not beyond stuff. 

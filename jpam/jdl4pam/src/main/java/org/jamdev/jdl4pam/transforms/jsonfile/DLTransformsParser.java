@@ -13,6 +13,8 @@ import org.jamdev.jdl4pam.animalSpot.AnimalSpotModel;
 import org.jamdev.jdl4pam.animalSpot.AnimalSpotParams;
 import org.jamdev.jdl4pam.transforms.DLTransfromParams;
 import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
+import org.jamdev.jdl4pam.transforms.WaveTransform;
+import org.jamdev.jpamutils.wavFiles.FilterParams;
 import org.json.JSONObject;
 
 import ai.djl.MalformedModelException;
@@ -184,10 +186,21 @@ public class DLTransformsParser {
 
 		switch (dlTransfromParams.dltransfromType) {
 		case DECIMATE:
+		case DECIMATE_SCIPY:
 			paramsObject.put("sr", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue()); 
 			break;
 		case PREEMPHSIS:
 			paramsObject.put("pre_empf_factor", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue()); 
+			break;
+		case FILTER:
+			FilterParams filterParams = WaveTransform.transform2FilterParams(((SimpleTransformParams) dlTransfromParams).params); 
+
+			paramsObject.put("filtertype", filterParams.filterType); 
+			paramsObject.put("filtermethod", filterParams.filterMethod); 
+			paramsObject.put("order", filterParams.order); 
+			paramsObject.put("lowcut", filterParams.lowCut); 
+			paramsObject.put("highcut", filterParams.highCut); 
+
 			break;
 		case SPEC2DB:
 			if (((SimpleTransformParams) dlTransfromParams).params[0]!=null) {
@@ -243,6 +256,14 @@ public class DLTransformsParser {
 		case SPECNORMALISE_MINIMAX:
 			//nothing to add here - no params. 
 			break;
+		case NORMALISE_WAV:
+			break;
+		case SPECTROGRAMKETOS:
+			paramsObject.put("fft", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
+			paramsObject.put("hop", ((SimpleTransformParams) dlTransfromParams).params[1].intValue());
+			break;
+		default:
+			break;
 		}
 
 		return paramsObject; 
@@ -266,6 +287,7 @@ public class DLTransformsParser {
 
 		switch (dlTransformType) {
 		case DECIMATE:
+		case DECIMATE_SCIPY:
 			number = new Number[1]; 
 			number[0] = jsonObjectParams.getFloat("sr"); 
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
@@ -277,6 +299,18 @@ public class DLTransformsParser {
 			break;
 		case NORMALISE_WAV:
 			dlTransformParams = new SimpleTransformParams(dlTransformType, null); 
+			break;
+		case FILTER:
+			FilterParams filterParams = new FilterParams();
+
+			filterParams.filterMethod = jsonObjectParams.getInt("filtermethod"); 
+			filterParams.filterType = jsonObjectParams.getInt("filtertype"); 
+			filterParams.order = jsonObjectParams.getInt("order"); 
+			filterParams.lowCut = jsonObjectParams.getInt("lowcut"); 
+			filterParams.highCut = jsonObjectParams.getInt("highcut"); 
+
+			dlTransformParams = new SimpleTransformParams(dlTransformType, WaveTransform.filterParams2transform(filterParams));
+			break;
 		case SPEC2DB:
 			number = new Number[1]; 
 			number[0] = jsonObjectParams.getDouble("min_db"); 
@@ -397,13 +431,17 @@ public class DLTransformsParser {
 		case FILTER_ISOLATED_SPOTS:
 			//TODO
 			break;
+		case SPECTROGRAMKETOS:
+			break;
+		default:
+			break;
 
 		}
 
 		return dlTransformParams; 
 	}
-	
-	
+
+
 
 
 	/**
@@ -655,11 +693,11 @@ public class DLTransformsParser {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} 
+		//			e.printStackTrace();
+		//		} catch (IOException e) {
+		//			// TODO Auto-generated catch block
+		//			e.printStackTrace();
+		//		} 
 	}
 
 

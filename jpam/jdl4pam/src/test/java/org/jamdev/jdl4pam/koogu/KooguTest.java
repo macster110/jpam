@@ -68,7 +68,7 @@ public class KooguTest {
 		System.out.println("Koogu - test Blue Whale model"); 
 
 		//relative paths to the resource folders.
-		String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/blue_whale/BmD_23_tf_model/koogu/saved_model.pb";
+		String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/blue_whale/BmD_24_tf_model/koogu/saved_model.pb";
 		String relWavPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/blue_whale/20190527_190000.wav";
 
 		String relPredicitonFile  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/blue_whale/rawScores_20190527_190000.csv";
@@ -90,8 +90,9 @@ public class KooguTest {
 		//the target sample rate
 		float sr = 250; 
 
-		int chunkSize  =  (int) (4.0*sr); //blue whale call
-		//		int chunkSize  =  (int) (5*sr); //blue whale call
+		///note you must check audiospec metadata file to get the correct chunk size
+		int chunkSize  =  (int) (4.5*sr); //blue whale call 23
+		//		int chunkSize  =  (int) (5*sr); //blue whale call 24
 
 		//run the Koogu test. 
 		float[][] results = kooguTest(modelPath,  wavFilePath,  predictions,  sr,  chunkSize); 

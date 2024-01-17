@@ -1,11 +1,12 @@
-package org.jamdev.jdl4pam.genericmodel;
+package org.jamdev.jdl4pam.deepAcoustics;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import org.jamdev.jdl4pam.genericmodel.SpectrogramTranslator;
+import org.jamdev.jdl4pam.genericmodel.WaveformTranslator;
 import org.jamdev.jdl4pam.transforms.DLTransform;
 import org.jamdev.jdl4pam.transforms.DLTransformsFactory;
 import org.jamdev.jdl4pam.transforms.DLTransfromParams;
@@ -13,39 +14,31 @@ import org.jamdev.jdl4pam.transforms.FreqTransform;
 import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
 import org.jamdev.jdl4pam.transforms.WaveTransform;
 import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
-import org.jamdev.jdl4pam.utils.DLMatFile;
 import org.jamdev.jdl4pam.utils.DLUtils;
 import org.jamdev.jpamutils.wavFiles.AudioData;
+import org.opencv.imgproc.CLAHE;
 
 import ai.djl.Model;
 import ai.djl.engine.Engine;
 import ai.djl.inference.Predictor;
-import us.hebi.matlab.mat.format.Mat5;
-import us.hebi.matlab.mat.types.MatFile;
-import us.hebi.matlab.mat.types.Matrix;
 
 /**
- * Scrappy test for loading a right whale classifier. 
- * 
- * @author Jamie Macaulay 
- *
+ * A test class for DeepAcousticsModel
  */
-public class RightWhaleDL {
+public class DeepAcousticsDLTest {
 	
 	/**
-	 * Run the right whale model. 
+	 * Run the blue whale model as close to pure DJL as possible 
 	 * @param modelPath - the path the saved_model.pb file
 	 * @param wavFilePath - path to a wav file. 
 	 * @param startChunck - the location to start form in the file (in samples). 
 	 * @return predicitons. 
 	 */
-	public static float[] runRightWhaleDL(String modelPath, String wavFilePath, int startChunck) {
-		float sr = 2000; 
-		int startchunk =  (int) (181.2*sr); //right whale call
+	public static float[] runDolphinDL(String modelPath, String wavFilePath, int startChunck) {
+		float sr = 250; 
 		int nRuns = 5; 
-		//int startchunk =  (int) (190.2*sr); 
 
-		int chunkSize = 4000; 
+		int chunkSize = (int) (sr*3.0);; 
 		
 		try {
 
@@ -63,7 +56,8 @@ public class RightWhaleDL {
 			System.out.println("Input: " + model.describeInput().values()); 
 			System.out.println("Output: " + model.describeOutput().values()); 
 
-			SpectrogramTranslator translator = new SpectrogramTranslator( model.describeInput().get(0).getValue()); 
+			SpectrogramTranslator translator = new SpectrogramTranslator(model.describeInput().get(0).getValue());
+			
 			//predictor for the model
 			Predictor<float[][][], float[]> predictor = model.newPredictor(translator);
 
@@ -72,22 +66,14 @@ public class RightWhaleDL {
 			//Open wav files. 
 			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
 			
-			
-			int[] samplesChunk = new int[] {0, 4000}; // the sample chunk to use. 
-
-
+		
 			//create the transforms. 
 			ArrayList<DLTransfromParams> dlTransformParamsArr = new ArrayList<DLTransfromParams>();
 
 			//waveform transforms. 
-			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.DECIMATE, sr)); 
-			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.TRIM, startchunk, startchunk+chunkSize)); 
-			//			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.PREEMPHSIS, preemphases)); 
-			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAM, 256, 100)); 
-			//in the python code they have an sfft of 129xN where N is the number of chunks. They then
-			//choose fft data between bin 5 and 45 in the FFT. 	This roughly between 40 and 350 Hz. 
-			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECCROPINTERP, 47.0, 357.0, 40)); 
-			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECNORMALISEROWSUM)); 
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.NORMALISE_WAV)); 
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAM, 1024,512)); 
+
 
 			//generate the transforms. 
 			ArrayList<DLTransform> transforms =	DLTransformsFactory.makeDLTransforms(dlTransformParamsArr); 
@@ -101,7 +87,13 @@ public class RightWhaleDL {
 			}
 
 			float[][] dataF =  DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
-			System.out.println("Data input size: " + dataF.length + "   " + dataF[0].length);
+			System.out.println("Data input size: " + dataF.length);
+			
+			//NEED TO COLOURISE SPECTROGRAM TO MAKE INOT A 3D INPUT
+			
+
+			
+			
 			
 //			Matrix matrixSpec=  DLMatFile.array2Matrix(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
 //
@@ -148,33 +140,27 @@ public class RightWhaleDL {
 		} 
 
 	}
+
 	
+	
+
 	/**
 	 * Test the classifier on a wave file. 
 	 * @param args - the arguments. 
 	 */
 	public static void main(String[] args) {
 
-		// let's test on some right whale data. 
-
-		//right whale at 3.01.201 - 181 seconds. 
-		//the second  class is right whale. class 0 = noise, Class 1= right whale. 
-		String wavFilePath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Right_whales_DG/SouthernRightWhale001-v1/sar98_trk3_8000.wav";
+		//Dolphin wav file
+		String wavFilePath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/deepAcoustics/Detection_Example_DarkNet_11_Whistles/IMMS_Combined_Test.wav";
 
 		//		String modelPath = "/Users/au671271/Google Drive/PAMGuard_dev/Deep_Learning/Right_whales_DG/model_lenet_dropout_input_conv_all.hdf5"; 
-		String modelPath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Right_whales_DG/model_lenet_dropout_input_conv_all/saved_model.pb";
+		String modelPath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/deepAcoustics/DA_Network11_pbConv/saved_model.pb";
 		
-	
+		int startchunk=0;
 //		String outMatlabPath = "/Users/au671271/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/generic_classifier/rightwhaespec.mat";
 		
-
-
-		float sr = 2000; 
-		int startchunk =  (int) (181.2*sr); //right whale call
+		float[] output  = runDolphinDL(modelPath, wavFilePath, startchunk); 
 		
-		float[] output  = runRightWhaleDL(modelPath, wavFilePath, startchunk); 
-		
-
 		for (int j = 0; j<output.length; j++) {
 			System.out.println("Output: " + j + " : " + output[j]);
 		}

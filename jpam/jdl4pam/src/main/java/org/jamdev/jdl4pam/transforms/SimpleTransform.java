@@ -11,6 +11,11 @@ public abstract class SimpleTransform implements DLTransform {
 	 * The parameters. 
 	 */
 	protected Number[] params;
+	
+//	/**
+//	 * Error message
+//	 */
+//	private TransformError error;
 
 	/**
 	 * Get the parameters for the transform
@@ -59,7 +64,30 @@ public abstract class SimpleTransform implements DLTransform {
 		
 		return transform.getDLTransformType().equals(this.getDLTransformType()); 
 	}
-
+	
+//	/**
+//	 * Get the error object for the transform. Is null if there is no error. 
+//	 * @return the error object or null if there is no error. 
+//	 */
+//	public TransformError getError() {
+//	   return this.error;
+//	}
+//
+//	/**
+//	 * Set the transform error. Set to null toclear errors. 
+//	 * @param the error to set. 
+//	 */
+//	public void setError(TransformError object) {
+//		this.error = object; 
+//	}
+//	
+//	/**
+//	 * Check whether the last transform caused an error. See getError();
+//	 * @return true if an error has occurred. 
+//	 */
+//	public boolean isError() {
+//		return error!=null;
+//	}
 	
 
 }

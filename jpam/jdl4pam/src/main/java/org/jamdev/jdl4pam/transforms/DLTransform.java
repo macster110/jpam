@@ -16,6 +16,8 @@ public interface DLTransform {
 	 * {@link #SPECCROPINTERP} {@link #SPECNORMALISE} {@link #SPECNORMALISEROWSUM}
 	 * {@link #SPEC2DB}
 	 * 
+	 * Note when adding a new transform also add required implementation to transforms.jsonfile.DLTransformParser2;
+	 * 
 	 * @author Jamie Macaulay
 	 *
 	 */
@@ -228,7 +230,7 @@ public interface DLTransform {
 		 *  <ul>
 			  <li>Filter type (int) - low pass = 0, high pass = 1, band pass = 2  </li>
 			  <li>Filter order(int) - the filter order.	</li>
-			  <li>Filter type (int) - Butterworth = 0, Chebyshev = 1</li>
+			  <li>Filter mthod (int) - Butterworth = 0, Chebyshev = 1</li>
 			  <li>Low cut frequency - ignored when using low pass</li>
 			  <li>High cut frequency - ignored when using high pass</li>
 			</ul> 

@@ -69,6 +69,12 @@ public class SimpleTransformParams extends DLTransfromParams {
 		}
 		return string;
 	}
+
+
+	public void setGray(int x, int y, int gray) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 	

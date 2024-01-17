@@ -3,9 +3,10 @@ package org.jamdev.jdl4pam.transforms;
 import java.util.ArrayList;
 
 import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
+import org.jamdev.jpamutils.wavFiles.FilterParams;
 
 /**
- * Generates a transform class from Enum and paramters. 
+ * Generates a transform class from Enum and default parameters. 
  * 
  * @author Jamie Macaulay
  *
@@ -33,6 +34,10 @@ public class DLTransformsFactory {
 			break;
 		case NORMALISE_WAV:
 			dlTransform = new WaveTransform(dlTransformType, null); 
+			break;
+		case FILTER:
+			FilterParams filtParams = new FilterParams(); //default params
+			dlTransform = new WaveTransform(dlTransformType, WaveTransform.filterParams2transform(filtParams)); 
 			break;
 		case SPEC2DB:
 			dlTransform = new FreqTransform(dlTransformType, null); 
@@ -79,6 +84,7 @@ public class DLTransformsFactory {
 		case SPECNORMALISE_MINIMAX:
 			dlTransform = new FreqTransform(dlTransformType, null); 
 			break;
+			
 		default:
 			break;
 

@@ -446,30 +446,39 @@ public class AudioData {
 		}
 		return arr;
 	}
+	
+	/**
+	 * Filter audio data using a Butterworth or Chebyshev filter. 
+	 * @param params - filter params object holding paratmers for filter. 
+	 * @return filtered audio data. 
+	 */
+	public AudioData filter(FilterParams params) {
+		return filter(params.filterMethod, params.filterType, params.order, params.lowCut, params.highCut); 
+	}
 
 	/**
 	 * Filter audio data using a Butterworth or Chebyshev filter. 
-	 * @param type - the type if filter e.g. AudioData.BUTTERWORTH
-	 * @param passType - the pass type e.g. AudioData.LOWPASS
+	 * @param filterMethod - the type if filter e.g. AudioData.BUTTERWORTH
+	 * @param filterType - the pass type e.g. AudioData.LOWPASS
 	 * @param order - the filter order. 
 	 * @param lowCut - the low cut frequency in Hz (not used for LOWPASS).
 	 * @param highCut - the high cut frequency in Hz (not used for HIGHPASS). 
 	 * @return filtered audio data. 
 	 */
-	public AudioData filter(int type, int passType, int order, double lowCut, double highCut) {
+	public AudioData filter(int filterMethod, int filterType, int order, double lowCut, double highCut) {
 		
 //		System.out.println("Create filter: type: " + type + " passType: " + passType + " order: " +  order + " lowCut: " + lowCut + " highCut: " + highCut + " sr " + this.sampleRate); 
 
 		Cascade filter = null;
-		switch (passType) {
+		switch (filterType) {
 		case LOWPASS: 
-			filter = createLowPassFilter( type,  order,   highCut); 
+			filter = createLowPassFilter( filterMethod,  order,   highCut); 
 			break;
 		case HIGHPASS: 
-			filter = createHighPassFilter( type,  order,   lowCut); 
+			filter = createHighPassFilter( filterMethod,  order,   lowCut); 
 			break;
 		case BANDPASS: 
-			filter = createBandPassFilter( type,  order,   lowCut, highCut); 
+			filter = createBandPassFilter( filterMethod,  order,   lowCut, highCut); 
 			break;
 		}
 
@@ -511,15 +520,15 @@ public class AudioData {
 
 	/**
 	 * Create a low pass filter. 
-	 * @param type - the filter type e.g. AudioData.BUTTERWORTH
+	 * @param filterMethod - the filter type e.g. AudioData.BUTTERWORTH
 	 * @param order - the filter order.
 	 * @param highCut - the high cut frequency in Hz.
 	 * @return a filter object. 
 	 */
-	private Cascade createLowPassFilter(int type, int order,  double highCut) {
+	private Cascade createLowPassFilter(int filterMethod, int order,  double highCut) {
 
 		Cascade filter = null;
-		switch (type) {
+		switch (filterMethod) {
 
 		case CHEBYSHEV:
 			ChebyshevII filterC = new ChebyshevII(); 
@@ -539,15 +548,15 @@ public class AudioData {
 
 	/**
 	 * Create a high pass filter. 
-	 * @param type - the filter type e.g. AudioData.BUTTERWORTH
+	 * @param filterMethod - the filter type e.g. AudioData.BUTTERWORTH
 	 * @param order - the filter order.
 	 * @param lowCut - the low cut frequency in Hz.
 	 * @return a filter object. 
 	 */
-	private Cascade createHighPassFilter(int type, int order, double lowCut) {
+	private Cascade createHighPassFilter(int filterMethod, int order, double lowCut) {
 
 		Cascade filter = null;
-		switch (type) {
+		switch (filterMethod) {
 
 		case CHEBYSHEV:
 			ChebyshevII filterC = new ChebyshevII(); 
@@ -567,19 +576,19 @@ public class AudioData {
 
 	/**
 	 * Create a band pass filter. 
-	 * @param type - the filter type e.g. AudioData.BUTTERWORTH
+	 * @param filterMethod - the filter type e.g. AudioData.BUTTERWORTH
 	 * @param order - the filter order.
 	 * @param lowCut - the low cut frequency in Hz.
 	 * @param highCut - the low cut frequency in Hz.
 	 * @return a filter object. 
 	 */
-	private Cascade createBandPassFilter(int type, int order, double lowCut, double highCut) {
+	private Cascade createBandPassFilter(int filterMethod, int order, double lowCut, double highCut) {
 		Cascade filter = null;
 
 		double width = (highCut-lowCut);
 		double center = (highCut+lowCut)/2;
 
-		switch (type) {
+		switch (filterMethod) {
 
 		case CHEBYSHEV:
 			ChebyshevII filterC = new ChebyshevII(); 
@@ -596,5 +605,7 @@ public class AudioData {
 
 		return filter;
 	}
+	
+
 
 }

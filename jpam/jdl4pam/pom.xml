@@ -91,6 +91,14 @@
 		<!-- <artifactId>tensorflow-model-zoo</artifactId> -->
 		<!-- <version>0.10.0</version> -->
 		<!-- </dependency> -->
+		
+		<!-- https://mvnrepository.com/artifact/net.imglib2/imglib2 -->
+		<dependency>
+		    <groupId>org.openpnp</groupId>
+		    <artifactId>opencv</artifactId>
+		    <version>4.9.0-0</version>
+		</dependency>
+
 
 	</dependencies>
 
