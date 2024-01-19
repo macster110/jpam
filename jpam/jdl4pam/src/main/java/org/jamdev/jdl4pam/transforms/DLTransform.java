@@ -66,6 +66,14 @@ public interface DLTransform {
 		 */
 		SPECTROGRAM("Spectrogram", "spectrogram"),
 
+		/**
+		 * Converts a waveform to a spectrogram in exactly the same as the Ketos library
+		 * <p>
+		 * Two associated parameters - the FFT length and FFT hop size in samples. The
+		 * hop is the number of samples from the start of the last FFT window to move.
+		 * The third parameter is window size which is in seconds. 
+		 * 
+		 */
 		SPECTROGRAMKETOS("Spectrogramketos", "spectrogramketos"),
 
 		/**
@@ -230,13 +238,26 @@ public interface DLTransform {
 		 *  <ul>
 			  <li>Filter type (int) - low pass = 0, high pass = 1, band pass = 2  </li>
 			  <li>Filter order(int) - the filter order.	</li>
-			  <li>Filter mthod (int) - Butterworth = 0, Chebyshev = 1</li>
+			  <li>Filter method (int) - Butterworth = 0, Chebyshev = 1</li>
 			  <li>Low cut frequency - ignored when using low pass</li>
 			  <li>High cut frequency - ignored when using high pass</li>
 			</ul> 
 		 * 
 		 */
-		FILTER("Filter", "filter_wav");
+		FILTER("Filter", "filter_wav"), 
+
+		/**
+		 * Resize the spectrgram so that the frequency and time axis are a certian
+		 * number of bins
+		 * <p>
+		 * Two associated parameters. *
+		 * <ul>
+		 * <li>time bins - the number of bins to resize the time axis to</li>
+		 * <li>frequency bins - the number of bins to resize the frequency axis to</li>
+		 * </ul>
+		 * 
+		 */
+		SPECRESIZE("Resize Spectrogram", "spec_resize");
 
 		/**
 		 * Then name of the transform.

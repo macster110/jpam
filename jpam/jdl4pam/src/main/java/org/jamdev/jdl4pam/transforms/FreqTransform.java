@@ -161,6 +161,10 @@ public class FreqTransform extends SimpleTransform {
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().reduceTonalNoiseMean(params[0].intValue());
 			freqlims = ((FreqTransform) transform).freqlims; 
 			break;
+		case SPECRESIZE:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().resize(params[0].intValue(), params[1].intValue());
+			freqlims = ((FreqTransform) transform).freqlims; 
+			break;
 		default:
 			break;
 		}

@@ -261,6 +261,11 @@ public class DLTransformsParser {
 		case SPECTROGRAMKETOS:
 			paramsObject.put("fft", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
 			paramsObject.put("hop", ((SimpleTransformParams) dlTransfromParams).params[1].intValue());
+			paramsObject.put("window_size", ((SimpleTransformParams) dlTransfromParams).params[2].doubleValue());
+			break;
+		case SPECRESIZE:
+			paramsObject.put("time_bins", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
+			paramsObject.put("freq_bins", ((SimpleTransformParams) dlTransfromParams).params[1].intValue());
 			break;
 		default:
 			break;
@@ -432,6 +437,17 @@ public class DLTransformsParser {
 			//TODO
 			break;
 		case SPECTROGRAMKETOS:
+			number = new Number[2]; 
+			number[0] = jsonObjectParams.getInt("fft"); 
+			number[1] = jsonObjectParams.getInt("hop"); 
+			number[2] = jsonObjectParams.getDouble("window_size"); 
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
+			break;
+		case SPECRESIZE:		
+			number = new Number[2]; 
+			number[0] = jsonObjectParams.getInt("time_bins"); 
+			number[1] = jsonObjectParams.getInt("freq_bins"); 
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
 			break;
 		default:
 			break;

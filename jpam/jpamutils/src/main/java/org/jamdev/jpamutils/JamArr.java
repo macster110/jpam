@@ -1555,6 +1555,44 @@ public class JamArr {
 		return aux; 
 	}
 
+	/**
+	 * Convert a 2D double array to a float array. 
+	 * @param arrayd - the double array to convert. 
+	 * @return the float array equivalent. 
+	 */
+	public static float[][] doubleToFloat(double[][] arrayd) {
+		float[][] outF = new float[arrayd.length][]; 
+		float[] temp;
+		for (int i=0; i<arrayd.length; i++) {
+			temp = new float[arrayd[i].length]; 
+			for (int j=0; j<arrayd[i].length; j++) {
+				temp[j] = (float) arrayd[i][j]; 
+			}
+			outF[i]=temp;
+		}
+		return outF;
+	}
+	
+	
+	/**
+	 * Convert a 2D float array to a double array. 
+	 * @param arrayd - the float array to convert. 
+	 * @return the double array equivalent. 
+	 */
+	public static double[][] floatToDouble(float[][] arrayd) {
+		double[][] outD = new double[arrayd.length][]; 
+		double[] temp;
+		for (int i=0; i<arrayd.length; i++) {
+			temp = new double[arrayd[i].length]; 
+			for (int j=0; j<arrayd[i].length; j++) {
+				temp[j] = (double) arrayd[i][j]; 
+			}
+			outD[i]=temp;
+		}
+		return outD;
+	}
+	
+
 
 
 

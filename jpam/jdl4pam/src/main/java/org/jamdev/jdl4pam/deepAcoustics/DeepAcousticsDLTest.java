@@ -1,9 +1,12 @@
 package org.jamdev.jdl4pam.deepAcoustics;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.jamdev.jdl4pam.genericmodel.SpectrogramTranslator;
 import org.jamdev.jdl4pam.genericmodel.WaveformTranslator;
@@ -14,6 +17,7 @@ import org.jamdev.jdl4pam.transforms.FreqTransform;
 import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
 import org.jamdev.jdl4pam.transforms.WaveTransform;
 import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
+import org.jamdev.jdl4pam.utils.DLMatFile;
 import org.jamdev.jdl4pam.utils.DLUtils;
 import org.jamdev.jpamutils.wavFiles.AudioData;
 import org.opencv.imgproc.CLAHE;
@@ -21,12 +25,89 @@ import org.opencv.imgproc.CLAHE;
 import ai.djl.Model;
 import ai.djl.engine.Engine;
 import ai.djl.inference.Predictor;
+import us.hebi.matlab.mat.format.Mat5;
+import us.hebi.matlab.mat.types.MatFile;
+import us.hebi.matlab.mat.types.Matrix;
 
 /**
  * A test class for DeepAcousticsModel
  */
 public class DeepAcousticsDLTest {
-	
+
+	public static float[][] transformsTest(String wavFilePath, String outMatlabPath){
+		///load the wave data. 
+		//Open wav files. 
+		AudioData soundData;
+		try {
+			soundData = DLUtils.loadWavFile(wavFilePath);
+
+			float sR = soundData.getSampleRate();
+
+			int chunkSize = (int) (sR*3.0);; 
+
+			//create the transforms. 
+
+			ArrayList<DLTransfromParams> dlTransformParamsArr = new ArrayList<DLTransfromParams>();
+
+			//transforms
+			//the clip length is three seconds
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.TRIM, 0, chunkSize));
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAMKETOS, 1009, 202, 3.0)); 
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPEC2DB));
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECNORMALISE_MINIMAX)); 
+
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECRESIZE, 160, 160)); 
+
+
+			//generate the transforms. 
+			ArrayList<DLTransform> transforms =	DLTransformsFactory.makeDLTransforms(dlTransformParamsArr); 
+
+			((WaveTransform) transforms.get(0)).setWaveData(soundData); 
+
+			//run the tansforms. 
+			MatFile matFile = Mat5.newMatFile();
+			DLTransform transform = transforms.get(0); 
+			double[][] dataD;
+			for (int i=0; i<transforms.size(); i++) {
+				transform = transforms.get(i).transformData(transform); 
+
+				if (transform instanceof FreqTransform) {
+					dataD = ((FreqTransform) transform).getSpecTransfrom().getTransformedData();
+					Matrix matrixSpec=  DLMatFile.array2Matrix(dataD);
+					matFile.addArray(transform.getDLTransformType().getJSONString(), matrixSpec); 
+				}
+
+
+			}
+
+			float[][] dataF =  DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
+			System.out.println("Data input size: " + dataF.length + " x " + dataF[0].length);
+
+			Matrix matrixSpec=  DLMatFile.array2Matrix(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
+
+			matFile.addArray("inputimage", matrixSpec); 
+
+			try {
+				Mat5.writeToFile(matFile, outMatlabPath);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			return dataF;
+
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedAudioFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null; 
+
+	}
 	/**
 	 * Run the blue whale model as close to pure DJL as possible 
 	 * @param modelPath - the path the saved_model.pb file
@@ -34,14 +115,13 @@ public class DeepAcousticsDLTest {
 	 * @param startChunck - the location to start form in the file (in samples). 
 	 * @return predicitons. 
 	 */
-	public static float[] runDolphinDL(String modelPath, String wavFilePath, int startChunck) {
-		float sr = 250; 
-		int nRuns = 5; 
+	public static ArrayList<float[]> runDolphinDL(String modelPath, String wavFilePath, int startChunck) {
 
-		int chunkSize = (int) (sr*3.0);; 
-		
+
+		int nRuns =10; 
 		try {
 
+			// load the model 
 			File file = new File(modelPath); 
 
 			Path modelDir = Paths.get(file.getAbsoluteFile().getParent()); //the directory of the file (in case the file is local this should also return absolute directory)
@@ -56,28 +136,36 @@ public class DeepAcousticsDLTest {
 			System.out.println("Input: " + model.describeInput().values()); 
 			System.out.println("Output: " + model.describeOutput().values()); 
 
-			SpectrogramTranslator translator = new SpectrogramTranslator(model.describeInput().get(0).getValue());
-			
+			DeepAcousticsTranslator translator = new DeepAcousticsTranslator(model.describeInput().get(0).getValue());
+
 			//predictor for the model
-			Predictor<float[][][], float[]> predictor = model.newPredictor(translator);
+			Predictor<float[][][][], ArrayList<float[]>> predictor = model.newPredictor(translator);
 
 
 			///load the wave data. 
 			//Open wav files. 
 			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
-			
-		
+
+			float sR = soundData.getSampleRate();
+
+			int chunkSize = (int) (sR*3.0);; 
+
 			//create the transforms. 
+
 			ArrayList<DLTransfromParams> dlTransformParamsArr = new ArrayList<DLTransfromParams>();
 
-			//waveform transforms. 
-			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.NORMALISE_WAV)); 
-			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAM, 1024,512)); 
+			//transforms
+			//the clip length is three seconds
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.TRIM, 0, chunkSize));
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAM, 1009,202)); 
+			//
+
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECNORMALISE)); 
 
 
 			//generate the transforms. 
 			ArrayList<DLTransform> transforms =	DLTransformsFactory.makeDLTransforms(dlTransformParamsArr); 
-			
+
 			((WaveTransform) transforms.get(0)).setWaveData(soundData); 
 
 			//run the tansforms. 
@@ -87,37 +175,27 @@ public class DeepAcousticsDLTest {
 			}
 
 			float[][] dataF =  DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
-			System.out.println("Data input size: " + dataF.length);
-			
-			//NEED TO COLOURISE SPECTROGRAM TO MAKE INOT A 3D INPUT
-			
+			System.out.println("Data input size: " + dataF.length + " x " + dataF[0].length);
 
-			
-			
-			
-//			Matrix matrixSpec=  DLMatFile.array2Matrix(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
-//
-//			MatFile matFile = Mat5.newMatFile()
-//					.addArray("spectrogram", matrixSpec); 
-//
-//			try {
-//				Mat5.writeToFile(matFile, outMatlabPath);
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
+			//NEED TO COLOURISE SPECTROGRAM TO MAKE IT A 3D INPUT
 
-			float[] output = null; 
-			float[][][] data;
+
+
+			float[][][] dataF3 = colouriseSpec(); 
+
+
+
+			ArrayList<float[]> output = null; 
+			float[][][][] data;
 			for (int i=0; i<nRuns; i++) {
 				long time1 = System.currentTimeMillis();
 				//				data = DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
 				//				System.out.println("Data input size: " + data.length + "   " + data[0].length);
 				int nSpec = 1;
-				data = new float[nSpec][][]; 
+				data = new float[nSpec][][][]; 
 				for (int j=0; j<nSpec; j++) {
 					//data[j]=  DLUtils.makeDummySpectrogram(40, 40); 
-					data[j]=  dataF; 
+					data[j]=  dataF3; 
 				}
 
 				output = predictor.predict(data); 
@@ -131,7 +209,7 @@ public class DeepAcousticsDLTest {
 			//			 
 			//			 ModelZoo.loadModel(criteria);
 
-				return output; 
+			return output; 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -141,8 +219,16 @@ public class DeepAcousticsDLTest {
 
 	}
 
-	
-	
+
+
+
+	private static float[][][] colouriseSpec() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
 
 	/**
 	 * Test the classifier on a wave file. 
@@ -153,17 +239,21 @@ public class DeepAcousticsDLTest {
 		//Dolphin wav file
 		String wavFilePath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/deepAcoustics/Detection_Example_DarkNet_11_Whistles/IMMS_Combined_Test.wav";
 
+		//output MATLAB path
+		String outMatPath = "/Users/au671271/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/deepAcoustics/deepAcoustic_spec_test.mat";
+
 		//		String modelPath = "/Users/au671271/Google Drive/PAMGuard_dev/Deep_Learning/Right_whales_DG/model_lenet_dropout_input_conv_all.hdf5"; 
 		String modelPath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/deepAcoustics/DA_Network11_pbConv/saved_model.pb";
-		
+
 		int startchunk=0;
-//		String outMatlabPath = "/Users/au671271/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/generic_classifier/rightwhaespec.mat";
-		
-		float[] output  = runDolphinDL(modelPath, wavFilePath, startchunk); 
-		
-		for (int j = 0; j<output.length; j++) {
-			System.out.println("Output: " + j + " : " + output[j]);
-		}
+		//		String outMatlabPath = "/Users/au671271/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/generic_classifier/rightwhaespec.mat";
+
+		transformsTest(wavFilePath, outMatPath); 
+
+		//		ArrayList<float[]> output  = runDolphinDL(modelPath, wavFilePath, startchunk); 
+		//		for (int j = 0; j<output.size(); j++) {
+		//			System.out.println("Output: " + j + " : " + output.get(j));
+		//		}
 	}
 
 }

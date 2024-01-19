@@ -1,4 +1,5 @@
-package org.jamdev.jdl4pam.transforms;
+package org.jamdev.jpamutils.clahe;
+
 
 //Catalano Android Imaging Library
 //The Catalano Framework
