@@ -257,8 +257,36 @@ public interface DLTransform {
 		 * </ul>
 		 * 
 		 */
-		SPECRESIZE("Resize Spectrogram", "spec_resize");
+		SPECRESIZE("Resize Spectrogram", "spec_resize"), 
+		
+		/**
+		 * Flip the spectrogram on the frequency axis. 
+		 */
+		SPECFLIP("Flip Spectrogram", "spec_flip"), 
+		
+		/**
+		 * Contrast Limited Adaptive Histogram Equalization.
+		 * 
+		 * <br>
+		 * References:
+		 * http://en.wikipedia.org/wiki/Adaptive_histogram_equalization#Contrast_Limited_AHE
+		 * 
+		 * Three associated parameters.
+		 * <ul>
+		 * <li>block radius - Integer - The size of the local region around a pixel for
+		 * which the histogram is equalized. This size should be larger than the size of
+		 * features to be preserved.</li>
+		 * <li>bins - the number of histogram bins used for histogram equalization.</li>
+		 * <li>slope - Float - Limits the contrast stretch in the intensity transfer
+		 * function. Very large values will let the histogram equalization do whatever
+		 * it wants to do, that is result in maximal local contrast. The value 1 will
+		 * result in the original image.</li>
+		 * </ul>
+		 */
+		CLAHE("CLAHE Spectrogram", "clahe");
 
+		
+		
 		/**
 		 * Then name of the transform.
 		 */

@@ -99,11 +99,11 @@ public class KetosModel {
 		}
 		else {
 			if (model!=null && model.describeInput()!=null) {
-				//System.out.println("Generic Model: Input: " + model.describeInput().get(0).getValue()); 
+				System.out.println("Generic Model: Input: " + model.describeInput().get(0).getValue()); 
 				inputShape =  model.describeInput().get(0).getValue();
 			}
 			if (model!=null && model.describeOutput()!=null) {
-				//System.out.println("Generic Model: Output: " + model.describeOutput().get(0).getValue()); 
+				System.out.println("Generic Model: Output: " + model.describeOutput().get(0).getValue()); 
 				outShape = model.describeOutput().get(0).getValue();
 			}
 

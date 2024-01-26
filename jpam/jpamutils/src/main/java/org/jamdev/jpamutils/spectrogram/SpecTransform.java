@@ -3,6 +3,8 @@ package org.jamdev.jpamutils.spectrogram;
 import java.util.Arrays;
 
 import org.jamdev.jpamutils.JamArr;
+import org.jamdev.jpamutils.clahe.Clahe;
+import org.jamdev.jpamutils.clahe.FastBitmap;
 import org.jamdev.jpamutils.interpolation.Bilinear;
 import org.jamdev.jpamutils.interpolation.Interpolation;
 
@@ -344,6 +346,46 @@ public class SpecTransform {
 
 		return this;
 	}
+	
+	/**
+	 * Flip the spectrogram along the frequency axis. 
+	 * @return the fliped spectrogram. 
+	 */
+	public SpecTransform flip() {
+		if (specData == null)
+			initialiseSpecData();
+
+		this.specData = flip(this.specData);
+
+		return this;
+	}
+
+	/**
+	 * Contrast Limited Adaptive Histogram Equalization.
+	 * 
+	 * <br>
+	 * References:
+	 * http://en.wikipedia.org/wiki/Adaptive_histogram_equalization#Contrast_Limited_AHE
+	 * 
+	 * Three associated parameters.
+	 * @param blockRadius - Integer - The size of the local region around a pixel for
+	 * which the histogram is equalized. This size should be larger than the size of
+	 * features to be preserved.
+	 * @param bins - the number of histogram bins used for histogram equalization.
+	 * @param slope - Float - Limits the contrast stretch in the intensity transfer
+	 * function. Very large values will let the histogram equalization do whatever
+	 * it wants to do, that is result in maximal local contrast. The value 1 will
+	 * result in the original image.
+	 * @return the histogram equalized spectrgram. 
+	 */
+	public SpecTransform clahe(int blockRadius, int bins, float slope) {
+		if (specData == null)
+			initialiseSpecData();
+
+		this.specData = clahe(this.specData, blockRadius, bins, slope);
+
+		return this;
+	}
 
 	/**
 	 * Convert a spectrogram to dB.
@@ -434,6 +476,32 @@ public class SpecTransform {
 
 		for (int i = 0; i < array.length; i++) {
 			System.arraycopy(array[i], 0, arrCopy[i], 0, array[i].length);
+		}
+
+		return arrCopy;
+	}
+	
+	
+
+	/**
+	 * Flip an array along it's y axis. 
+	 * 
+	 * @param array - the array to flip
+	 * @return the flipped array
+	 */
+	public static double[][] flip(double[][] array) {
+		
+		double[][] arrCopy = new double[array.length][array[0].length];
+
+		double[] arr;
+		for (int i = 0; i < array.length; i++) {
+			
+			arr = new double[array[i].length];
+			
+			for (int j=0; j<arr.length; j++) {
+				arr[arr.length-j-1] = array[i][j];
+			}
+			arrCopy[i]=arr;
 		}
 
 		return arrCopy;
@@ -549,6 +617,9 @@ public class SpecTransform {
 
 		return JamArr.floatToDouble(resizeArr);
 	}
+	
+	
+	
 
 	/**
 	 * Perform a nearest neighbour interpolation of a 1D array of evenly spaced
@@ -993,5 +1064,52 @@ public class SpecTransform {
 	public void setTransformedData(double[][] absoluteSpectrogram) {
 		this.specData = absoluteSpectrogram;
 	}
+
+	/**
+	 * Contrast Limited Adaptive Histogram Equalization.
+	 * 
+	 * <br>
+	 * References:
+	 * http://en.wikipedia.org/wiki/Adaptive_histogram_equalization#Contrast_Limited_AHE
+	 * 
+	 * Three associated parameters.
+	 * @param blockRadius - Integer - The size of the local region around a pixel for
+	 * which the histogram is equalized. This size should be larger than the size of
+	 * features to be preserved.
+	 * @param bins - the number of histogram bins used for histogram equalization.
+	 * @param slope - Float - Limits the contrast stretch in the intensity transfer
+	 * function. Very large values will let the histogram equalization do whatever
+	 * it wants to do, that is result in maximal local contrast. The value 1 will
+	 * result in the original image.
+	 * @return histogram equalized image. 
+	 */
+	public static double[][] clahe(double[][] dataF, int bloackRadius, int bins, float slope) {
+		
+		FastBitmap fastBitMap = new FastBitmap(dataF[0].length, dataF.length); 
+
+		for (int i=0; i<dataF.length; i++) {
+			for (int j=0; j<dataF[0].length; j++) {
+				fastBitMap.setGray(i, j, (int) (255.*dataF[i][j]));
+			}
+		}
+		
+		Clahe clahe = new  Clahe(bloackRadius, bins, slope); 
+		
+		
+		clahe.applyInPlace(fastBitMap);
+		
+		double[][] dataClahe = new double[dataF.length][dataF[0].length];
+		for (int i=0; i<dataF.length; i++) {
+			for (int j=0; j<dataF[0].length; j++) {
+				dataClahe[i][j] = fastBitMap.getGray(i, j)/255.;
+			}
+		}
+		
+		return dataClahe;
+	}
+
+
+
+
 
 }

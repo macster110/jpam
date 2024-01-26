@@ -84,7 +84,9 @@ public class DLTransformsFactory {
 		case SPECNORMALISE_MINIMAX:
 			dlTransform = new FreqTransform(dlTransformType, null); 
 			break;
-			
+		case SPECFLIP:
+			dlTransform = new FreqTransform(dlTransformType, null); 
+			break;
 		default:
 			break;
 
