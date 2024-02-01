@@ -79,6 +79,8 @@ public class KetosAudioProcess {
 	 */
 	public static ArrayList<KetosResult> processSoundData(KetosModel ketosModel, AudioData soundData, Double hop, int verbosity){
 
+		System.out.println("AUDIO_SETTINGS: " + ketosModel.getAudioReprFile());
+		
 		//read the JSOn string from the file.
 		String jsonString = DLTransformsParser.readJSONString(new File(ketosModel.getAudioReprFile()));
 

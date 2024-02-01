@@ -120,6 +120,8 @@ public class KetosTest {
 
 			//the ketos model.
 			KetosModel ketosModel = new KetosModel(new File(modelPath));
+			
+			System.out.println("KETOS SETTINGS: " + ketosModel.getAudioReprFile());
 
 			ArrayList<KetosResult> results = KetosAudioProcess.processSoundData( ketosModel,  soundData, 5., KetosAudioProcess.VERBOSITY_MEDIUM); 
 			

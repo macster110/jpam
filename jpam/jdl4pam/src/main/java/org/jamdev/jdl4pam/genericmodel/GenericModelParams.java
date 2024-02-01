@@ -86,15 +86,15 @@ public class GenericModelParams {
 	public boolean equals(Object o) {
 		
 		GenericModelParams params = (GenericModelParams) o;
-		
+	
 
 		//check the transforms are the same. 		
 		if (this.dlTransforms!=null && params.dlTransforms == null) {
-//			System.out.println("Transforms are null this"); 
+//			System.err.println("Transforms are null this"); 
 			return false; 
 		}
 		if (params.dlTransforms!=null && this.dlTransforms == null) {
-//			System.out.println("Transforms are null test"); 
+//			System.err.println("Transforms are null test"); 
 			return false; 
 		}
 		
@@ -102,13 +102,13 @@ public class GenericModelParams {
 		if (this.dlTransforms!=null) {
 			
 			if (this.dlTransforms.size()!=dlTransforms.size()) {
-//				System.out.println("Transforms size not the same"); 
+//				System.err.println("Transforms size not the same"); 
 				return false; 
 			}
 				
 			for (int i=0; i<this.dlTransforms.size();i++) {
 				if (!this.dlTransforms.get(i).equals(params.dlTransforms.get(i))) {
-//					System.out.println(dlTransforms.get(i) + " not equal to "  + params.dlTransforms.get(i)); 
+//					System.err.println(dlTransforms.get(i) + " not equal to "  + params.dlTransforms.get(i)); 
 					return false; 
 				}
 			}
@@ -117,7 +117,7 @@ public class GenericModelParams {
 			//both transforms must be null and so can still be equal
 		}
 		
-		
+//		
 //		System.out.println("Basic params seglen: " + this.segLen  + "  " + params.segLen);
 //		System.out.println("Basic params defaultOutputShape: " + this.defaultOutputShape  + "  " + params.defaultOutputShape);
 //		System.out.println("Basic params defaultInputShape: " + this.defaultInputShape  + "  " + params.defaultInputShape);
@@ -126,7 +126,7 @@ public class GenericModelParams {
 		boolean isEqual = 
 				this.segLen.equals(params.segLen) && 
 				shapeEquals(this.defaultOutputShape, params.defaultOutputShape) &&
-				shapeEquals(this.defaultOutputShape, params.defaultInputShape) &&
+				shapeEquals(this.defaultInputShape, params.defaultInputShape) &&
 				Arrays.equals(this.classNames, params.classNames); 
 
 		return isEqual; 

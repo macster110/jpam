@@ -59,42 +59,31 @@ public class GenericModel {
 	 */
 	private Integer inputShapeIndex = null; 
 	
-	
+	/**
+	 * Load a model from a file.
+	 * @param modelPath - path to the file.
+	 * @throws MalformedModelException 
+	 * @throws IOException
+	 */
 	public GenericModel(String modelPath) throws MalformedModelException, IOException {
-		this(modelPath, null); 
+		this(modelPath, null);
 	}
 
-
-
-
+	/**
+	 * Load a model from a file 
+	 * @param modelPath - path to the model file. Can be a Tensorflow model (e.g. daved_model.pb) or Pytorch model (e.g. modelname.py). 
+	 * @param inputShapeIndex- This can be null in which case the shape with the largest
+	 * dimensions will be assumed to be the input data.  Note that often only one input shape 
+	 * is retrieved from the model in which case this index is redundant. 
+	 * @throws MalformedModelException
+	 * @throws IOException
+	 */
 	public GenericModel(String modelPath, Integer inputShapeIndex) throws MalformedModelException, IOException{
 
-		File file = new File(modelPath); 
-
-		//String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JAMIE.pk"; 
-
-		Path modelDir = Paths.get(file.getAbsoluteFile().getParent()); //the directory of the file (in case the file is local this should also return absolute directory)
-		String modelName = file.getName(); 
-
-		String extension = FilenameUtils.getExtension(file.getAbsolutePath());
-
-		System.out.println("Generic Model: Available engines: " + Engine.getAllEngines()); 
-
-		Model model; 
-		switch  (extension) {
-		case "pb":
-			model = Model.newInstance(modelPath, "TensorFlow"); 
-			model.load(modelDir, modelName);
-			break; 
-		case "py":
-			model = Model.newInstance(modelName);
-			model.load(modelDir, modelName);
-			break; 
-		default:
-			//will try to load a model automatically - problematic but let's see. 
-			model = Model.newInstance(modelPath); 
-			break;
-		}
+		/**
+		 * Load the model. 
+		 */
+		Model model = loadModel(modelPath);
 
 		if (model == null) {
 			System.err.println("Generic Model: Could not load model: " + modelPath);
@@ -127,6 +116,44 @@ public class GenericModel {
 
 		}
 
+	}
+	
+	/**
+	 * Load a model form a path. 
+	 * @param modelPath - the path to the model
+	 * @return the loaded mode3l
+	 * @throws MalformedModelException
+	 * @throws IOException
+	 */
+	public Model loadModel(String modelPath) throws MalformedModelException, IOException {
+		File file = new File(modelPath); 
+
+		//String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JAMIE.pk"; 
+
+		Path modelDir = Paths.get(file.getAbsoluteFile().getParent()); //the directory of the file (in case the file is local this should also return absolute directory)
+		String modelName = file.getName(); 
+
+		String extension = FilenameUtils.getExtension(file.getAbsolutePath());
+
+		System.out.println("Generic Model: Available engines: " + Engine.getAllEngines()); 
+
+		Model model; 
+		switch  (extension) {
+		case "pb":
+			model = Model.newInstance(modelPath, "TensorFlow"); 
+			model.load(modelDir, modelName);
+			break; 
+		case "py":
+			model = Model.newInstance(modelName);
+			model.load(modelDir, modelName);
+			break; 
+		default:
+			//will try to load a model automatically - problematic but let's see. 
+			model = Model.newInstance(modelPath); 
+			break;
+		}
+		
+		return model;
 	}
 
 	/**

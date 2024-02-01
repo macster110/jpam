@@ -22,7 +22,7 @@ public class SimpleTransformParams extends DLTransfromParams {
 	 */
 	public SimpleTransformParams(DLTransformType dlTransformType, Number... params) {
 		this.dltransfromType = dlTransformType;
-		this.params = params; 
+		this.params = params;
 	}
 
 	
@@ -61,7 +61,7 @@ public class SimpleTransformParams extends DLTransfromParams {
 			string = dltransfromType.toString() + " min samples: " + params[0] + " max samples: " + params[1];
 			break;
 		case SPECNORMALISEROWSUM:
-			string = dltransfromType.toString();
+			string = dltransfromType.toString() + "  " + params;
 			break;
 		default:
 			string = dltransfromType.toString();

@@ -65,7 +65,7 @@ public class JSONParseTest {
 
 		DLTransformParser2.writeJSONTargetSpecies(targetSpecies, mainObject);
 
-		System.out.println(mainObject.toString(2));
+//		System.out.println(mainObject.toString(2));
 		
 		/****Read the JSON Object****/
 
@@ -74,7 +74,7 @@ public class JSONParseTest {
 		double version = DLTransformParser2.readJSONVersionInfo(mainObject); 
 		
 		String[] targetNames = DLTransformParser2.readJSONTargetSpecies(mainObject); 
-		
+			
 		return params2; 
 	}
 

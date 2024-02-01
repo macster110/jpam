@@ -303,7 +303,7 @@ public class DLTransformsParser {
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
 			break;
 		case NORMALISE_WAV:
-			dlTransformParams = new SimpleTransformParams(dlTransformType, null); 
+			dlTransformParams = new SimpleTransformParams(dlTransformType); 
 			break;
 		case FILTER:
 			FilterParams filterParams = new FilterParams();
@@ -322,7 +322,7 @@ public class DLTransformsParser {
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number[0] == null? null : number); 
 			break;
 		case SPECNORMALISEROWSUM:
-			dlTransformParams = new SimpleTransformParams(dlTransformType, null); 
+			dlTransformParams = new SimpleTransformParams(dlTransformType); 
 			break;
 		case SPECCLAMP:
 			number = new Number[2]; 
@@ -352,7 +352,7 @@ public class DLTransformsParser {
 			//System.out.println ("DLTransformsParser: min_db: ---  " + jsonObjectParams.getString("min_db") + "  " +  jsonObjectParams.getString("min_db").getClass()); 
 			if (String.valueOf(jsonObjectParams.get("min_db")).equals("None")) {
 				//in SoundSpot a "None" means use the min max normalisation instead. A little messy but this is how animal spot metadata works. 
-				dlTransformParams = new SimpleTransformParams(DLTransformType.SPECNORMALISE_MINIMAX, null); 
+				dlTransformParams = new SimpleTransformParams(DLTransformType.SPECNORMALISE_MINIMAX); 
 			}
 			else {
 				number = new Number[2]; 
@@ -362,7 +362,7 @@ public class DLTransformsParser {
 			}
 			break;
 		case SPECNORMALISE_MINIMAX:
-			dlTransformParams = new SimpleTransformParams(dlTransformType, null); 
+			dlTransformParams = new SimpleTransformParams(dlTransformType); 
 			break; 
 		case SPECTROGRAM:		
 			number = new Number[2]; 
@@ -407,10 +407,10 @@ public class DLTransformsParser {
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
 			break;
 		case REDUCETONALNOISE_MEDIAN:
-			dlTransformParams = new SimpleTransformParams(dlTransformType, null); 
+			dlTransformParams = new SimpleTransformParams(dlTransformType); 
 			break;
 		case MEDIANFILTER:
-			dlTransformParams = new SimpleTransformParams(dlTransformType, null); 
+			dlTransformParams = new SimpleTransformParams(dlTransformType); 
 			break;
 		case ENHANCE:
 			number = new Number[1]; 

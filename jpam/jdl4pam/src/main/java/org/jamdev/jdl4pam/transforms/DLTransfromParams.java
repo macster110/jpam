@@ -38,19 +38,25 @@ public class DLTransfromParams implements Serializable {
 		DLTransfromParams transform = (DLTransfromParams) o; 
 
 		
-		if (params ==null && transform.params!=null) return false;
-		if (transform.params ==null && params!=null) return false;
+		if (params ==null && transform.params!=null) {
+			return false;
+		}
+		if (transform.params ==null && params!=null) {
+			System.err.println(transform.params + "  " + params);
+
+			return false;
+		}
 
 		if (params!=null) {
 
 			if (params.length != transform.params.length) {
-//				System.out.println("Simple transform not same length ");
+//				System.err.println("Simple transform not same length ");
 				return false; 
 			}
 
 			for (int i=0; i<params.length; i++) {
 				if (!params[i].equals(transform.params[i])) {
-//					System.out.println("Simple transform not equal: " + i + "  " +  params[i] + "  " + transform.params[i]);
+//					System.err.println("Simple transform not equal: " + i + "  " +  params[i] + "  " + transform.params[i]);
 					return false;  
 				}
 			}

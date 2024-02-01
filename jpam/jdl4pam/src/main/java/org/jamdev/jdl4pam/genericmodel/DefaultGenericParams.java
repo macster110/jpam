@@ -85,7 +85,7 @@ public class DefaultGenericParams {
 		ArrayList<DLTransfromParams> dlTransformParamsArr = new ArrayList<DLTransfromParams>();
 
 		// waveform transforms.
-		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.DECIMATE, 10000));
+		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.DECIMATE, 10000.f));
 
 		params.dlTransforms = dlTransformParamsArr;
 
@@ -117,7 +117,7 @@ public class DefaultGenericParams {
 		ArrayList<DLTransfromParams> dlTransformParamsArr = new ArrayList<DLTransfromParams>();
 
 		// waveform transforms.
-		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.DECIMATE, 2000));
+		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.DECIMATE, 2000.f));
 		// dlTransformParamsArr.add(new
 		// SimpleTransformParams(DLTransformType.PREEMPHSIS, preemphases));
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAM, 256, 100));
