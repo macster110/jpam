@@ -19,6 +19,10 @@ public class KooguModel extends ArchiveModel {
 		super(file);
 	}
 
+	public KooguModel(String modelPath) throws MalformedModelException, IOException {
+		this(new File(modelPath));
+	}
+
 	@Override
 	public String getAudioReprRelPath() {
 		// settings are in parent direcotry

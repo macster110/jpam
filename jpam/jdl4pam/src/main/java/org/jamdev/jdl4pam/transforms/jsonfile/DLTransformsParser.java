@@ -598,7 +598,7 @@ public class DLTransformsParser {
 	public static DLTransformType getTransformType(String string) {
 		DLTransformType[] dlTransformTypes = DLTransformType.values();
 
-		//System.out.println(" DLTransformType: " + string); 
+//		System.out.println(" DLTransformType: " + string); 
 		for (DLTransformType dlTransformType: dlTransformTypes) {
 			if (dlTransformType.getJSONString().equals(string)) {
 				return dlTransformType; 

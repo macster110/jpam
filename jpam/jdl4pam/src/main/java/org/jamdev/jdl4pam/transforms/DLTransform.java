@@ -228,7 +228,7 @@ public interface DLTransform {
 		 * PGNORM is the PAMGuard method.
 		 * MEANNORM is a standard subtract the mean and divide by absolute value. 
 		 */
-		NORMALISE_WAV("Normalise Waveform", "normlize_wav"), 
+		NORMALISE_WAV("Normalise Waveform", "normalize_wav"), 
 		
 		/**
 		 * Filter a waveform. 
