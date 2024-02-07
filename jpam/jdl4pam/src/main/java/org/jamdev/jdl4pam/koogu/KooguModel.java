@@ -24,13 +24,13 @@ public class KooguModel extends ArchiveModel {
 	}
 
 	@Override
-	public String getAudioReprRelPath() {
-		// settings are in parent direcotry
+	public String getAudioReprRelPath(String zipFolder) {
+		// settings are in parent directory
 		return "audio_repr_pg.json";
 	}
 
 	@Override
-	public String getModelRelPath() {
+	public String getModelRelPath(String zipFolder) {
 		// model is in parent directory
 		return "saved_model.pb";
 	}

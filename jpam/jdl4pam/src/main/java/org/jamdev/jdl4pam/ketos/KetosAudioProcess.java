@@ -162,6 +162,9 @@ public class KetosAudioProcess {
 			/**** Write the model to a mat file so it can be easily viewed***/
 
 			double[][] transformedData = ((FreqTransform) transform).getSpecTransfrom().getTransformedData();
+			if (verbosity>0) {
+				System.out.println("TransformedData: " + String.format("%d %d", transformedData.length, transformedData[0].length));  
+			}
 
 
 			/*********************** Run the Model ************************/

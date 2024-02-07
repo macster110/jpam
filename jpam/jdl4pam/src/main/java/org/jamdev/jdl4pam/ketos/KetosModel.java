@@ -22,14 +22,14 @@ public class KetosModel extends ArchiveModel {
 	}
 
 	@Override
-	public String getAudioReprRelPath() {
+	public String getAudioReprRelPath(String zipFolder) {
 		// settings are in parent directory
 		return "audio_repr.json";
 	}
 
 	@Override
-	public String getModelRelPath() {
-		// model is in parent directory
+	public String getModelRelPath(String zipFolder) {
+		// model is in parent directory - ketos always has the same format. 
 		return "model/saved_model.pb";
 	}
 
@@ -38,6 +38,7 @@ public class KetosModel extends ArchiveModel {
 		return "ketos";
 	}
 	
+
 }
 
 

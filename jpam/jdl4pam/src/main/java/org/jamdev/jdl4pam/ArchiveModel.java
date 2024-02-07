@@ -80,10 +80,10 @@ public abstract class ArchiveModel extends GenericModel {
 
 
 		// tnhe file that contains the model meta data
-		 audReprFile = zipFolder + File.separator + getAudioReprRelPath();
+		audReprFile = zipFolder + File.separator + getAudioReprRelPath(zipFolder);
 	
 		// the model path.
-		 modelPath = zipFolder +  File.separator + getModelRelPath();
+		modelPath = zipFolder +  File.separator + getModelRelPath(zipFolder);
 		
 		//make sure you reference super here or things get weird...
 		Model model = super.loadModel(modelPath);
@@ -103,20 +103,20 @@ public abstract class ArchiveModel extends GenericModel {
 	/**
 	 * Get the relative path (within the unzipped folder) to the settings file that
 	 * contains metadata about the model. For example "audio_repr_pg.json" if the
-	 * settings are in the pqrent directory.
-	 * 
-	 * @return the relative path to the audiofile.
+	 * settings are in the parent directory.
+	 * @param - the uncompressed top level folder from the archive file. 
+	 * @return the relative path from zipFolder to the audiofile.
 	 */
-	public abstract String getAudioReprRelPath();
+	public abstract String getAudioReprRelPath(String zipFolder);
 
 	/**
 	 * Get the relative path (within the unzipped folder) to the model file that
 	 * contains metadata about the model. For example "audio_repr_pg.json" if the
 	 * settings are in the pqrent directory.
-	 * 
-	 * @return the relative path to the audiofile.
+	 * @param - the uncompressed top level folder from the archive file.
+	 * @return the relative path from zipFolder to the audiofile.
 	 */
-	public abstract String getModelRelPath();
+	public abstract String getModelRelPath(String zipFolder);
 
 	/**
 	 * Get a name for the model - this is used to create temporary folders etc. e.g.
