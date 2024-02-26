@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>ai.djl</groupId>
 			<artifactId>api</artifactId>
-			<version>0.25.0</version>
+			<version>0.26.0</version>
 		</dependency>
 
 		<!-- Java FFT library -->
@@ -59,7 +59,7 @@
 		<dependency>
 			<groupId>ai.djl.pytorch</groupId>
 			<artifactId>pytorch-engine</artifactId>
-			<version>0.25.0</version>
+			<version>0.26.0</version>
 <!-- 			<scope>runtime</scope> -->
 		</dependency>
 		
@@ -81,10 +81,24 @@
 		<dependency>
 			<groupId>ai.djl.tensorflow</groupId>
 			<artifactId>tensorflow-engine</artifactId>
-			<version>0.25.0</version>
+			<version>0.26.0</version>
 <!-- 			<scope>runtime</scope> -->
 		</dependency>
-
+		
+		<!-- https://mvnrepository.com/artifact/ai.djl.tflite/tflite-native-auto -->
+		<dependency>
+		    <groupId>ai.djl.tflite</groupId>
+		    <artifactId>tflite-engine</artifactId>
+		    <version>0.26.0</version>
+		    <scope>runtime</scope>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/ai.djl.tflite/tflite-native-cpu -->
+		<dependency>
+		    <groupId>ai.djl.tflite</groupId>
+		    <artifactId>tflite-native-cpu</artifactId>
+    <version>2.6.2</version>		
+    </dependency>
 
 		<!-- <dependency> -->
 		<!-- <groupId>ai.djl.tensorflow</groupId> -->
@@ -98,7 +112,6 @@
 		    <artifactId>opencv</artifactId>
 		    <version>4.9.0-0</version>
 		</dependency>
-
 
 	</dependencies>
 
