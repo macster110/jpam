@@ -97,8 +97,8 @@
 		<dependency>
 		    <groupId>ai.djl.tflite</groupId>
 		    <artifactId>tflite-native-cpu</artifactId>
-    <version>2.6.2</version>		
-    </dependency>
+	    <version>2.6.2</version>		
+	    </dependency>
 
 		<!-- <dependency> -->
 		<!-- <groupId>ai.djl.tensorflow</groupId> -->

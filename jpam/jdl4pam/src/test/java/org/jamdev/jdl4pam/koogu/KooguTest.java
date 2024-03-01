@@ -398,6 +398,7 @@ public class KooguTest {
 
 			//standard format. 
 			GenericModelParams params = DLTransformParser2.readJSONParams(jsonObject);
+			System.out.println(params.segLen);
 
 			
 			//do we have a decimator? - if so, extract the sample rate. 
@@ -411,7 +412,6 @@ public class KooguTest {
 			int chunkSize = (int) ((params.segLen/1000.)*sr);
 
 			System.out.println("Parameters: chunkSize: " + chunkSize + " sr "  + sr);
-
 
 
 			//add trim transform to chunk up the data - the trim values are changed every iteration

@@ -19,7 +19,10 @@ public class GibbonDL {
 
 	public static void runGubbon() {
 
-		String modelPath = "D:/Dropbox/PAMGuard_dev/Deep_Learning/Gibbons/gibbon_model_shared/model.tflite";
+		//tried loading a tflite file but it only loads in MACOS x86 or Linux x86 using djl
+//		String modelPath = "D:/Dropbox/PAMGuard_dev/Deep_Learning/Gibbons/gibbon_model_shared/model.tflite";
+		String modelPath = "D:\\Dropbox\\PAMGuard_dev\\Deep_Learning\\Gibbons\\gibbon_model_shared\\saved_model\\saved_model.pb";
+		
 
 		File file = new File(modelPath); 
 
@@ -28,7 +31,7 @@ public class GibbonDL {
 
 		System.out.println(Engine.getAllEngines()); 
 
-		Model model = Model.newInstance(modelPath, "TFLite"); 
+		Model model = Model.newInstance(modelPath, "TensorFlow"); 
 
 		try {
 			model.load(modelDir, modelName);
@@ -38,10 +41,6 @@ public class GibbonDL {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-	
-
-
 	}
 
 	public static void main(String[] args) {

@@ -74,7 +74,7 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], ArrayL
 		ArrayList<float[]> outArr= new ArrayList<float[]>(); 
 		for (int j=0; j<list.size(); j++) {
 			NDArray temp_arr = list.get(j);
-
+			
 			Number[] number = temp_arr.toArray(); 
 
 			float[] results = new float[number.length]; 

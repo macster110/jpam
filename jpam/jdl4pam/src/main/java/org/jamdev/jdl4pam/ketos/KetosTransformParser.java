@@ -243,9 +243,9 @@ public class KetosTransformParser {
 		 * Note very important to use the calculated segment length and NOT the duration
 		 * here. See comment in parseSpectrogramInfo fro more info.
 		 */
-		ketosParams.segLen = spectrogramInfo[3];
+		ketosParams.segLen = spectrogramInfo[3]*1000.; //convert to millis
 
-		System.out.println("Segment length: " + ketosParams.segLen + " samples: " + ketosParams.segLen * sampleRate);
+		System.out.println("Segment length: " + ketosParams.segLen + " samples: " + ketosParams.segLen/1000. * sampleRate);
 
 		// normalise sample rate
 		Boolean normaliseWav = false;
@@ -288,7 +288,7 @@ public class KetosTransformParser {
 		}
 		
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAMKETOS, (int) spectrogramInfo[0],
-				(int) spectrogramInfo[1], ketosParams.segLen));
+				(int) spectrogramInfo[1], ketosParams.segLen/1000.)); //important to make sure the window is in seconds or else we hit some serious memory issues...
 		dlTransformParamsArr
 				.add(new SimpleTransformParams(DLTransformType.SPECCROPINTERP, freq_min, freq_max, expectedShape[2]));
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPEC2DB));

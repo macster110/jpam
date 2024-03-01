@@ -24,6 +24,7 @@ import org.jamdev.jpamutils.wavFiles.AudioData;
 import ai.djl.Model;
 import ai.djl.engine.Engine;
 import ai.djl.inference.Predictor;
+import ai.djl.ndarray.types.Shape;
 import us.hebi.matlab.mat.format.Mat5;
 import us.hebi.matlab.mat.types.MatFile;
 import us.hebi.matlab.mat.types.Matrix;
@@ -161,13 +162,9 @@ public class DeepAcousticsDLTest {
 
 			float sR = soundData.getSampleRate();
 
-
-
 			float[][] dataF =  transformsTest( soundData,  null);
 
 			//NEED TO COLOURISE SPECTROGRAM TO MAKE IT A 3D INPUT
-
-
 			float[][][] dataF3 = new float[3][][];
 			for (int i=0; i<3; i++) {
 				dataF3[i] = dataF;
@@ -221,13 +218,13 @@ public class DeepAcousticsDLTest {
 	public static void main(String[] args) {
 
 		//Dolphin wav file
-		String wavFilePath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/deepAcoustics/Detection_Example_DarkNet_11_Whistles/IMMS_Combined_Test.wav";
+		String wavFilePath = "D:/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/Detection_Example_DarkNet_11_Whistles/IMMS_Combined_Test.wav";
 
 		//output MATLAB path
-		String outMatPath = "/Users/au671271/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/deepAcoustics/deepAcoustic_spec_test.mat";
+		String outMatPath = "C:/Users/Jamie Macaulay/MATLAB Drive/MATLAB/PAMGUARD/deep_learning/deepAcoustics/deepAcoustic_spec_test.mat";
 
 		//		String modelPath = "/Users/au671271/Google Drive/PAMGuard_dev/Deep_Learning/Right_whales_DG/model_lenet_dropout_input_conv_all.hdf5"; 
-		String modelPath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/deepAcoustics/DA_Network11_pbConv/saved_model.pb";
+		String modelPath = "D:/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/DA_Network11_pbConv/saved_model.pb";
 
 		int startchunk=0;
 		//		String outMatlabPath = "/Users/au671271/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/generic_classifier/rightwhaespec.mat";
@@ -246,10 +243,18 @@ public class DeepAcousticsDLTest {
 		}
 
 		ArrayList<float[]> output  = runDolphinDL(modelPath, wavFilePath, startchunk); 
+		//the output shape
+		//Output: [(-1, 20, 20, 6), (-1, 10, 10, 6), (-1, 5, 5, 6)]
+
 		for (int j = 0; j<output.size(); j++) {
 			System.out.println("Output: " + j + " : " + output.get(j).length);
 //			JamArr.printArray(output.get(j));
+			
+			Shape shape = new Shape(new long[] {-1,20,20,6});
+			
 		}
+		
+		
 	}
 
 }

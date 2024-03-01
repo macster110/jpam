@@ -24,7 +24,7 @@ public class KooguDLTest {
 	
 	
 	/**
-	 * Run some wav data through a Koogu deep learning model. Note that this only supports the input of raw wave data, not spectrograms. 
+	 * Run some wav data through a deep learning model. Note that this only supports the input of raw wave data, not spectrograms. 
 	 * 
 	 * @param model      - model object which has a loaded Koogu Model. 
 	 * @param soundData  - sound data to process.
