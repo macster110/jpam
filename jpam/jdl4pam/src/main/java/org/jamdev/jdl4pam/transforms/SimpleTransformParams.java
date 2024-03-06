@@ -37,6 +37,7 @@ public class SimpleTransformParams extends DLTransfromParams {
 		String string = null;
 		switch (dltransfromType) {
 		case DECIMATE:
+		case DECIMATE_SCIPY:
 			string = dltransfromType.toString() + " sR: " + params[0];
 			break;
 		case PREEMPHSIS:
@@ -56,6 +57,9 @@ public class SimpleTransformParams extends DLTransfromParams {
 			break;
 		case SPECTROGRAM:
 			string = dltransfromType.toString() + " fft length: " + params[0] + " fft hop: " + params[1];
+			break;
+		case SPECTROGRAMKETOS:
+			string = dltransfromType.toString() + " fft length: " + params[0] + " fft hop: " + params[1] + " window: " + params[2];
 			break;
 		case TRIM:
 			string = dltransfromType.toString() + " min samples: " + params[0] + " max samples: " + params[1];

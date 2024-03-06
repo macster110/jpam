@@ -17,6 +17,7 @@ import org.jamdev.jpamutils.wavFiles.AudioData;
 import us.hebi.matlab.mat.format.Mat5;
 import us.hebi.matlab.mat.types.MatFile;
 import us.hebi.matlab.mat.types.Matrix;
+import us.hebi.matlab.mat.types.Struct;
 
 /**
  * A simple example of using a Ketos model to analyse a single chunk of data. 
@@ -30,14 +31,24 @@ public class KetosModelTest  {
 	 * Run a Ketos model on a single chunk of sound data. 
 	 * @param modelPath - the model path. 
 	 * @param wavFilePath - path to an audio file. 
+	 * @param outMatPath - MATLAB file to save transforms to. 
 	 * @param chunk - the chunk of sound data to process from the audio file. 
 	 * @return the transformed data for input into the model. 
 	 */
-	public static double[][] simpleModelTest(String modelPath, String wavFilePath, double[] chunk) {
+	public static double[][] simpleModelTest(String modelPath, String wavFilePath, String outMatPath, double[] chunk) {
 		
 		try {
+			//create struct to save data to and set up matrix to save transforms
+			Struct struct = Mat5.newStruct();
+			Matrix transfromedDataM;
+
 			//Open wav files.
 			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
+			Matrix transfromedData;
+			double[] soundDataD = soundData.getScaledSampleAmplitudes(); 
+			System.out.println("Scaled amplitudes: " + soundDataD[0] + " " + soundDataD[1]);
+//			Matrix transfromedDataM = DLMatFile.array2Matrix(soundData.getScaledSampleAmplitudes());
+//			struct.set("audio", transfromedDataM);
 
 			//the ketos model.
 			KetosModel ketosModel = new KetosModel(new File(modelPath));
@@ -45,7 +56,6 @@ public class KetosModelTest  {
 			//read the JSOn string from the file.
 			String jsonString = DLTransformsParser.readJSONString(new File(ketosModel.getAudioReprFile()));
 
-			AudioData soundDataChunk; 
 
 			//get the audio representation file.
 			KetosParams ketosParams = new KetosParams(jsonString);
@@ -53,8 +63,11 @@ public class KetosModelTest  {
 			System.out.println(ketosParams);
 
 			/******* Trim the sound file to correct size ******/
-
+			AudioData soundDataChunk; 
 			soundDataChunk = soundData.trim((int) (chunk[0]*soundData.sampleRate), (int) (chunk[1]*soundData.sampleRate));
+			
+			transfromedDataM = DLMatFile.array2Matrix(soundDataChunk.getScaledSampleAmplitudes());
+			struct.set("trimmed_audio", transfromedDataM);
 
 			//generate the transforms.
 			ArrayList<DLTransform> transforms = DLTransformsFactory.makeDLTransforms(ketosParams.dlTransforms);
@@ -72,21 +85,30 @@ public class KetosModelTest  {
 				transform = transforms.get(i).transformData(transform);
 				
 				if (transforms.get(i) instanceof FreqTransform) {
+					transfromedDataM = DLMatFile.array2Matrix(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
+					struct.set(transforms.get(i).getDLTransformType().getJSONString(), transfromedDataM);
 					System.out.println(transforms.get(i).getDLTransformType() + "  " + + JamArr.min(((FreqTransform) transforms.get(i)).getSpecTransfrom().getTransformedData()));
 				}
 				if (transforms.get(i) instanceof WaveTransform) {
+					transfromedDataM = DLMatFile.array2Matrix(((WaveTransform) transform).getWaveData().getScaledSampleAmplitudes());
+					struct.set(transforms.get(i).getDLTransformType().getJSONString(), transfromedDataM);
 					System.out.println(transforms.get(i).getDLTransformType() + "  " + + JamArr.min(((WaveTransform) transforms.get(i)).getWaveData().getSampleAmplitudes()));
 				}
 				
 				if (transforms.get(i).getDLTransformType().name().equals("SPECTROGRAMKETOS")) {
 					specTransform = transform;
 				} 
+				
+			
 			}
 
 
 			/**** Write the model to a mat file so it can be easily viewed***/
 
 			double[][] transformedData = ((FreqTransform) transform).getSpecTransfrom().getTransformedData();
+			transfromedDataM = DLMatFile.array2Matrix(transformedData);
+			struct.set("model_input", transfromedDataM);
+			System.out.println("Data shape: " + transformedData.length + "  "  + transformedData[0].length);
 
 
 			/*********************** Run the Model ************************/
@@ -118,6 +140,17 @@ public class KetosModelTest  {
 				//System.out.println("The probability is: " + prob[j]); 
 			}
 			
+			
+			//save MATLAB data; 
+			MatFile matFile = Mat5.newMatFile()
+					.addArray("data_transforms", struct);
+			try {
+				Mat5.writeToFile(matFile, outMatPath);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			return transformedData; 
 
 		} catch (Exception e) {
@@ -140,10 +173,7 @@ public class KetosModelTest  {
 		//a new classifier based on a different architecture
 //		String modelPath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Ketos/narw_2/hallo-kw-det_v1_test/hallo-kw-det_v1.ktpb";
 		
-		//Minke whale
-		String modelPath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Ketos/minke_whales/ketos_model_MW.ktpb";
-
-
+	
 		/****Wav files*****/
 
 		//the wav file to test.
@@ -154,29 +184,30 @@ public class KetosModelTest  {
 		//		String wavFilePath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Ketos/narw_2/JASCO_resampled_20k.wav";
 
 		//jasco_reduced - use for right whales hallo-kw-det_v1
-		String wavFilePath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Ketos/narw_2/hallo-kw-det_v1_test/audio/jasco_reduced.wav";
+//		String wavFilePath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Ketos/narw_2/hallo-kw-det_v1_test/audio/jasco_reduced.wav";
 //		double[] chunk = new double[]{4.9843, 10.052900000000001}; 
-		double[] chunk = new double[]{44.9843, 50.05290000000001}; 
-
-		
+//		double[] chunk = new double[]{44.9843, 50.05290000000001}; 
 		/****Output MAT file for diagnosis****/
-		String outputMatfile = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Ketos/narw_2/hallo-kw-det_v1_test/transformed_data_ketos.mat";
+//		String outputMatfile = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Ketos/narw_2/hallo-kw-det_v1_test/transformed_data_ketos.mat";
+		
+		
+		//Minke Whale model. 
+		String modelPath = "D:\\Dropbox\\PAMGuard_dev\\Deep_Learning\\Ketos\\minke_whales\\minke_2\\ketos_model.ktpb";
+		String wavFilePath = "D:\\Dropbox\\PAMGuard_dev\\Deep_Learning\\Ketos\\minke_whales\\minke_2\\79296_Brunswick03_002K_M06_UTCm5_CH6_20161227_110000.wav";
+//		double[] chunk = new double[]{1.02, 1.02+5.226}; 
+//		double[] chunk = new double[]{53.04, 53.04+5.226}; 
+		double[] chunk = new double[] {264.18, 264.18+5.266}; //example which was not working well
+//		double[] chunk = new double[] {621.18, 621.18+5.266}; //example which was not working well
+
+		/****Output MAT file for diagnosis****/
+		String outputMatfile = "C:\\Users\\Jamie Macaulay\\MATLAB Drive\\MATLAB\\PAMGUARD\\deep_learning\\ketos_classifier\\minke_wahle_java.mat";
+
 
 		//run the ketos model. 
-		double[][] transformedData = simpleModelTest( modelPath,  wavFilePath, chunk); 
-		
+		double[][] transformedData = simpleModelTest( modelPath,  wavFilePath, outputMatfile, chunk); 
 		
 		System.out.println("Image size: " + transformedData.length + " x " + transformedData[0].length);
 
-		Matrix transfromedDataM = DLMatFile.array2Matrix(transformedData);
-		MatFile matFile = Mat5.newMatFile()
-				.addArray("transformed_data_j", transfromedDataM);
-		try {
-			Mat5.writeToFile(matFile, outputMatfile);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		System.exit(0);
 	}

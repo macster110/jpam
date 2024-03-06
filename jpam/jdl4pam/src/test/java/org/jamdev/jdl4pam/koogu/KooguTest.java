@@ -181,7 +181,17 @@ public class KooguTest {
 	 * @param resultsPath - the path to the file
 	 * @return the raw scores - first columns is the sample start - other columns are the prediction scores.
 	 */
-	private double[][] getPredictions(String resultsPath) {
+	public static double[][] getPredictions(String resultsPath) {
+		return getPredictions(resultsPath, 0);
+	}
+
+	/**
+	 * Read a Koogu rawScroes_XXx.csv file. Should handle different number of output classes. 
+	 * @param resultsPath - the path to the file
+	 * @param skip - number of lines to skip at start. 
+	 * @return the raw scores - first columns is the sample start - other columns are the prediction scores.
+	 */
+	public static double[][] getPredictions(String resultsPath, int skip) {
 		//run the humpback whale classifier. 
 
 		File file = new File(resultsPath);
@@ -210,11 +220,15 @@ public class KooguTest {
 			fr = new FileReader(file);
 			br = new BufferedReader(fr);
 			//run through all the different thinks
+			int count = 0;
 			while((line = br.readLine()) != null){
 
-
-				//read the data from the text file
-				//				System.out.println(line);
+				if (count<skip) {
+					count++;
+					continue;
+				}
+									//read the data from the text file
+//								System.out.println(line);
 
 				String[] data = line.split(",");
 				double[] predictionLine = new double[data.length];
@@ -226,6 +240,7 @@ public class KooguTest {
 				predicitons[ind]=predictionLine;
 
 				ind++;
+				count++;
 			}
 
 			br.close();

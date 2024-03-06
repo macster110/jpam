@@ -79,7 +79,7 @@ public class KetosAudioProcess {
 	 */
 	public static ArrayList<KetosResult> processSoundData(KetosModel ketosModel, AudioData soundData, Double hop, int verbosity){
 
-		System.out.println("AUDIO_SETTINGS: " + ketosModel.getAudioReprFile());
+		//System.out.println("AUDIO_SETTINGS: " + ketosModel.getAudioReprFile());
 		
 		//read the JSOn string from the file.
 		String jsonString = DLTransformsParser.readJSONString(new File(ketosModel.getAudioReprFile()));
@@ -107,26 +107,29 @@ public class KetosAudioProcess {
 
 		int numTimeSegs = (int) Math.ceil((soundData.getLengthInSeconds() - duration) / hop) + 1;
 		
+		
 		double modelTime = 0; //avergae model time
 
-
+		double startTime = 0.;
 		for (int timewind= 0; timewind<numTimeSegs; timewind++) {
 
 
+			if (hop==duration) {
 			/******* Trim the sound file to correct size ******/
-
-
 			double[] offsets = computeOffsets(jsonString, timewind * duration );
-			double startTime = 0.;
 			if (offsets[2] < 0){
 				startTime = 0.;
 			}
 			else {
 				startTime = offsets[2];
 			}
+			}
+			else {
+				startTime=startTime+hop;
+			}
 
 			// Time limits of the audio would be after the new duration computed in the KetosParams function
-			double[] timelims = new double[]{startTime, startTime + ketosParams.segLen}; //5 second window
+			double[] timelims = new double[]{startTime, startTime + ketosParams.segLen/1000.}; //5 second window
 
 
 			int[] timelims_samples = new int[]{(int) (DLUtils.numSamplesKetos(startTime,
@@ -134,8 +137,10 @@ public class KetosAudioProcess {
 
 			soundDataChunk = soundData.trim(timelims_samples[0], timelims_samples[1]);
 
-			//System.out.println("Start time: " + timelims[0] +  " end: " + timelims[1] + " duration: " + (timelims[1]-timelims[0]));
-
+			if (verbosity>0) {
+			System.out.println("Start time: " + timelims[0] +  " end: " + timelims[1] + " duration: " + (timelims[1]-timelims[0]
+						+  " samples: " + (timelims_samples[1] - timelims_samples[0])));
+			}
 
 			//generate the transforms.
 			ArrayList<DLTransform> transforms = DLTransformsFactory.makeDLTransforms(ketosParams.dlTransforms);
@@ -163,7 +168,7 @@ public class KetosAudioProcess {
 
 			double[][] transformedData = ((FreqTransform) transform).getSpecTransfrom().getTransformedData();
 			if (verbosity>0) {
-				System.out.println("TransformedData: " + String.format("%d %d", transformedData.length, transformedData[0].length));  
+				System.out.println("TransformedData: " + String.format("%d %d sample %.3f", transformedData.length, transformedData[0].length, transformedData[0][0]));  
 			}
 
 
@@ -184,16 +189,16 @@ public class KetosAudioProcess {
 				modelTime += (time2-time1); 
 			}
 
-			if (verbosity>0) System.out.print("Start time: " + String.format("%.3f", timelims[0])  + " ");  
+			if (verbosity>0) System.out.print(String.format("%d of %d Start time: %.3f", timewind, numTimeSegs, timelims[0]));  
 
-			if (verbosity>0) System.out.print(" Prediction: ");  
+			if (verbosity>0) System.out.print(" Prediction: "); 
 			double[] prob = new double[output.length]; 
 			for (int j=0; j<output.length; j++) {
 				//python code for this. 
 				//		    	prob = torch.nn.functional.softmax(out).numpy()[n, 1]
 				//	                    pred = int(prob >= ARGS.threshold)		    	
 				//softmax function
-				if (verbosity>0) System.out.print(String.format("%.4f", output[j]) + "  "); 
+				if (verbosity>0) System.out.print(String.format("%.5f", output[j]) + "  "); 
 
 				prob[j] = output[j]; 
 				//System.out.println("The probability is: " + prob[j]); 

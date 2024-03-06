@@ -80,7 +80,7 @@ public class DeepAcousticsDLTest {
 		}
 
 		float[][] dataF =  DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
-		System.out.println("Data input size: " + dataF.length + " x " + dataF[0].length);
+//		System.out.println("Data input size: " + dataF.length + " x " + dataF[0].length);
 		//			
 		//			
 		//			FastBitmap fastBitMap = new FastBitmap(dataF[0].length, dataF.length); 
@@ -129,7 +129,7 @@ public class DeepAcousticsDLTest {
 	 * @param startChunck - the location to start form in the file (in samples). 
 	 * @return predicitons. 
 	 */
-	public static ArrayList<float[]> runDolphinDL(String modelPath, String wavFilePath, int startChunck) {
+	public static ArrayList<DeepAcousticsResult> runDolphinDL(String modelPath, String wavFilePath, int startChunck) {
 
 
 		int nRuns =10; 
@@ -153,7 +153,7 @@ public class DeepAcousticsDLTest {
 			DeepAcousticsTranslator translator = new DeepAcousticsTranslator(model.describeInput().get(0).getValue());
 
 			//predictor for the model
-			Predictor<float[][][][], ArrayList<float[]>> predictor = model.newPredictor(translator);
+			Predictor<float[][][][], ArrayList<DeepAcousticsResult>> predictor = model.newPredictor(translator);
 
 
 			///load the wave data. 
@@ -165,13 +165,15 @@ public class DeepAcousticsDLTest {
 			float[][] dataF =  transformsTest( soundData,  null);
 
 			//NEED TO COLOURISE SPECTROGRAM TO MAKE IT A 3D INPUT
-			float[][][] dataF3 = new float[3][][];
-			for (int i=0; i<3; i++) {
-				dataF3[i] = dataF;
+			float[][][] dataF3 = new float[160][160][3];
+			for (int i=0; i<160; i++) {
+				for (int j=0; j<160; j++) {
+					dataF3[i][j] = new float[] {dataF[i][j],dataF[i][j],dataF[i][j]};
+				}
 			}
 
 
-			ArrayList<float[]> output = null; 
+			ArrayList<DeepAcousticsResult> output = null; 
 			float[][][][] data;
 			for (int i=0; i<nRuns; i++) {
 				long time1 = System.currentTimeMillis();
@@ -205,7 +207,32 @@ public class DeepAcousticsDLTest {
 
 	}
 
-
+	/**
+	 * Filter the anchor boxes to get the final bounding box results. 
+	 * @param results - the results filterted. 
+	 * @param minThresh
+	 * @return
+	 */
+	public static ArrayList<DeepAcousticsResult> filterResults(ArrayList<DeepAcousticsResult> results, double minThresh){
+		ArrayList<DeepAcousticsResult> filtResults = new ArrayList<DeepAcousticsResult>();
+		float[] classProb = new float[results.size()];
+		
+		
+		//filter by objectiveness score
+		double objectness;
+		for (int i=0; i<results.size(); i++) {
+			classProb[i] = JamArr.max(results.get(i).getPredicitions());
+			objectness = classProb[i]*results.get(i).getConfidence();
+			
+			System.out.println(String.format("Confidence %.2f x %.2f, y %.2f, width %.2f, height %.2f", 
+					results.get(i).getConfidence(), results.get(i).getX(), results.get(i).getY(), results.get(i).getWidth(), results.get(i).getHeight()));
+			
+			if (objectness>minThresh) {
+				filtResults.add(results.get(i));
+			}
+		}
+		return filtResults;	
+	}
 
 
 
@@ -242,17 +269,28 @@ public class DeepAcousticsDLTest {
 			e.printStackTrace();
 		}
 
-		ArrayList<float[]> output  = runDolphinDL(modelPath, wavFilePath, startchunk); 
+		ArrayList<DeepAcousticsResult> results = runDolphinDL(modelPath, wavFilePath, startchunk); 
+		
+		/**
+		 * Filter the results
+		 */
+		ArrayList<DeepAcousticsResult> filtResults = filterResults(results,  0.5);
+		
+		//Results before
+		System.out.println("Results: " + results.size()  + " filt " + filtResults.size());
+		
+		
+		//now that we have the results perform a simple filter. 
 		//the output shape
 		//Output: [(-1, 20, 20, 6), (-1, 10, 10, 6), (-1, 5, 5, 6)]
 
-		for (int j = 0; j<output.size(); j++) {
-			System.out.println("Output: " + j + " : " + output.get(j).length);
-//			JamArr.printArray(output.get(j));
-			
-			Shape shape = new Shape(new long[] {-1,20,20,6});
-			
-		}
+//		for (int j = 0; j<output.size(); j++) {
+//			System.out.println("Output: " + j + " : " + output.get(j).length);
+////			JamArr.printArray(output.get(j));
+//			
+//			Shape shape = new Shape(new long[] {-1,20,20,6});
+//			
+//		}
 		
 		
 	}

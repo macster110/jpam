@@ -1,6 +1,8 @@
 package org.jamdev.jdl4pam.deepAcoustics;
 
+
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.jamdev.jdl4pam.utils.DLUtils;
 
@@ -21,7 +23,7 @@ import ai.djl.translate.TranslatorContext;
  * <p>
  * @author Jamie Macaulay
  */
-public class DeepAcousticsTranslator implements Translator<float[][][][], ArrayList<float[]>> {
+public class DeepAcousticsTranslator implements Translator<float[][][][], ArrayList<DeepAcousticsResult>> {
 
 
 	/**
@@ -56,12 +58,14 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], ArrayL
 		//this was the shap0e for the right whale classifie.r. 
 		//Shape shape = new Shape(data.length, data[0].length, data[0][0].length, 1L); 
 		Shape shape; 
-		
+
 		shape = new Shape(data.length, this.shape.get(1), this.shape.get(2), this.shape.get(3)); 
 
 		//need to the first element to be the number of data frames  Input: [(-1, 40, 40, 1)]
 
 		float[] specgramFlat = DLUtils.flattenDoubleArrayF(data); 
+		
+		System.out.println("Input shape " + shape);
 
 		NDArray array = manager.create(specgramFlat, shape); 
 
@@ -69,24 +73,32 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], ArrayL
 	}
 
 	@Override
-	public ArrayList<float[]>  processOutput(TranslatorContext ctx, NDList list) {
+	public ArrayList<DeepAcousticsResult>  processOutput(TranslatorContext ctx, NDList list) {
+
 		//System.out.println("Output: " + list.size()); 
-		ArrayList<float[]> outArr= new ArrayList<float[]>(); 
+		ArrayList<DeepAcousticsResult> boundingBoxes= new ArrayList<DeepAcousticsResult>(); 
+
+		//first conactonate all the results into a single matrix of bounding box results. 
 		for (int j=0; j<list.size(); j++) {
 			NDArray temp_arr = list.get(j);
-			
-			Number[] number = temp_arr.toArray(); 
 
-			float[] results = new float[number.length]; 
-			for (int i=0; i<number.length; i++) {
-				results[i] = number[i].floatValue(); 
+			System.out.println("Shape: " + temp_arr.getShape() + " size " + temp_arr.toFloatArray().length);
+
+			temp_arr=temp_arr.reshape(temp_arr.getShape());
+			float[] newArr = temp_arr.flatten().toFloatArray();
+
+			float[] dataPoint;
+			for (int i = 0; i<newArr.length; i+=6) {
+				dataPoint = Arrays.copyOfRange(newArr, i, i+6);
+//				System.out.println("");
+//				for (int ii=0; ii<dataPoint.length; ii++) {
+//					System.out.print(dataPoint[ii] + " ");
+//				}
+				boundingBoxes.add(new DeepAcousticsResult(dataPoint));
 			}
-			outArr.add(results); 
 		}
 
-		//System.out.println("results: " + results.length); 
-
-		return outArr; 
+		return boundingBoxes; 
 	}
 
 

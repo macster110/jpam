@@ -714,10 +714,10 @@ public class JamArr {
 	 * @param arr - the array to find the maximum value of. 
 	 * @return the maximum value in the array
 	 */
-	public static double max(float[] arr) {
-		double max = Double.NEGATIVE_INFINITY;
+	public static float max(float[] arr) {
+		float max = Float.NEGATIVE_INFINITY;
 
-		for(double cur: arr)
+		for(float cur: arr)
 			max = Math.max(max, cur);
 
 		return max;

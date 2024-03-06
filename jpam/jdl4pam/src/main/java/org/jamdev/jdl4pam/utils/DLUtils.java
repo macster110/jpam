@@ -12,6 +12,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import org.jamdev.jpamutils.JamArr;
 import org.jamdev.jpamutils.wavFiles.AudioData;
 import org.jamdev.jpamutils.wavFiles.WavFile;
 
@@ -134,6 +135,10 @@ public class DLUtils {
 		stack.push(floatArray);
 
 		int[] shape = arrayShape(floatArray);
+		
+//		System.out.println("Shape: " );
+//		JamArr.printArray(shape);
+		
 		int length = prod(shape);
 		float[] flat = new float[length];
 		int count = 0;
