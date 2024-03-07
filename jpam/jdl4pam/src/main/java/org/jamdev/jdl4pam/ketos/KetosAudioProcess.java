@@ -185,6 +185,9 @@ public class KetosAudioProcess {
 					data[j] = DLUtils.toFloatArray(transformedData); 
 				}
 				output = ketosModel.runModel(data); 
+				
+				
+				
 				long time2 = System.currentTimeMillis();
 				modelTime += (time2-time1); 
 			}
@@ -201,6 +204,8 @@ public class KetosAudioProcess {
 				if (verbosity>0) System.out.print(String.format("%.5f", output[j]) + "  "); 
 
 				prob[j] = output[j]; 
+//				prob[j] = DLUtils.softmax(output[j], output);
+				
 				//System.out.println("The probability is: " + prob[j]); 
 
 			}

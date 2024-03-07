@@ -37,17 +37,21 @@ public class KetosMinkeTest {
 		/****Wav files*****/
 		//jasco_reduced - use for right whales hallo-kw-det_v1
 //		String relWavFilePath = "./src/test/java/org/jamdev/jdl4pam/resources/Ketos/minke_whale/1705_FLAC_1705_20171106_185953_253.wav";
-		String relWavFilePath = "C:/Users/Jamie Macaulay/git/jpam/jpam/jpam/jdl4pam/src/test/java/org/jamdev/jdl4pam/resources/Ketos/minke_whale/79296_Brunswick03_002K_M06_UTCm5_CH6_20161227_110000.wav";
+		String relWavFilePath = "./src/test/java/org/jamdev/jdl4pam/resources/Ketos/minke_whale/79296_Brunswick03_002K_M06_UTCm5_CH6_20161227_110000.wav";
 	
 		//Path to predictions file
-		String predictionPath = "C:/Users/Jamie Macaulay/git/jpam/jpam/jpam/jdl4pam/src/test/java/org/jamdev/jdl4pam/resources/Ketos/minke_whale/classif_scores.csv";
+		String predictionPath = "./src/test/java/org/jamdev/jdl4pam/resources/Ketos/minke_whale/classif_scores.csv";
 		
-		double[][] ketosPredicitons = KooguTest.getPredictions(predictionPath,1);
+		Path path = Paths.get(predictionPath);
+		//note that normalize gets rid of all the redundant elements (e.g. .)
+		String ketosPredictionsPath = path.toAbsolutePath().normalize().toString();
+		//get the predictions
+		double[][] ketosPredicitons = KooguTest.getPredictions(ketosPredictionsPath,1);
 		
 		System.out.println("Predicitons: " + ketosPredicitons.length);
 //		JamArr.printArray(predictions);
 		
-		Path path = Paths.get(relModelPath);
+		path = Paths.get(relModelPath);
 		//note that normalize gets rid of all the redundant elements (e.g. .)
 		String modelPath = path.toAbsolutePath().normalize().toString();
 		

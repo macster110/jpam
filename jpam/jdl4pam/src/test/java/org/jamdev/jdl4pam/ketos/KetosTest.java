@@ -96,7 +96,6 @@ public class KetosTest {
 		/** 
 		 * Example running Ketos model on a wav file. 
 		 */
-		
 		String relModelPath = 	"./src/test/java/org/jamdev/jdl4pam/resources/Ketos/right_whale/hallo-kw-det_v1/hallo-kw-det_v1.ktpb";
 
 		/****Wav files*****/
@@ -123,12 +122,12 @@ public class KetosTest {
 			
 			System.out.println("KETOS SETTINGS: " + ketosModel.getAudioReprFile());
 
-			ArrayList<KetosResult> results = KetosAudioProcess.processSoundData( ketosModel,  soundData, 5., KetosAudioProcess.VERBOSITY_MEDIUM); 
+			ArrayList<KetosResult> results = KetosAudioProcess.processSoundData(ketosModel,  soundData, 5., KetosAudioProcess.VERBOSITY_MEDIUM); 
 			
 			//check prediction results are within 10%
 			//Note we forget the weird edge cases (start and end of file) here for Ketos
 			for (int i=1; i<results.size()-1; i++) {
-//				System.out.println(i + ": prediction: " + results.get(i).prediction[1] + " true: " + ketosPredicitons[i][2]);
+				System.out.println(i + ": prediction: " + results.get(i).prediction[1] + " true: " + ketosPredicitons[i][2]);
 				assertTrue(results.get(i).prediction[1]> ketosPredicitons[i][2]-0.1 && results.get(i).prediction[1]< ketosPredicitons[i][2]+0.1); 
 			}
 

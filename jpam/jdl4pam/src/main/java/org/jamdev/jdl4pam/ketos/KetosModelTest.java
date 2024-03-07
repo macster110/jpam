@@ -15,6 +15,7 @@ import org.jamdev.jpamutils.JamArr;
 import org.jamdev.jpamutils.wavFiles.AudioData;
 
 import us.hebi.matlab.mat.format.Mat5;
+import us.hebi.matlab.mat.format.Mat5File;
 import us.hebi.matlab.mat.types.MatFile;
 import us.hebi.matlab.mat.types.Matrix;
 import us.hebi.matlab.mat.types.Struct;
@@ -66,6 +67,8 @@ public class KetosModelTest  {
 			AudioData soundDataChunk; 
 			soundDataChunk = soundData.trim((int) (chunk[0]*soundData.sampleRate), (int) (chunk[1]*soundData.sampleRate));
 			
+//			System.out.println("Extract samples: " + ((int) (chunk[0]*soundData.sampleRate)) + " to " + (int) (chunk[1]*soundData.sampleRate));
+			
 			transfromedDataM = DLMatFile.array2Matrix(soundDataChunk.getScaledSampleAmplitudes());
 			struct.set("trimmed_audio", transfromedDataM);
 
@@ -110,37 +113,22 @@ public class KetosModelTest  {
 			struct.set("model_input", transfromedDataM);
 			System.out.println("Data shape: " + transformedData.length + "  "  + transformedData[0].length);
 
+			struct.set("chunk_s", DLMatFile.array2Matrix(chunk));
+			struct.set("wav_file", Mat5.newString(wavFilePath));
+			struct.set("model", Mat5.newString(modelPath));
 
 			/*********************** Run the Model ************************/
 
-			float[] output = null; 
-			float[][][] data;
-			int nStack = 1; //number of specs to give to the classifier. 
-			for (int i=0; i<10; i++) {
-				long time1 = System.currentTimeMillis();
-				data = new float[nStack][][]; 
-				for (int j=0; j<nStack; j++) {
-					data[j] = DLUtils.toFloatArray(transformedData); 
-				}
-				output = ketosModel.runModel(data); 
-				long time2 = System.currentTimeMillis();
-				System.out.println("Time to run model: " + (time2-time1) + " ms"); 
-			}
-
-			double[] prob = new double[output.length]; 
+			double[] output = runKetosModel(transformedData,  ketosModel);
+			
 			for (int j=0; j<output.length; j++) {
 				//python code for this. 
 				//		    	prob = torch.nn.functional.softmax(out).numpy()[n, 1]
 				//	                    pred = int(prob >= ARGS.threshold)		    	
 				//softmax function
-				System.out.println("The output is: " + output[j]); 
-
-
-				prob[j] = DLUtils.softmax(output[j], output); 
+				System.out.println("The output is: " + output[j]);
 				//System.out.println("The probability is: " + prob[j]); 
 			}
-			
-			
 			//save MATLAB data; 
 			MatFile matFile = Mat5.newMatFile()
 					.addArray("data_transforms", struct);
@@ -160,6 +148,70 @@ public class KetosModelTest  {
 		}
 		
 	}
+	
+	private static double[] runKetosModel(double[][] transformedData, KetosModel ketosModel) {
+		float[] output = null; 
+		float[][][] data;
+		int nStack = 1; //number of specs to give to the classifier. 
+		for (int i=0; i<10; i++) {
+			long time1 = System.currentTimeMillis();
+			data = new float[nStack][][]; 
+			for (int j=0; j<nStack; j++) {
+				data[j] = DLUtils.toFloatArray(transformedData); 
+			}
+			output = ketosModel.runModel(data); 
+			long time2 = System.currentTimeMillis();
+			System.out.println("Time to run model: " + (time2-time1) + " ms"); 
+		}
+
+		double[] prob = new double[output.length]; 
+		for (int j=0; j<output.length; j++) {
+			//python code for this. 
+			//		    	prob = torch.nn.functional.softmax(out).numpy()[n, 1]
+			//	                    pred = int(prob >= ARGS.threshold)		    	
+			//softmax function
+
+
+//			prob[j] = DLUtils.softmax(output[j], output); 
+//			System.out.println("The output is: " + prob[j]); 
+			prob[j]=output[j];
+		}
+		
+		return prob;
+	}
+	
+	/**
+	 * Run a model from a MATLAB input - this loads a matrix form MATLAB then sends that directly to model
+	 * @return
+	 */
+	public static void simpleModelTestPython(String modelPath, String matFile) {
+		try {
+			
+			//the ketos model.
+			KetosModel ketosModel = new KetosModel(new File(modelPath));
+			
+			Mat5File mfr = Mat5.readFromFile(new File(matFile));
+			
+			Matrix matrix = mfr.getMatrix("spectrogram_ketos"); 
+			
+			double[][] model_input  = DLMatFile.matrix2array(matrix);
+			
+			System.out.println("Image size: " + model_input.length + " x " + model_input[0].length);
+
+			
+//			float[][] model_inputF = DLUtils.toFloatArray(model_input);
+			double[] output = runKetosModel(model_input,  ketosModel);
+			
+			for (int j=0; j<output.length; j++) {
+				System.out.println("The output from Python is: " + output[j]); 
+			}
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	
 	public static void main(String[] args) {
 		
@@ -192,19 +244,22 @@ public class KetosModelTest  {
 		
 		
 		//Minke Whale model. 
-		String modelPath = "D:\\Dropbox\\PAMGuard_dev\\Deep_Learning\\Ketos\\minke_whales\\minke_2\\ketos_model.ktpb";
-		String wavFilePath = "D:\\Dropbox\\PAMGuard_dev\\Deep_Learning\\Ketos\\minke_whales\\minke_2\\79296_Brunswick03_002K_M06_UTCm5_CH6_20161227_110000.wav";
+		String modelPath = "/Users/au671271/Library/CloudStorage/Dropbox/PAMGuard_dev/Deep_Learning/Ketos/minke_whales/minke_2/ketos_model.ktpb";
+		String wavFilePath = "/Users/au671271/Library/CloudStorage/Dropbox/PAMGuard_dev/Deep_Learning/Ketos/minke_whales/minke_2/79296_Brunswick03_002K_M06_UTCm5_CH6_20161227_110000.wav";
 //		double[] chunk = new double[]{1.02, 1.02+5.226}; 
 //		double[] chunk = new double[]{53.04, 53.04+5.226}; 
 		double[] chunk = new double[] {264.18, 264.18+5.266}; //example which was not working well
 //		double[] chunk = new double[] {621.18, 621.18+5.266}; //example which was not working well
 
 		/****Output MAT file for diagnosis****/
-		String outputMatfile = "C:\\Users\\Jamie Macaulay\\MATLAB Drive\\MATLAB\\PAMGUARD\\deep_learning\\ketos_classifier\\minke_wahle_java.mat";
-
+		String outputMatfile = "/Users/au671271/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/ketos_classifier/minke_transforms_java.mat";
 
 		//run the ketos model. 
 		double[][] transformedData = simpleModelTest( modelPath,  wavFilePath, outputMatfile, chunk); 
+		
+		String inputMatfile = "/Users/au671271/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/ketos_classifier/minke_transforms_python.mat";
+
+		simpleModelTestPython(modelPath, inputMatfile);
 		
 		System.out.println("Image size: " + transformedData.length + " x " + transformedData[0].length);
 

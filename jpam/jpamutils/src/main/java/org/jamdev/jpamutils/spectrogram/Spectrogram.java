@@ -256,8 +256,8 @@ public class Spectrogram {
 
 		double[] amplitudes = wave.getScaledSampleAmplitudes();
 		
-		//note that w=the window duration here is the true segment length. i.e. it is NOT the "duration" paramter
-		//in the ketos JSON file but the caluclated segment length. See KetosParams for more info. 
+		//note that w=the window duration here is the true segment length. i.e. it is NOT the "duration" parameter
+		//in the ketos JSON file but the calculated segment length. See KetosParams for more info. 
 
 		numFrames = numSamplesKetos(window_duration - ((double) fftLength)/sR, (double) sR/fftHop, Boolean.FALSE);
 		framesPerSecond = (int) (numFrames / wave.getLengthInSeconds());

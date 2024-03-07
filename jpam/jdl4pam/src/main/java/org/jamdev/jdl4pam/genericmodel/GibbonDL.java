@@ -23,6 +23,7 @@ public class GibbonDL {
 //		String modelPath = "D:/Dropbox/PAMGuard_dev/Deep_Learning/Gibbons/gibbon_model_shared/model.tflite";
 		String modelPath = "D:\\Dropbox\\PAMGuard_dev\\Deep_Learning\\Gibbons\\gibbon_model_shared\\saved_model\\saved_model.pb";
 		
+//		String modelPath = "/Users/au671271/Library/CloudStorage/Dropbox/PAMGuard_dev/Deep_Learning/Gibbons/gibbon_model_shared/model.tflite";
 
 		File file = new File(modelPath); 
 
