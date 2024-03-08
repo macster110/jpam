@@ -1,3 +1,13 @@
 Model for detecting Gibbons - input is a waveform with a sample rate of 7-sec audio clip at sample rate 8000, in other words, an audio with 56000 samples.
 
-There is bboth a tflite model and save_model.pb format. 
+Output should be
+
+[[9.7423404e-01 1.6867964e-03 2.8357367e-04]]
+[[5.9026042e-03 5.8442029e-06 1.1701107e-06]]
+[[3.6076629e-03 2.2650822e-06 6.4889866e-07]]
+[[9.9562621e-01 5.5051147e-05 1.8434161e-04]]
+[[4.1060164e-04 9.9579030e-01 1.3399041e-04]]
+[[2.2205876e-02 5.9773076e-01 2.4194127e-05]]
+[[8.6745679e-01 4.0851589e-03 2.0674334e-04]]
+[[3.6767789e-05 3.4960653e-08 1.5367555e-09]]
+[[1.3008083e-05 1.9438135e-05 7.1030962e-07]]

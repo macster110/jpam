@@ -3,15 +3,21 @@ package org.jamdev.jdl4pam.ketos;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import org.jamdev.jdl4pam.ketos.KetosAudioProcess.KetosResult;
 import org.jamdev.jdl4pam.koogu.KooguTest;
+import org.jamdev.jdl4pam.utils.DLMatFile;
 import org.jamdev.jdl4pam.utils.DLUtils;
 import org.jamdev.jpamutils.wavFiles.AudioData;
 import org.junit.Test;
+
+import us.hebi.matlab.mat.format.Mat5;
+import us.hebi.matlab.mat.types.MatFile;
+import us.hebi.matlab.mat.types.Matrix;
 
 /**
  * Test the Minke model works
@@ -78,6 +84,9 @@ public class KetosMinkeTest {
 //						results.get(i).startTime,  results.get(i).prediction[0], ketosPredicitons[i][1], results.get(i).prediction[1],  ketosPredicitons[i][2]));
 //			}
 			
+			//temp
+			exportResultsMAT("C:/Users/Jamie Macaulay/MATLAB Drive/MATLAB/PAMGUARD/deep_learning/ketos_classifier/minke_predictions_jpam.mat", results);
+			
 			//check prediction results are within 10%
 			//Note we forget the weird edge cases (start and end of file) here for Ketos
 			boolean[] match = new boolean[results.size()-1];
@@ -100,9 +109,33 @@ public class KetosMinkeTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private static void exportResultsMAT(String filePath, ArrayList<KetosResult> results) {
+
 		
+		double[][] resultsD =  new double[results.size()][results.get(0).prediction.length+1]; 
+		for (int i=0; i<resultsD.length; i++) {
+			resultsD[i][0]  = results.get(i).startTime;
+			for (int j=0; j<results.get(i).prediction.length; j++) {
+				resultsD[i][j+1] = results.get(i).prediction[j];
+			}
+		}
+		
+		Matrix matrix = DLMatFile.array2Matrix(resultsD); 
+		
+		MatFile matFile = Mat5.newMatFile()
+			    .addArray("predictions", matrix)
+			    .addArray("description",Mat5.newString("Time (s), probability class 0, class 1..."));
+		
+		try {
+			Mat5.writeToFile(matFile, filePath);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 	}
 	
 
+	
 }

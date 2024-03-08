@@ -155,15 +155,20 @@ public class DeepAcousticsDLTest {
 			//predictor for the model
 			Predictor<float[][][][], ArrayList<DeepAcousticsResult>> predictor = model.newPredictor(translator);
 
-
 			///load the wave data. 
 			//Open wav files. 
 			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
 
 			float sR = soundData.getSampleRate();
 
+			//transform the audio data and turn into image. 
 			float[][] dataF =  transformsTest( soundData,  null);
-
+			
+//			//TEMP
+//			Matrix im = Mat5.readFromFile("C:/Users/Jamie Macaulay/MATLAB Drive/MATLAB/PAMGUARD/deep_learning/deepAcoustics/deepacoustics_mat.mat").getArray("im");
+//			double[][] imJ = DLMatFile.matrix2array(im);
+//			dataF = JamArr.doubleToFloat(imJ);
+//		
 			//NEED TO COLOURISE SPECTROGRAM TO MAKE IT A 3D INPUT
 			float[][][] dataF3 = new float[160][160][3];
 			for (int i=0; i<160; i++) {
@@ -171,7 +176,7 @@ public class DeepAcousticsDLTest {
 					dataF3[i][j] = new float[] {dataF[i][j],dataF[i][j],dataF[i][j]};
 				}
 			}
-
+	
 
 			ArrayList<DeepAcousticsResult> output = null; 
 			float[][][][] data;
