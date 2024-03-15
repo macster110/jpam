@@ -144,7 +144,7 @@ public class HumpbackGoogle {
 		for (int i = 0; i < dataF.length; i++) {
 			dataF[i] = (float) dataD[i];
 		}
-//		System.out.println("Data input size: " + dataF.length);
+		//System.out.println("Data input size: " + dataF.length +  "  " + dataF[0]);
 
 		int nBatch = 5; // the number of batches.
 		float[] output = null;

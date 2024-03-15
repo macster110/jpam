@@ -127,9 +127,8 @@ public class GoogleHumpbackTest {
 				  int startChunk = (int) (soundData.sampleRate*startTimeS); //humpback whale call
 				  int chunkSize = (int) Math.ceil((endTimeS-startTimeS)*soundData.sampleRate); 
 				  
-				  
-				  System.out.println("ChunkSie: " + chunkSize);
-				  
+				  				
+				  				  
 				  float[] output = HumpbackGoogle.runHumpbackWhaledl(model,  soundData,  startChunk,  chunkSize, 1);
 				  
 				  System.out.println(String.format("Chunk %d %d Predicted output: %.2f true output: %.2f passed: %b", chunkID, startChunk,

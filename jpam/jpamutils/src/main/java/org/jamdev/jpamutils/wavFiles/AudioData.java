@@ -332,6 +332,9 @@ public class AudioData {
 	 * @return AudioData object containing interpolated data and sample rate.
 	 */
 	public AudioData interpolate(float interpSr) {
+		
+		if (interpSr==this.sampleRate) return this;
+
 		double[] wavArray = getScaledSampleAmplitudes();
 
 		double[] intperarr = wavInterpolator.interpolate(wavArray, this.sampleRate, interpSr);
@@ -352,7 +355,8 @@ public class AudioData {
 	 * @return AudioData object containing interpolated data and sample rate.
 	 */
 	public AudioData interpolate_scipy(float target_sr) {
-
+		
+		if (target_sr==this.sampleRate) return this;
 
 		double[] wavArray = getScaledSampleAmplitudes();
 		double ratio = target_sr / this.sampleRate;
