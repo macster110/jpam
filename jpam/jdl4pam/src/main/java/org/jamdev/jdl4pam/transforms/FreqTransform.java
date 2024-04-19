@@ -119,7 +119,6 @@ public class FreqTransform extends SimpleTransform {
 			Spectrogram spectrogram = new Spectrogram(((WaveTransform) transform).getWaveData(), (int) params[0], (int) params[1]); 
 			specTransfrom = new SpecTransform(spectrogram); 
 			specTransfrom.setTransformedData(this.specTransfrom.getSpectrgram().getAbsoluteSpectrogram()); 
-
 			//initialise freq
 			freqlims[0] = 0.0; 
 			freqlims[1] = ((WaveTransform) transform).getWaveData().getSampleRate()/2.0; 

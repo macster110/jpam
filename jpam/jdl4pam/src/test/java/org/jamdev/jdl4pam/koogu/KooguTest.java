@@ -334,7 +334,7 @@ public class KooguTest {
 				dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.TRIM, startChunck, startChunck+chunkSize));
 				dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.NORMALISE_WAV));
 				
-				System.out.println(dlTransformParamsArr);
+//				System.out.println(dlTransformParamsArr);
 
 
 				float[] output = KooguDLTest.runGenericWaveModel(model, soundData, dlTransformParamsArr, nRuns);
@@ -362,7 +362,7 @@ public class KooguTest {
 
 			double percTrue = 100*((double) truecount)/predictions.length; 
 
-			System.out.println(String.format("Precentage results true: %.2f  count %d", percTrue, truecount));
+			System.out.println(String.format("Perecentage results true: %.2f  count %d", percTrue, truecount));
 
 			//ramp this number up when we figure out why Kooguy and PG sometimes give quite different results. 
 			// Precentage results true: 83.31  count 1498 - without scipy
