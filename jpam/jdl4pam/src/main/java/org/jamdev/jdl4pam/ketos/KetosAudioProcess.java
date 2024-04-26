@@ -212,7 +212,6 @@ public class KetosAudioProcess {
 			if (verbosity>0) System.out.println(" ");  
 		
 
-
 			ketosResults.add(new KetosResult(prob, timelims[0], ketosParams.segLen)); 	
 
 			/**************************************************************/

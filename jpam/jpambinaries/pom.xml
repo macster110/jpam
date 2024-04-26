@@ -6,11 +6,11 @@
 	<parent>
 		<artifactId>jpam</artifactId>
 		<groupId>io.github.macster110</groupId>
-		<version>0.0.81</version>
+		<version>0.0.88</version>
 	</parent>
 
 	<artifactId>jpambinaries</artifactId>
-	<version>0.0.4</version>
+	<version>0.0.48</version>
 
 	<name>jpambinaries</name>
 	<!-- FIXME change it to the project's website -->

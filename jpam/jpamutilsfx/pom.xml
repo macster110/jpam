@@ -6,12 +6,12 @@
 	<parent>
 		<artifactId>jpam</artifactId>
 		<groupId>io.github.macster110</groupId>
-		<version>0.0.81</version>
+		<version>0.0.88</version>
 	</parent>
 
 	<groupId>io.github.macster110</groupId>
 	<artifactId>jpamutilsfx</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.28</version>
 
 	<name>jpamutilsfx</name>
 	<!-- FIXME change it to the project's website -->

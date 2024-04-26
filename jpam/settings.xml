@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     
     
-    <profiles>
+  <profiles>
     <profile>
       <id>ossrh</id>
       <activation>
@@ -12,7 +12,7 @@
       <properties>
         <gpg.executable>gpg2</gpg.executable>
         <gpg.keyname>0x9C0118D2</gpg.keyname>
-        <gpg.passphrase>@64Tahariveila</gpg.passphrase>
+        <gpg.passphrase>@64TahariveilaNBHF</gpg.passphrase>
     	<gpg.executable>/usr/local/bin/gpg</gpg.executable>
       </properties>
     </profile>

@@ -12,7 +12,7 @@
 	<parent>
 		<artifactId>jpam</artifactId>
 		<groupId>io.github.macster110</groupId>
-		<version>0.0.81</version>
+		<version>0.0.88</version>
 	</parent>
 
 	<name>djl_test</name>
