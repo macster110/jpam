@@ -204,6 +204,16 @@ public class FreqTransform extends SimpleTransform {
 	public SpecTransform getSpecTransfrom() {
 		return specTransfrom;
 	}
+	
+	/**
+	 * Set the spectrogram transform. This holds the transformed spectrogram data.
+	 * CAUTION - generally transforms handle their own spectrogram transforms
+	 * @param the spectrogram transform to set. 
+	 */
+	public void setSpecTransfrom(SpecTransform specTransfrom) {
+		this. specTransfrom = specTransfrom;
+	}
+
 
 
 	@Override

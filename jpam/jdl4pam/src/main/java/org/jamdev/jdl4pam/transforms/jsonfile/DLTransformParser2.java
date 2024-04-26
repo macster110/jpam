@@ -456,6 +456,8 @@ public class DLTransformParser2 {
 			jsonObjectParams  = (JSONObject) jsonArray.getJSONObject(i).get("params"); 
 			
 			DLTransformType dlTransType= DLTransformsParser.getTransformType(transformName); 
+			
+			if (dlTransType==null) continue;
 
 			dlTransformParams = DLTransformsParser.parseDLTransformParams(dlTransType, jsonObjectParams);  
 

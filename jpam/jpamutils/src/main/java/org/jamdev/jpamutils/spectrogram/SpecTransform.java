@@ -41,11 +41,18 @@ public class SpecTransform {
 	 */
 	// private GaussianFilter gaussianFilter;
 
+
 	/**
 	 * True to maintain the phase information after each transform. This will slow
 	 * down calculations.
 	 */
 	private boolean maintainPhase = false;
+
+	/**
+	 * The sampleRate in samples per second.
+	 */
+	private float sampleRate;
+
 
 	/**
 	 * Constructor for the spectrogram transform.
@@ -55,6 +62,13 @@ public class SpecTransform {
 	public SpecTransform(Spectrogram spectrgram) {
 		this.spectrgram = spectrgram;
 		initialiseSpecData();
+	}
+	
+	/**
+	 * Constructor for the spectrogram transform. Only use for subclassing. 
+	 * 
+	 */
+	public SpecTransform( ) {
 	}
 
 	/**
@@ -286,7 +300,7 @@ public class SpecTransform {
 	public SpecTransform interpolate(double fMin, double fMax, int freqBins) {
 		if (this.specData == null)
 			initialiseSpecData();
-		this.specData = interpolate(this.specData, fMin, fMax, freqBins, spectrgram.getSampleRate());
+		this.specData = interpolate(this.specData, fMin, fMax, freqBins, sampleRate);
 
 		// this is a little crazy for complex arrays...
 		if (maintainPhase) {
@@ -973,6 +987,7 @@ public class SpecTransform {
 	private void initialiseSpecData() {
 		this.specData = spectrgram.getAbsoluteSpectrogram();
 		this.complexData = spectrgram.getComplexSpectrogram();
+		this.sampleRate = spectrgram.getSampleRate(); 
 	}
 
 	/**
@@ -1109,6 +1124,55 @@ public class SpecTransform {
 	}
 
 
+	/**
+	 * Get the spectrogram image data. This is the absolute data from the spectrogram. 
+	 * Each row is a the absolute value of a single FFT. 
+	 * @return the absolute from the spectrogram.. 
+	 */
+	public double[][] getSpecData() {
+		return specData;
+	}
+
+	/**
+	 * Set the spectrogram image data. This is the absolute data from the spectrogram. 
+	 * @param specData - the absolute data from the spectrogram. 
+	 */
+	public void setSpecData(double[][] specData) {
+		this.specData = specData;
+	}
+
+	/**
+	 * Get the phase data from the spectrogram (complex data). 
+	 * @return the phase data from each FFT bin in the spectrogram. 
+	 */
+	public ComplexArray[] getComplexData() {
+		return complexData;
+	}
+
+	/**
+	 * Set the phase data from the spectrogram (complex data). 
+	 * @param the phase data from each FFT bin in the spectrogram. 
+	 */
+	public void setComplexData(ComplexArray[] complexData) {
+		this.complexData = complexData;
+	}
+	
+
+	/**
+	 * Get the sample rate of the spectrogram in samples per second. 
+	 * @return samples in samples per second. 
+	 */
+	public float getSampleRate() {
+		return sampleRate;
+	}
+
+	/**
+	 * Set the sample rate of the spectrogram in samples per second. 
+	 * @param samples in samples per second. 
+	 */
+	public void setSampleRate(float sampleRate) {
+		this.sampleRate = sampleRate;
+	}
 
 
 
