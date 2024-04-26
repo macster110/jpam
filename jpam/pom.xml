@@ -13,7 +13,7 @@
 	<url>https://github.com/macster110/jpam</url>
 
 	<properties>
-    	<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>	   
+    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	   
  		<maven.compiler.target>14</maven.compiler.target>
 		<maven.compiler.source>14</maven.compiler.source> 
 		<maven.compiler.release>14</maven.compiler.release>
