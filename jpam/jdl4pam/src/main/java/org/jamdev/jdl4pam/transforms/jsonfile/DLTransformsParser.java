@@ -449,7 +449,10 @@ public class DLTransformsParser {
 			number[1] = jsonObjectParams.getInt("freq_bins"); 
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
 			break;
+		case SPECFLIP:
+			dlTransformParams = new SimpleTransformParams(dlTransformType); 
 		default:
+			dlTransformParams = new SimpleTransformParams(dlTransformType); 
 			break;
 
 		}
@@ -598,10 +601,10 @@ public class DLTransformsParser {
 	public static DLTransformType getTransformType(String string) {
 		DLTransformType[] dlTransformTypes = DLTransformType.values();
 
-//		System.out.println(" DLTransformType: " + string); 
+//		System.out.println(" DLTransformType: " + string + "|"); 
 		for (DLTransformType dlTransformType: dlTransformTypes) {
 			if (dlTransformType.getJSONString().equals(string)) {
-				return dlTransformType; 
+				return dlTransformType; 				
 			}
 		}
 

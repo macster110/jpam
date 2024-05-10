@@ -71,7 +71,7 @@ public class AnimalSpotModel {
 		
 				
 		model.load(modelDir, modelName, hashMap);
-				
+						
 		//predictor for the model
 		predictor = model.newPredictor(translator);
 		}

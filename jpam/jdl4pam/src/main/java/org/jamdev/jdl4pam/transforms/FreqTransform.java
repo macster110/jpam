@@ -161,7 +161,11 @@ public class FreqTransform extends SimpleTransform {
 			freqlims = ((FreqTransform) transform).freqlims; 
 			break;
 		case SPECRESIZE:
-			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().resize(params[0].intValue(), params[1].intValue());
+			int resizeType=0;
+			if (params.length>=3) {
+				resizeType= params[2].intValue();
+			}
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().resize(params[0].intValue(), params[1].intValue(), resizeType);
 			freqlims = ((FreqTransform) transform).freqlims; 
 			break;
 		case SPECFLIP:

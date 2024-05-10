@@ -36,13 +36,9 @@ public abstract class SimpleTransform implements DLTransform {
 	@Override
 	public boolean equals(Object o) {
 		
-		if (o==null) {
-//			System.out.println("Simple transform not equal null ");
-			return false; 
-		}
-
+		if (!(o instanceof SimpleTransform)) return false; 
+	
 		SimpleTransform transform = (SimpleTransform) o; 
-
 		
 		if (params ==null && transform.params!=null) return false;
 		if (transform.params ==null && params!=null) return false;

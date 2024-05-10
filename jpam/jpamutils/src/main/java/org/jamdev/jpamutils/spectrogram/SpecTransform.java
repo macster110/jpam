@@ -5,8 +5,10 @@ import java.util.Arrays;
 import org.jamdev.jpamutils.JamArr;
 import org.jamdev.jpamutils.clahe.Clahe;
 import org.jamdev.jpamutils.clahe.FastBitmap;
+import org.jamdev.jpamutils.interpolation.Bicubic;
 import org.jamdev.jpamutils.interpolation.Bilinear;
 import org.jamdev.jpamutils.interpolation.Interpolation;
+import org.jamdev.jpamutils.interpolation.NearestNeighbor;
 
 /**
  * Transforms spectrogram data.
@@ -345,18 +347,35 @@ public class SpecTransform {
 	}
 
 	/**
+	 * Use a bilinear interpolation.
+	 */
+	public final static int RESIZE_BILINEAR = 0; 
+	
+
+	/**
+	 * Use a nearest neighbour interpolation.
+	 */
+	public final static int RESIZE_NEAREST = 1; 
+	
+
+	/**
+	 * Use a bicubic interpolation.
+	 */
+	public final static int RESIZE_BICUBIC = 2; 
+	/**
 	 * Resize the spectrogram using bilinear interpolation.
 	 * 
 	 * @param array    - the spectrogram array. This should be spectrogram covering
 	 *                 it's full frequency range.
 	 * @param timebins - the number of time bins to interpolate to.
+	 * @param resizeType - an int flag for the resize type. e.g SpecTransForm.RESIZE_BILINEAR.
 	 * @return reference to the interpolated spectrogram.
 	 */
-	public SpecTransform resize(int timebins, int freqbins) {
+	public SpecTransform resize(int timebins, int freqbins, int resizeType) {
 		if (specData == null)
 			initialiseSpecData();
 
-		this.specData = resize(this.specData, timebins, freqbins);
+		this.specData = resize(this.specData, timebins, freqbins, resizeType);
 
 		return this;
 	}
@@ -619,12 +638,21 @@ public class SpecTransform {
 	 * @param array    - the spectrogram array. This should be spectrogram covering
 	 *                 it's full frequency range.
 	 * @param timebins - the number of time bins to interpolate to.
+	 * @param resizeType - an int flag for the resize type. e.g SpecTransForm.RESIZE_BILINEAR.
 	 * @return interpolated spectrogram
 	 */
-	public double[][] resize(double[][] array, int timeBins, int freqbins) {
+	public double[][] resize(double[][] array, int timeBins, int freqbins, int resizeType) {
 
-		if (interpolation == null) {
+		switch (resizeType) {
+		case RESIZE_BILINEAR:
 			interpolation = new Bilinear(JamArr.doubleToFloat(array));
+			break;
+		case RESIZE_NEAREST:
+			interpolation = new NearestNeighbor(JamArr.doubleToFloat(array));
+			break;
+		case RESIZE_BICUBIC:
+			interpolation = new Bicubic(JamArr.doubleToFloat(array));
+			break;
 		}
 
 		float[][] resizeArr = interpolation.resize(timeBins, freqbins);
