@@ -3,6 +3,8 @@ package org.jamdev.jdl4pam.genericmodel;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.jamdev.jdl4pam.utils.DLUtils;
 
@@ -25,7 +27,7 @@ import ai.djl.util.PairList;
  */
 public class WaveformTranslator implements Translator<float[][], float[]> {    
 	
-	long hop = (long) (3.92*10000L); 
+	//long hop = (long) (3.92*10000L); 
 
 	/**
 	 * Create the shape 
@@ -48,18 +50,6 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 	public WaveformTranslator(PairList<String, Shape> shapes) {
 		this.shapes = shapes; 		
 	}
-	
-
-
-//	/**
-//	 * Constructor for the waveform translator. The translator gets the data
-//	 * @param shapes
-//	 * @param hop
-//	 */
-//	public WaveformTranslator(PairList<String, Shape> shapes, long hop) {
-//		this.shapes = shapes; 
-//	}
-//	
 	
 	
 	@Override
@@ -92,8 +82,18 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 			shapeL[i] =1L;
 		}
 		
-		shapeL[0] = data.length;
-		shapeL[1] = data[0].length; 
+//		System.out.println("Shape: " + shapes.get(shapeAudioIndex).getValue() + " " + shapeL.length);
+		
+		//two scenarios here with shape - either a model has some shape like (-1, 512) which specifies
+		//a stack of waves or a model has a shape of (-1) or say (512) specifying the input is a 1D array. 
+		if (shapeL.length>=2) {
+			shapeL[0] = data.length;
+			shapeL[1] = data[0].length; 
+		}
+		else {
+			//set the input shape as the first waveform. 
+			shapeL[0] = data[0].length;
+		}
 
 		shape = new Shape(shapeL); 
 		
@@ -120,15 +120,18 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 		while (n<shapeAudioIndex) {
 			//we cross our fingers here and hope that the extra data are not needed. Otherwise
 			//this will have be subclassed. 
+			System.out.println("Add extra data:"); 
+
 			arrays.add(generateExtraData(manager, n)); //add the hop
 			n++; 
 		}
 		arrays.add(shapeAudioIndex, array); //add the waveform information. 
-		
-		//System.out.println("NDArray size: " + dummy.size()); 
-		//System.out.println("NDArray size: " + arrays.size()); 
 
-		return new NDList (arrays);
+		//System.out.println("NDArray size: " + dummy.size()); 
+		
+		NDList output = new NDList(arrays); 
+						
+		return output;
 	}
 	
 	
@@ -144,7 +147,6 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 
 	@Override
 	public float[]  processOutput(TranslatorContext ctx, NDList list) {
-		//System.out.println("Output: " + list.size()); 
 
 		NDArray temp_arr = list.get(0);
 		
@@ -189,13 +191,7 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 		this.shape = shape;
 	}
 
-
-	public double[] getWaveform() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
+	
 	/**
 	 * Get the audio shape index. This can be null in which case the shape with the largest
 	 * dimensions will be assumed to be the input data. Note that often only one input shape 
@@ -216,6 +212,7 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 	public void setAudioShapeIndex(Integer shapeIndex) {
 		this.shapeIndex = shapeIndex;
 	}
+
 };
 
 

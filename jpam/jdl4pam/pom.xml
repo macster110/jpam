@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>jdl4pam</artifactId>
-	<version>0.0.99</version>
+	<version>0.0.99b</version>
 	<packaging>jar</packaging>
 
 	<name>jdl4pam</name>
@@ -29,7 +29,7 @@
 		<dependency>
 			<groupId>io.github.macster110</groupId>
 			<artifactId>jpamutils</artifactId>
-			<version>0.0.58</version>
+			<version>0.0.59</version>
 		</dependency>
 
 		<dependency>
@@ -106,12 +106,12 @@
 		<!-- <version>0.10.0</version> -->
 		<!-- </dependency> -->
 		
-		<!-- https://mvnrepository.com/artifact/net.imglib2/imglib2 -->
+		<!-- https://mvnrepository.com/artifact/net.imglib2/imglib2
 		<dependency>
 		    <groupId>org.openpnp</groupId>
 		    <artifactId>opencv</artifactId>
 		    <version>4.9.0-0</version>
-		</dependency>
+		</dependency> -->
 
 	</dependencies>
 

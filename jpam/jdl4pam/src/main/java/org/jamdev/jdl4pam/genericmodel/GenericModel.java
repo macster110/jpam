@@ -91,7 +91,8 @@ public class GenericModel {
 
 		else {
 			if (model!=null && model.describeInput()!=null) {
-				System.out.println("Generic Model: Input: " + model.describeInput().get(0).getValue()); 
+				for (int i=0; i<model.describeInput().size(); i++)
+				System.out.println("Generic Model: Input: " + i + " - " + model.describeInput().get(i).getValue()); 
 				inputShape =  model.describeInput().get(0).getValue();
 			}
 			if (model!=null && model.describeOutput()!=null) {
@@ -228,7 +229,7 @@ public class GenericModel {
 			float[] results  = wavePredictor.predict(waveform);
 			//DLUtils.printArray(results);
 			return results; 
-		} catch (TranslateException e) {
+		} catch (Exception e) {
 			System.out.println("Error on model: "); 
 			e.printStackTrace();
 		}

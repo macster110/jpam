@@ -230,10 +230,10 @@ public class HumpbackGoogle {
 
 		/**** Vincent HumpBack whale classifier *****/
 		// the second class is humpback whale. class 0 = noise, Class 1= right whale.
-		String wavFilePath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Google/humpback_whale/sound.wav";
+		String wavFilePath = "/Users/au671271/Library/CloudStorage/Dropbox//PAMGuard_dev/Deep_Learning/Google/humpback_whale/sound.wav";
 
 		// the model
-		String modelPath = "/Users/au671271/Library/CloudStorage/GoogleDrive-macster110@gmail.com/My Drive/PAMGuard_dev/Deep_Learning/Google/humpback_whale_atlantic/FlatHBNA/saved_model.pb";
+		String modelPath = "/Users/au671271/Library/CloudStorage/Dropbox/PAMGuard_dev/Deep_Learning/Google/humpback_whale_atlantic/FlatHBNA/saved_model.pb";
 
 		int startChunk = 0; // humpback whale call
 

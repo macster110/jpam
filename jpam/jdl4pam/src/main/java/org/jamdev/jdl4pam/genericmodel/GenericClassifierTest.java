@@ -15,6 +15,8 @@ import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 import org.jamdev.jdl4pam.utils.DLUtils;
 import org.jamdev.jpamutils.wavFiles.AudioData;
 
+import ai.djl.MalformedModelException;
+
 /**
  * 
  * Test the generic classifier on Tensorflow and Pytorch models
@@ -131,6 +133,72 @@ public class GenericClassifierTest {
 		}
 
 	}
+	
+	
+	public static void clickDLTest() {
+		
+		System.out.println("****APMGuard click DL test****");
+
+		//the model path
+		String modelPath = "/Users/au671271/git/PAMGuard/src/test/resources/rawDeepLearningClassifier/Generic/risso_click/best_model/saved_model.pb";
+
+		//Load a small wav file with click data export from PAMGuard. 
+		String wavFilePath = "/Users/au671271/git/PAMGuard/src/test/resources/rawDeepLearningClassifier/Generic/risso_click/clickwavrisso.wav";
+
+		//define some bits and pieces we need for the classifier. 
+		float sr = 500000; 
+
+		AudioData soundData;
+		try {
+			soundData = DLUtils.loadWavFile(wavFilePath);
+			
+			//create the transforms. 
+			ArrayList<DLTransfromParams> dlTransformParamsArr = new ArrayList<DLTransfromParams>();
+
+			//waveform transforms. 
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.NORMALISE_WAV)); 
+	
+			//generic classifier
+			GenericModel genericModel;
+			try {
+				genericModel = new GenericModel(modelPath);
+			
+			
+			//create transforms
+			ArrayList<DLTransform> transforms = DLTransformsFactory.makeDLTransforms(dlTransformParamsArr);
+
+			((WaveTransform) transforms.get(0)).setWaveData(soundData);
+
+			// run the tansforms.
+			DLTransform transform = transforms.get(0);
+			for (int i = 0; i < transforms.size(); i++) {
+				transform = transforms.get(i).transformData(transform);
+			}
+
+			double[] dataD = ((WaveTransform) transform).getWaveData().getScaledSampleAmplitudes();
+
+			float[] dataF = new float[dataD.length];
+			for (int i = 0; i < dataF.length; i++) {
+				dataF[i] = (float) dataD[i];
+			}
+
+			float[] output = genericModel.runModel(new float[][] {dataF});
+
+			for (int j = 0; j<output.length; j++) {
+				System.out.println("Output: " + j + " : " + output[j]);
+			}
+			
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+
+		} catch (IOException | UnsupportedAudioFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 
 	/**
 	 * The bat Pytorch test. 
@@ -141,8 +209,7 @@ public class GenericClassifierTest {
 	}
 
 	public static void main(String args[]) {
-		//spectrogramTest(); 
-		rightWhaleTest();
+		clickDLTest();
 	}
 
 

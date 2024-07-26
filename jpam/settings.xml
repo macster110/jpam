@@ -17,24 +17,24 @@
       </properties>
     </profile>
   </profiles>
-    
-  <servers>
-    <server>
-      <id>ossrh</id>
-      <username>macster110</username>
-      <password>@64Tahariveila</password>
-    </server>
-     <server>
-            <id>github</id>
-            <username>macster110</username>
-            <password>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</password>
-       </server>
-       <server>
-  <id>ossrh</id>
-  <username>2WT+dijB</username>
-  <password>YHo116t92jDAtO9B4RukvYMDcobbRt5YAkco+TqD/tx9</password>
-</server>
-  </servers>
+
+	<servers>
+<!--		<server>-->
+<!--			<id>ossrh</id>-->
+<!--			<username>macster110</username>-->
+<!--			<password>@64Tahariveila</password>-->
+<!--		</server>-->
+		<server>
+			<id>github</id>
+			<username>macster110</username>
+			<password>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</password>
+		</server>
+		<server>
+			<id>ossrh</id>
+			<username>2WT+dijB</username>
+			<password>YHo116t92jDAtO9B4RukvYMDcobbRt5YAkco+TqD/tx9</password>
+		</server>
+	</servers>
 
   
 </settings>

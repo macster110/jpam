@@ -82,7 +82,7 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], ArrayL
 		for (int j=0; j<list.size(); j++) {
 			NDArray temp_arr = list.get(j);
 
-			System.out.println("Shape: " + temp_arr.getShape() + " size " + temp_arr.toFloatArray().length);
+//			System.out.println("Shape: " + temp_arr.getShape() + " size " + temp_arr.toFloatArray().length);
 
 			temp_arr=temp_arr.reshape(temp_arr.getShape());
 			float[] newArr = temp_arr.flatten().toFloatArray();
