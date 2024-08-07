@@ -252,7 +252,7 @@ public class JamArr {
 		double sum = 0.0;
 		for(double a : data)
 			sum += a;
-		return sum/data.length;
+		return  sum/data.length;
 	}
 
 
@@ -265,7 +265,7 @@ public class JamArr {
 		double sum = 0.0;
 		for(int a : data)
 			sum += a;
-		return sum/data.length;
+		return ((double) sum) /data.length;
 	}
 
 
@@ -497,7 +497,7 @@ public class JamArr {
 	 * @param data - the int array to convert
 	 * @return the same array but with doubles. 
 	 */
-	private static double[] int2doubleArray(int[] data) {
+	public static double[] int2doubleArray(int[] data) {
 		double[] arr = new double[data.length];
 		for (int i=0; i<data.length; i++) {
 			arr[i] = data[i]; 
@@ -736,6 +736,124 @@ public class JamArr {
 
 		return max;
 	}
+	
+	/**
+	 * Calculate the index of the maximum value within an array
+	 * @param arr - the array to find the maximum index of. 
+	 * @return the position of the maximum value in the array. 
+	 */
+	public static int maxIndex(int[] arr) {
+		int max = Integer.MIN_VALUE;
+		int index =-1;
+		for (int i=0; i<arr.length; i++) {
+			if (max<arr[i]) {
+				max=arr[i];
+				index =i;
+			}
+		}
+
+		return index;
+	}
+	
+	
+	
+	/**
+	 * Calculate the index of the minimum value within an array
+	 * @param arr - the array to find the maximum index of. 
+	 * @return the position of the maximum value in the array. 
+	 */
+	public static int minIndex(int[] arr) {
+		int min = Integer.MAX_VALUE;
+		int index =-1;
+		for (int i=0; i<arr.length; i++) {
+			if (min>arr[i]) {
+				min=arr[i];
+				index =i;
+			}
+		}
+
+		return index;
+	}
+	
+	
+	/**
+	 * Calculate the index of the maximum value within an array
+	 * @param arr - the array to find the maximum index of. 
+	 * @return the position of the maximum value in the array. 
+	 */
+	public static int maxIndex(double[] arr) {
+		double max = Double.POSITIVE_INFINITY;
+		int index =-1;
+		for (int i=0; i<arr.length; i++) {
+			if (max<arr[i]) {
+				max=arr[i];
+				index =i;
+			}
+		}
+
+		return index;
+	}
+	
+	
+	
+	
+	/**
+	 * Calculate the index of the minimum value within an array
+	 * @param arr - the array to find the maximum index of. 
+	 * @return the position of the maximum value in the array. 
+	 */
+	public static int minIndex(double[] arr) {
+		double min = Double.NEGATIVE_INFINITY;
+		int index =-1;
+		for (int i=0; i<arr.length; i++) {
+			if (min>arr[i]) {
+				min=arr[i];
+				index =i;
+			}
+		}
+
+		return index;
+	}
+	
+	/**
+	 * Calculate the index of the maximum value within an array
+	 * @param arr - the array to find the maximum index of. 
+	 * @return the position of the maximum value in the array. 
+	 */
+	public static int maxIndex(float[] arr) {
+		float max = Float.POSITIVE_INFINITY;
+		int index =-1;
+		for (int i=0; i<arr.length; i++) {
+			if (max<arr[i]) {
+				max=arr[i];
+				index =i;
+			}
+		}
+
+		return index;
+	}
+	
+	
+	
+	
+	/**
+	 * Calculate the index of the minimum value within an array
+	 * @param arr - the array to find the maximum index of. 
+	 * @return the position of the maximum value in the array. 
+	 */
+	public static int minIndex(float[] arr) {
+		float min = Float.NEGATIVE_INFINITY;
+		int index =-1;
+		for (int i=0; i<arr.length; i++) {
+			if (min>arr[i]) {
+				min=arr[i];
+				index =i;
+			}
+		}
+
+		return index;
+	}
+
 
 	/**
 	 * Get the minimum value in an array 
@@ -754,6 +872,8 @@ public class JamArr {
 
 		return min;
 	}
+	
+	
 
 	/**
 	 * Get the minimum value in an array 
@@ -1573,6 +1693,8 @@ public class JamArr {
 		return outF;
 	}
 	
+
+
 	
 	/**
 	 * Convert a 2D float array to a double array. 
@@ -1591,6 +1713,21 @@ public class JamArr {
 		}
 		return outD;
 	}
+	
+	/**
+	 * Cast all values in a double array to an integer. 
+	 * @param arrayd - the array cast to integers. 
+	 * @return an array of integers. 
+	 */
+	public static int[] double2Int(double[] arrayd) {
+		int[] outInt = new int[arrayd.length]; 
+		for (int i=0; i<arrayd.length; i++) {
+			outInt[i]=(int) arrayd[i];
+		}
+		return outInt;
+	}
+	
+
 	
 
 

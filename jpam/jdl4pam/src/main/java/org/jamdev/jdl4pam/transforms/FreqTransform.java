@@ -161,7 +161,7 @@ public class FreqTransform extends SimpleTransform {
 			freqlims = ((FreqTransform) transform).freqlims; 
 			break;
 		case SPECRESIZE:
-			int resizeType=0;
+			int resizeType=0; //default is bilinear
 			if (params.length>=3) {
 				resizeType= params[2].intValue();
 			}

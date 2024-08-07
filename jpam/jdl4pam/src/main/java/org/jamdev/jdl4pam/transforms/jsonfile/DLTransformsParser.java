@@ -202,6 +202,10 @@ public class DLTransformsParser {
 			paramsObject.put("highcut", filterParams.highCut); 
 
 			break;
+		case PEAK_TRIM:
+			paramsObject.put("pad", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
+			paramsObject.put("peak_method", ((SimpleTransformParams) dlTransfromParams).params[1].intValue());
+			break;
 		case SPEC2DB:
 			if (((SimpleTransformParams) dlTransfromParams).params[0]!=null) {
 				paramsObject.put("min_db", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue()); 
@@ -295,6 +299,12 @@ public class DLTransformsParser {
 		case DECIMATE_SCIPY:
 			number = new Number[1]; 
 			number[0] = jsonObjectParams.getFloat("sr"); 
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
+			break;
+		case PEAK_TRIM:
+			number = new Number[2]; 
+			number[0] = jsonObjectParams.getInt("pad"); 
+			number[1] = jsonObjectParams.getInt("peak_method"); 
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
 			break;
 		case PREEMPHSIS:

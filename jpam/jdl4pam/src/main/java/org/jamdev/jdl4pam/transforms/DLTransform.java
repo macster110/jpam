@@ -56,6 +56,18 @@ public interface DLTransform {
 		 * 
 		 */
 		TRIM("Trim wave", "trim"),
+		
+		/**
+		 * Trims the acoustic data to new length around the peak of the waveform
+		 * <p>
+		 * Two associated parameters- padding and peak search type. Padding is the
+		 * number of samples to trim to. So for example 128 samples keeps 64 samples
+		 * before the peak and 64 samples after. The second parameter is an int flag for
+		 * the type of peak search. Peak search types are 1 - max peak - select the max
+		 * value in the waveform as a peak.
+		 * 
+		 */
+		PEAK_TRIM("Peak trim", "peak_trim"),
 
 		/**
 		 * Converts a waveform to a spectrogram

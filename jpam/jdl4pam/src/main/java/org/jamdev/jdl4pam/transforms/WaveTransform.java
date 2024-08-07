@@ -85,6 +85,9 @@ public class WaveTransform extends SimpleTransform {
 		case TRIM:
 			soundData = waveTransform.getWaveData().trim(params[0].intValue(), params[1].intValue());
 			break;
+		case PEAK_TRIM:
+			soundData = waveTransform.getWaveData().selectPeak(params[0].intValue(), params[1].intValue());
+			break;
 		case FILTER:
 //			System.out.println("Filter waveform1: " + waveTransform.getWaveData().samples.length); 
 			FilterParams filtParams = transform2FilterParams(params);

@@ -26,7 +26,7 @@ import ai.djl.util.PairList;
  *
  */
 public class WaveformTranslator implements Translator<float[][], float[]> {    
-	
+
 	//long hop = (long) (3.92*10000L); 
 
 	/**
@@ -38,10 +38,10 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 	 * The shapes associated with the model. 
 	 */
 	private PairList<String, Shape> shapes;
-	
+
 	private Integer shapeIndex = null; 
-	
-	
+
+
 	/**
 	 * Constructor for the waveform translator. The translator gets the data
 	 * into a format ready for the model 
@@ -50,13 +50,13 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 	public WaveformTranslator(PairList<String, Shape> shapes) {
 		this.shapes = shapes; 		
 	}
-	
-	
+
+
 	@Override
 	public NDList processInput(TranslatorContext ctx, float[][] data) {
 		//System.out.println("Hello: 1 " ); 
 		NDManager manager = ctx.getNDManager();
-		
+
 		//We need to find the index of the shape that is for audio. If there is more than one shape pick the 
 		//one the largest number of dimensions unless explicitly set. 
 		int shapeAudioIndex = 0; 
@@ -74,16 +74,16 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 		else {
 			shapeAudioIndex = this.shapeIndex;
 		}
-		
-		
+
+
 		long[] shapeL = new long[shapes.get(shapeAudioIndex).getValue().dimension()]; 
-		
+
 		for (int i=0; i<shapeL.length; i++) {
 			shapeL[i] =1L;
 		}
-		
-//		System.out.println("Shape: " + shapes.get(shapeAudioIndex).getValue() + " " + shapeL.length);
-		
+
+		//		System.out.println("Shape: " + shapes.get(shapeAudioIndex).getValue() + " " + shapeL.length);
+
 		//two scenarios here with shape - either a model has some shape like (-1, 512) which specifies
 		//a stack of waves or a model has a shape of (-1) or say (512) specifying the input is a 1D array. 
 		if (shapeL.length>=2) {
@@ -96,52 +96,51 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 		}
 
 		shape = new Shape(shapeL); 
-		
-		float[] specgramFlat = DLUtils.flattenDoubleArrayF(data); 
-		
-		NDArray array = manager.create(specgramFlat, shape); 
-		
 
-//		NDArray array = manager.create(data); 
-//		System.out.println("NDArray size: " + array.size()); 
-		
+		float[] specgramFlat = DLUtils.flattenDoubleArrayF(data); 
+
+		NDArray array = manager.create(specgramFlat, shape); 
+
+
+		//		NDArray array = manager.create(data); 
+		//		System.out.println("NDArray size: " + array.size()); 
+
 		ArrayList<NDArray> arrays = new ArrayList<NDArray>();
-		
-//		System.out.println("Shape size: " + shapes.size());
-		
-		
-//		//this is a little bit of a weird one 
-//		if (shapes.size()>1) {
-//			NDArray hoparray = manager.create(-1);
-//			arrays.add(hoparray); //add the hop
-//		}
-		
+
+		//		System.out.println("Shape size: " + shapes.size());
+
+
+		//		//this is a little bit of a weird one 
+		//		if (shapes.size()>1) {
+		//			NDArray hoparray = manager.create(-1);
+		//			arrays.add(hoparray); //add the hop
+		//		}
+
 		int n=0; 
-		while (n<shapeAudioIndex) {
+		while  (n<shapes.size()) {
 			//we cross our fingers here and hope that the extra data are not needed. Otherwise
 			//this will have be subclassed. 
-			System.out.println("Add extra data:"); 
-
-			arrays.add(generateExtraData(manager, n)); //add the hop
+			if (n!=shapeAudioIndex) {
+				arrays.add(generateExtraData(manager, shapes.get(n).getValue(), n)); //add the hop
+			}
 			n++; 
 		}
 		arrays.add(shapeAudioIndex, array); //add the waveform information. 
-
-		//System.out.println("NDArray size: " + dummy.size()); 
-		
+				
 		NDList output = new NDList(arrays); 
-						
+
 		return output;
 	}
-	
-	
+
+
 	/**
 	 * Add non-audio data to the output data list. Note this is intended to be subclassed for more complex models. 
 	 * @param shapeIndex - the index of the input shape. 
 	 * @return the data. 
 	 */
-	public NDArray generateExtraData(NDManager manager , int shapeIndex) {
-		return manager.create(1000L); //add the hop
+	public NDArray generateExtraData(NDManager manager , Shape shape, int index) {
+//		System.out.println("Shape: " +  shape); 
+		return manager.create(1000L); //add the hop for Google model by default. This is just a scaler. 
 
 	}
 
@@ -149,7 +148,7 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 	public float[]  processOutput(TranslatorContext ctx, NDList list) {
 
 		NDArray temp_arr = list.get(0);
-		
+
 		//System.out.println("Output2: " + list); 
 
 
@@ -173,8 +172,8 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 		// Stacking, the most common batchifier, takes N [X1, X2, ...] arrays to a single [N, X1, X2, ...] array
 		return null;
 	}
-	
-	
+
+
 	/**
 	 * Get the default input shape. 
 	 * @return the default input shape. 
@@ -191,7 +190,7 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 		this.shape = shape;
 	}
 
-	
+
 	/**
 	 * Get the audio shape index. This can be null in which case the shape with the largest
 	 * dimensions will be assumed to be the input data. Note that often only one input shape 

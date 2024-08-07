@@ -35,6 +35,9 @@ public class DLTransformsFactory {
 		case NORMALISE_WAV:
 			dlTransform = new WaveTransform(dlTransformType, null); 
 			break;
+		case PEAK_TRIM:
+			dlTransform = new WaveTransform(dlTransformType,  new Number[] {128, 1}); 
+			break;
 		case FILTER:
 			FilterParams filtParams = new FilterParams(); //default params
 			dlTransform = new WaveTransform(dlTransformType, WaveTransform.filterParams2transform(filtParams)); 
@@ -106,40 +109,13 @@ public class DLTransformsFactory {
 
 		switch (dlTransfromParams.dltransfromType) {
 		case DECIMATE:
-			dlTransform = new WaveTransform(DLTransformType.DECIMATE, ((SimpleTransformParams) dlTransfromParams).params); 
-			break;
 		case DECIMATE_SCIPY:
-			dlTransform = new WaveTransform(dlTransfromParams.dltransfromType, ((SimpleTransformParams) dlTransfromParams).params); 
-			break;
 		case PREEMPHSIS:
-			dlTransform = new WaveTransform(DLTransformType.PREEMPHSIS, ((SimpleTransformParams) dlTransfromParams).params); 
-			break;
-//		case SPEC2DB:
-//			dlTransform = new FreqTransform(DLTransformType.SPEC2DB, ((SimpleTransformParams) dlTransfromParams).params); 
-//			break;
-//		case SPECCLAMP:
-//			dlTransform = new FreqTransform(DLTransformType.SPECCLAMP, ((SimpleTransformParams) dlTransfromParams).params); 
-//			break;
-//		case SPECCROPINTERP:
-//			dlTransform = new FreqTransform(DLTransformType.SPECCROPINTERP, ((SimpleTransformParams) dlTransfromParams).params); 
-//			break;
-//		case SPECNORMALISE:
-//			dlTransform = new FreqTransform(DLTransformType.SPECNORMALISE, ((SimpleTransformParams) dlTransfromParams).params); 
-//			break;
-//		case SPECNORMALISEROWSUM:
-//			dlTransform = new FreqTransform(DLTransformType.SPECNORMALISEROWSUM, ((SimpleTransformParams) dlTransfromParams).params); 
-//			break;
-//		case SPECTROGRAM:
-//			dlTransform = new FreqTransform(DLTransformType.SPECTROGRAM, ((SimpleTransformParams) dlTransfromParams).params); 
-//			break;
 		case FILTER:
-			dlTransform = new WaveTransform(DLTransformType.FILTER, ((SimpleTransformParams) dlTransfromParams).params); 
-			break;
 		case TRIM:
-			dlTransform = new WaveTransform(DLTransformType.TRIM, ((SimpleTransformParams) dlTransfromParams).params); 
-			break;
 		case NORMALISE_WAV:
-			dlTransform = new WaveTransform(DLTransformType.NORMALISE_WAV, ((SimpleTransformParams) dlTransfromParams).params); 
+		case PEAK_TRIM:
+			dlTransform = new WaveTransform(dlTransfromParams.dltransfromType, ((SimpleTransformParams) dlTransfromParams).params); 
 			break;
 		default:
 			dlTransform = new FreqTransform(dlTransfromParams.dltransfromType, ((SimpleTransformParams) dlTransfromParams).params); 

@@ -299,6 +299,8 @@ public class AudioData {
 
 		return x_padded;
 	}
+
+
 	public void appendLeftRight(int num_pad_left, int num_pad_right) {
 		double[] wavArray = getScaledSampleAmplitudes();
 
@@ -326,13 +328,14 @@ public class AudioData {
 		}
 	}
 
+
 	/**
 	 * Interpolate the audio data (e..g up sample or down sample)
 	 * @param interpSr - the new sample rate.
 	 * @return AudioData object containing interpolated data and sample rate.
 	 */
 	public AudioData interpolate(float interpSr) {
-		
+
 		if (interpSr==this.sampleRate) return this;
 
 		double[] wavArray = getScaledSampleAmplitudes();
@@ -355,7 +358,7 @@ public class AudioData {
 	 * @return AudioData object containing interpolated data and sample rate.
 	 */
 	public AudioData interpolate_scipy(float target_sr) {
-		
+
 		if (target_sr==this.sampleRate) return this;
 
 		double[] wavArray = getScaledSampleAmplitudes();
@@ -369,6 +372,36 @@ public class AudioData {
 		AudioData soundTmp = new AudioData(wavArrayResampled, target_sr);
 
 		return soundTmp;
+	}
+
+	/**
+	 * Selects the largest value in the waveform and use that to hunt for the peak. 
+	 */
+	public final static int PEAK_MAX = 0; 
+
+	/**
+	 * Select  a peak and pad it. 
+	 * @param padding - the number of samples to pad with. i.e. if padding is 128 then 64 bins before the peak and 64 bins after the peak are selected
+	 * @param type - the type of peak finding to use. 
+	 * @return AudioData object containing interpolated data and sample rate.
+	 */
+	public AudioData selectPeak(int padding, int type) {
+
+		int[] samples = this.getSampleAmplitudes();
+
+		switch (type) {
+		case (PEAK_MAX): default:
+			int index = JamArr.maxIndex(samples); 
+
+			int indexstart = Math.max(index-padding, 0);
+			int indexend = Math.min(indexstart + padding-1, samples.length-1); 
+
+			int[] copiedArray = Arrays.copyOfRange(samples, indexstart, indexend);
+
+			AudioData soundTmp = new AudioData(copiedArray, this.getSampleRate());
+			return soundTmp;
+		}
+
 	}
 
 	private void setSampleRate(float targetSr) {
@@ -393,9 +426,58 @@ public class AudioData {
 	public final static int KETOSNORM = 1;
 
 	/**
-	 * Subtract the mean and divide by absolute value. Ignores mean and std values
+	 * Subtract the mean and divide by absolute value. Ignores target mean and std values
 	 */
 	public final static int MEANNORM = 2;
+
+
+	/**
+	 * Transform  waveform data such that the mean value becomes zero and the standard deviation becomes one
+	 */
+	public final static int ZSCORE = 3;
+
+
+	//	/**
+	//	 * Normalise the audio data.
+	//	 * @param mean - the target mean for the normalised data
+	//	 * @param std - the target standard deviation for the normalised audio data
+	//	 * @param - the transform type 
+	//	 * @return AudioData object containing normalised data.
+	//	 */
+	//	public AudioData normalise(double mean, double std, int type) {
+	//
+	//		// self.data = std * (self.data - np.mean(self.data)) / std_orig + mean
+	//
+	//		double meanSamples = JamArr.mean(this.samples);
+	//		double stdSamples = JamArr.std(this.samples);
+	//
+	//		int[] samplesNorm = new int[samples.length];
+	//		if (type == KETOSNORM){
+	//			for (int i = 0; i < samples.length; i++) {
+	//				// Ketos version of normalising
+	//				samplesNorm[i] = (int) (std * (this.samples[i] - meanSamples) / stdSamples + mean);
+	//			}
+	//		}
+	//		else if (type==PGNORM) {
+	//			for (int i = 0; i < samples.length; i++) {
+	//				// PAMGuard version
+	//				samplesNorm[i] = (int) (stdSamples*(samples[i] - meanSamples) / (std+mean));
+	//			}
+	//		}
+	//		else {
+	//			for (int i = 0; i < samples.length; i++) {
+	//				// PAMGuard version
+	//				samplesNorm[i] = (int) (samples[i] - meanSamples);
+	//
+	//			}
+	////			System.out.println("Max: " + JamArr.max(samplesNorm));
+	//			double[] samplesNormD =  JamArr.divide(samplesNorm, JamArr.max(samplesNorm)); 
+	//			return new AudioData(samplesNormD, this.sampleRate);
+	//		}
+	//
+	//		return new AudioData(samplesNorm, this.sampleRate);
+	//	}
+
 
 	/**
 	 * Normalise the audio data.
@@ -414,7 +496,7 @@ public class AudioData {
 		int[] samplesNorm = new int[samples.length];
 		if (type == KETOSNORM){
 			for (int i = 0; i < samples.length; i++) {
-				// Ketos version of normalising
+				// Ketos version of normalising - do not mess with this
 				samplesNorm[i] = (int) (std * (this.samples[i] - meanSamples) / stdSamples + mean);
 			}
 		}
@@ -424,19 +506,33 @@ public class AudioData {
 				samplesNorm[i] = (int) (stdSamples*(samples[i] - meanSamples) / (std+mean));
 			}
 		}
+		else if (type==ZSCORE) {
+//			System.out.println("ZSCORE:!!" + meanSamples + " " + stdSamples + "  " +samples[3]);
+			double[] samplesNormD = new double[ samples.length];
+			for (int i = 0; i < samples.length; i++) {
+				// standardisation or Z-score normalisation
+				samplesNormD[i] = (double) (samples[i]) - meanSamples;
+			}
+			samplesNormD =  JamArr.divide(samplesNormD, stdSamples); 
+			
+//			System.out.println("Max: " + JamArr.max(samplesNormD));
+			return new AudioData(JamArr.double2Int(JamArr.product(samplesNormD, Math.pow(2, bitRate)/2)), this.sampleRate);
+		}
 		else {
+			double[] samplesNormD = new double[ samples.length];
 			for (int i = 0; i < samples.length; i++) {
 				// PAMGuard version
-				samplesNorm[i] = (int) (samples[i] - meanSamples);
+				samplesNormD[i] =  (double) (samples[i]) - meanSamples;
 
 			}
-//			System.out.println("Max: " + JamArr.max(samplesNorm));
-			double[] samplesNormD =  JamArr.divide(samplesNorm, JamArr.max(samplesNorm)); 
+			//			System.out.println("Max: " + JamArr.max(samplesNorm));
+			samplesNormD =  JamArr.divide(samplesNorm, JamArr.max(samplesNorm)); 
 			return new AudioData(samplesNormD, this.sampleRate);
 		}
 
 		return new AudioData(samplesNorm, this.sampleRate);
 	}
+
 
 	/**
 	 * Convert a short[] array to int[].
@@ -450,7 +546,7 @@ public class AudioData {
 		}
 		return arr;
 	}
-	
+
 	/**
 	 * Filter audio data using a Butterworth or Chebyshev filter. 
 	 * @param params - filter params object holding paratmers for filter. 
@@ -470,8 +566,8 @@ public class AudioData {
 	 * @return filtered audio data. 
 	 */
 	public AudioData filter(int filterMethod, int filterType, int order, double lowCut, double highCut) {
-		
-//		System.out.println("Create filter: type: " + type + " passType: " + passType + " order: " +  order + " lowCut: " + lowCut + " highCut: " + highCut + " sr " + this.sampleRate); 
+
+		//		System.out.println("Create filter: type: " + type + " passType: " + passType + " order: " +  order + " lowCut: " + lowCut + " highCut: " + highCut + " sr " + this.sampleRate); 
 
 		Cascade filter = null;
 		switch (filterType) {
@@ -491,7 +587,7 @@ public class AudioData {
 		for (int i=0; i<amps.length; i++) {
 			ampsFilt[i]=filter.filter(amps[i]);
 		}		
-//		System.out.println("New audio data: " + ampsFilt.length);
+		//		System.out.println("New audio data: " + ampsFilt.length);
 		return new AudioData(ampsFilt, this.sampleRate);
 
 	}
@@ -609,7 +705,7 @@ public class AudioData {
 
 		return filter;
 	}
-	
+
 
 
 }
