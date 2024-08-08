@@ -3,6 +3,7 @@ package org.jamdev.jdl4pam.transforms;
 import java.util.ArrayList;
 
 import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
+import org.jamdev.jpamutils.wavFiles.AudioData;
 import org.jamdev.jpamutils.wavFiles.FilterParams;
 
 /**
@@ -36,7 +37,7 @@ public class DLTransformsFactory {
 			dlTransform = new WaveTransform(dlTransformType, null); 
 			break;
 		case PEAK_TRIM:
-			dlTransform = new WaveTransform(dlTransformType,  new Number[] {128, 1}); 
+			dlTransform = new WaveTransform(dlTransformType,  new Number[] {128, AudioData.PEAK_MAX}); 
 			break;
 		case FILTER:
 			FilterParams filtParams = new FilterParams(); //default params

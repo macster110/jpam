@@ -13,11 +13,14 @@ import org.jamdev.jdl4pam.transforms.FreqTransform;
 import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
 import org.jamdev.jdl4pam.transforms.WaveTransform;
 import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
+import org.jamdev.jdl4pam.utils.DLMatFile;
 import org.jamdev.jdl4pam.utils.DLUtils;
 import org.jamdev.jpamutils.JamArr;
 import org.jamdev.jpamutils.wavFiles.AudioData;
 
 import ai.djl.MalformedModelException;
+import us.hebi.matlab.mat.format.Mat5;
+import us.hebi.matlab.mat.types.MatFile;
 
 /**
  * 
@@ -138,13 +141,16 @@ public class GenericClassifierTest {
 		System.out.println("****PAMGuard click DL test****");
 
 		//the model path
-//		String modelPath = "C:/Users/Jamie Macaulay/git/PAMGuard/src/test/resources/rawDeepLearningClassifier/Generic/risso_click/best_model/saved_model.pb";
-		String modelPath  = "/Users/au671271/git/PAMGuard/src/test/resources/rawDeepLearningClassifier/Generic/risso_click/uniform_model/saved_model.pb";
+		String modelPath = "C:/Users/Jamie Macaulay/git/PAMGuard/src/test/resources/rawDeepLearningClassifier/Generic/risso_click/uniform_model/saved_model.pb";
+//		String modelPath  = "/Users/au671271/git/PAMGuard/src/test/resources/rawDeepLearningClassifier/Generic/risso_click/uniform_model/saved_model.pb";
 		//modelPath = Paths.get(modelPath).toAbsolutePath().normalize().toString();;
 
 		//Load a small wav file with click data export from PAMGuard. 
-		String wavFilePath = "/Users/au671271/git/PAMGuard/src/test/resources/rawDeepLearningClassifier/Generic/risso_click/clickwave.wav";
+		String wavFilePath = "C:/Users/Jamie Macaulay/git/PAMGuard/src/test/resources/rawDeepLearningClassifier/Generic/risso_click/clickwave_1.wav";
+//		String wavFilePath = "/Users/au671271/git/PAMGuard/src/test/resources/rawDeepLearningClassifier/Generic/risso_click/clickwave.wav";
 		//wavFilePath = Paths.get(wavFilePath).toAbsolutePath().normalize().toString();;
+
+		String outmatfile = "C:/Users/Jamie Macaulay/MATLAB Drive/MATLAB/PAMGUARD/deep_learning/generic_classifier/click_transformed_java.mat";
 
 		//define some bits and pieces we need for the classifier. 
 		float sr = 500000; 
@@ -158,8 +164,8 @@ public class GenericClassifierTest {
 
 			//waveform transforms. 
 			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.DECIMATE_SCIPY, 250000.)); 
-			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.NORMALISE_WAV, 0., 1, AudioData.ZSCORE)); 
 			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.PEAK_TRIM, 128, 1)); 
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.NORMALISE_WAV, 0., 1, AudioData.ZSCORE)); 
 
 			//generic classifier
 			GenericModel genericModel;
@@ -180,7 +186,14 @@ public class GenericClassifierTest {
 
 			double[] dataD = ((WaveTransform) transform).getWaveData().getScaledSampleAmplitudes();
 			
-			JamArr.printArray(dataD);
+//			JamArr.printArray(dataD);
+			
+			//save the click transfrom to a file
+			MatFile matFile = Mat5.newMatFile().addArray("click_transformed", DLMatFile.array2Matrix(dataD)); 
+
+
+			Mat5.writeToFile(matFile, outmatfile);
+
 			
 //			dataD = JamArr.product(dataD, 0.99);
 

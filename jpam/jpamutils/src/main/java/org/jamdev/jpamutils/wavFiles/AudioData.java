@@ -363,6 +363,7 @@ public class AudioData {
 
 		double[] wavArray = getScaledSampleAmplitudes();
 		double ratio = target_sr / this.sampleRate;
+		
 		int n_samples = (int) Math.ceil(wavArray.length * ratio);
 
 		double[] wavArrayResampled = wavInterpolator.fourierResample(wavArray, n_samples);
@@ -380,60 +381,63 @@ public class AudioData {
 	public final static int PEAK_MAX = 0; 
 
 	/**
+	 * Cuts or pads a waveform to match the target length while centring the maximum positive value.
+	 *
+	 * @param waveform The input waveform as a double array.
+	 * @param targetLength The desired length of the output waveform.
+	 * @return The cut or padded waveform as a double array.
+	 */
+	private int[] cutOrPadWaveform(int[] waveform, int targetLength) {
+		int currentLength = waveform.length;
+
+		if (currentLength > targetLength) {
+			int maxIndex = JamArr.maxIndex(waveform);
+			int start = Math.max(0, maxIndex - targetLength / 2);
+			int end = Math.min(currentLength, start + targetLength);
+			return Arrays.copyOfRange(waveform, start, end);
+		} else if (currentLength < targetLength) {
+			int maxIndex = JamArr.maxIndex(waveform);
+			int padBefore = Math.max(0, targetLength / 2 - maxIndex);
+			int padAfter = targetLength - (currentLength + padBefore);
+			if (padAfter < 0) {
+				padBefore += padAfter;
+				padAfter = 0;
+			}
+			return padArray(waveform, padBefore, padAfter);
+		} else {
+			return waveform.clone();
+		}
+	}
+
+	/**
+	 * Finds the index of the maximum value in a given array.
+	 *
+	 * @param array The input array.
+	 * @return The index of the maximum value.
+	 */
+	private int[] padArray(int[] array, int padBefore, int padAfter) {
+		int[] paddedArray = new int[array.length + padBefore + padAfter];
+		System.arraycopy(array, 0, paddedArray, padBefore, array.length);
+		return paddedArray;
+	}
+
+	/**
 	 * Select  a peak and pad it. 
-	 * @param padding - the number of samples to pad with. i.e. if padding is 128 then 64 bins before the peak and 64 bins after the peak are selected. Must be even.
+	 * @param targetLen - the number of samples to pad with. i.e. if padding is 128 then 64 bins before the peak and 64 bins after the peak are selected. Must be even.
 	 * @param type - the type of peak finding to use. 
 	 * @return AudioData object containing interpolated data and sample rate.
 	 */
-	public AudioData selectPeak(int padding, int type) {
+	public AudioData selectPeak(int targetLen, int type) {
 
 		int[] samples = this.getSampleAmplitudes();
-		
-		int[] trimSamples = new int[padding];
 
 		switch (type) {
 		case (PEAK_MAX): default:
-			//the peak index
-			int indexPeak = JamArr.maxIndex(samples); 
 
-			//we want the start index to be padding/2 samples before peak. But, say the peak is at the 
-			//end of the waveform, then we want to include as many samples as possible. 
-			int indexStart;
-			if (indexPeak+padding/2>samples.length) {
-				//peak at end of waveform. 
-				indexStart = Math.max(samples.length-padding, 0);
-			}
-			else {
-				//peak is at start of waveform. 
-				indexStart = Math.max(indexPeak-padding/2, 0);
-			}
-			
-			//length to copy
-			int len = Math.min(padding, samples.length);
-			
-			//where do we insert the new array? - if the waveform peak is less than half the padding then needs to 
-			//start being copied later in the array so we have zero padding
-			
-			//Now a few options; 
-			//if the waveform is the full length of the padding then we just start from the start of padded array
-			//if the waveform is smaller than the padding then we should place the waveform in the middle with zero padding either side. 
-			int srcStart;
-			if (len==padding) {
-				srcStart = 0;
-			}
-			else {
-				//place the waveform in the middle of the padded arrays so there is zero padding before and after. 
-				srcStart = (padding-len)/2+1; 
-			}
-			
-						
-//			int[] copiedArray = Arrays.copyOfRange(samples, indexstart, indexend);
-			System.out.println("AudioData.selectPeak: samples: " + samples.length + " indexstart " + indexStart + " trimSamples " + trimSamples +  " srcstart " + srcStart + " len: " + len + " indexPeak " + indexPeak); 
-			
-			System.arraycopy(samples, indexStart, trimSamples, srcStart, len);
+			int[] trimSamples = cutOrPadWaveform(samples,  targetLen);
 
 			AudioData soundTmp = new AudioData(trimSamples, this.getSampleRate());
-			
+
 			return soundTmp;
 		}
 
@@ -542,15 +546,15 @@ public class AudioData {
 			}
 		}
 		else if (type==ZSCORE) {
-//			System.out.println("ZSCORE:!!" + meanSamples + " " + stdSamples + "  " +samples[3]);
+			//			System.out.println("ZSCORE:!!" + meanSamples + " " + stdSamples + "  " +samples[3]);
 			double[] samplesNormD = new double[ samples.length];
 			for (int i = 0; i < samples.length; i++) {
 				// standardisation or Z-score normalisation
 				samplesNormD[i] = (double) (samples[i]) - meanSamples;
 			}
 			samplesNormD =  JamArr.divide(samplesNormD, stdSamples); 
-			
-//			System.out.println("Max: " + JamArr.max(samplesNormD));
+
+			//			System.out.println("Max: " + JamArr.max(samplesNormD));
 			return new AudioData(JamArr.double2Int(JamArr.product(samplesNormD, Math.pow(2, bitRate)/2)), this.sampleRate);
 		}
 		else {
