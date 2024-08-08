@@ -381,24 +381,59 @@ public class AudioData {
 
 	/**
 	 * Select  a peak and pad it. 
-	 * @param padding - the number of samples to pad with. i.e. if padding is 128 then 64 bins before the peak and 64 bins after the peak are selected
+	 * @param padding - the number of samples to pad with. i.e. if padding is 128 then 64 bins before the peak and 64 bins after the peak are selected. Must be even.
 	 * @param type - the type of peak finding to use. 
 	 * @return AudioData object containing interpolated data and sample rate.
 	 */
 	public AudioData selectPeak(int padding, int type) {
 
 		int[] samples = this.getSampleAmplitudes();
+		
+		int[] trimSamples = new int[padding];
 
 		switch (type) {
 		case (PEAK_MAX): default:
-			int index = JamArr.maxIndex(samples); 
+			//the peak index
+			int indexPeak = JamArr.maxIndex(samples); 
 
-			int indexstart = Math.max(index-padding, 0);
-			int indexend = Math.min(indexstart + padding-1, samples.length-1); 
+			//we want the start index to be padding/2 samples before peak. But, say the peak is at the 
+			//end of the waveform, then we want to include as many samples as possible. 
+			int indexStart;
+			if (indexPeak+padding/2>samples.length) {
+				//peak at end of waveform. 
+				indexStart = Math.max(samples.length-padding, 0);
+			}
+			else {
+				//peak is at start of waveform. 
+				indexStart = Math.max(indexPeak-padding/2, 0);
+			}
+			
+			//length to copy
+			int len = Math.min(padding, samples.length);
+			
+			//where do we insert the new array? - if the waveform peak is less than half the padding then needs to 
+			//start being copied later in the array so we have zero padding
+			
+			//Now a few options; 
+			//if the waveform is the full length of the padding then we just start from the start of padded array
+			//if the waveform is smaller than the padding then we should place the waveform in the middle with zero padding either side. 
+			int srcStart;
+			if (len==padding) {
+				srcStart = 0;
+			}
+			else {
+				//place the waveform in the middle of the padded arrays so there is zero padding before and after. 
+				srcStart = (padding-len)/2+1; 
+			}
+			
+						
+//			int[] copiedArray = Arrays.copyOfRange(samples, indexstart, indexend);
+			System.out.println("AudioData.selectPeak: samples: " + samples.length + " indexstart " + indexStart + " trimSamples " + trimSamples +  " srcstart " + srcStart + " len: " + len + " indexPeak " + indexPeak); 
+			
+			System.arraycopy(samples, indexStart, trimSamples, srcStart, len);
 
-			int[] copiedArray = Arrays.copyOfRange(samples, indexstart, indexend);
-
-			AudioData soundTmp = new AudioData(copiedArray, this.getSampleRate());
+			AudioData soundTmp = new AudioData(trimSamples, this.getSampleRate());
+			
 			return soundTmp;
 		}
 

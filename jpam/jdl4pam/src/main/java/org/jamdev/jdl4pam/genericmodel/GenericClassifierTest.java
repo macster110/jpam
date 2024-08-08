@@ -1,6 +1,7 @@
 package org.jamdev.jdl4pam.genericmodel;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -138,10 +139,12 @@ public class GenericClassifierTest {
 
 		//the model path
 //		String modelPath = "C:/Users/Jamie Macaulay/git/PAMGuard/src/test/resources/rawDeepLearningClassifier/Generic/risso_click/best_model/saved_model.pb";
-		String modelPath  = "C:/Users/Jamie Macaulay/git/PAMGuard/src/test/resources/rawDeepLearningClassifier/Generic/risso_click/uniform_model/saved_model.pb";
+		String modelPath  = "/Users/au671271/git/PAMGuard/src/test/resources/rawDeepLearningClassifier/Generic/risso_click/uniform_model/saved_model.pb";
+		//modelPath = Paths.get(modelPath).toAbsolutePath().normalize().toString();;
 
 		//Load a small wav file with click data export from PAMGuard. 
-		String wavFilePath = "C:/Users/Jamie Macaulay/git/PAMGuard/src/test/resources/rawDeepLearningClassifier/Generic/risso_click/clickwavrisso2.wav";
+		String wavFilePath = "/Users/au671271/git/PAMGuard/src/test/resources/rawDeepLearningClassifier/Generic/risso_click/clickwave.wav";
+		//wavFilePath = Paths.get(wavFilePath).toAbsolutePath().normalize().toString();;
 
 		//define some bits and pieces we need for the classifier. 
 		float sr = 500000; 
@@ -155,13 +158,12 @@ public class GenericClassifierTest {
 
 			//waveform transforms. 
 			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.DECIMATE_SCIPY, 250000.)); 
-			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.PEAK_TRIM, 128, 1)); 
 			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.NORMALISE_WAV, 0., 1, AudioData.ZSCORE)); 
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.PEAK_TRIM, 128, 1)); 
 
 			//generic classifier
 			GenericModel genericModel;
 			try {
-				genericModel = new GenericModel(modelPath);
 			
 			
 			//create transforms
@@ -173,9 +175,13 @@ public class GenericClassifierTest {
 			DLTransform transform = transforms.get(0);
 			for (int i = 0; i < transforms.size(); i++) {
 				transform = transforms.get(i).transformData(transform);
+//				System.out.println("Transform len: " + ((WaveTransform) transform).getWaveData().getScaledSampleAmplitudes().length);
 			}
 
 			double[] dataD = ((WaveTransform) transform).getWaveData().getScaledSampleAmplitudes();
+			
+			JamArr.printArray(dataD);
+			
 //			dataD = JamArr.product(dataD, 0.99);
 
 			float[] dataF = new float[dataD.length];
@@ -187,6 +193,11 @@ public class GenericClassifierTest {
 			JamArr.printArray(JamArr.minmax(dataD));
 			
 			float[][] waveStack = new float[][] {dataF};
+			
+			
+			/***Load and run the model***/
+			
+			genericModel = new GenericModel(modelPath);
 
 			float[] output = genericModel.runModel(waveStack);
 
