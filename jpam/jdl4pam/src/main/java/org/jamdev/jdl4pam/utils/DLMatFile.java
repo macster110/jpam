@@ -71,6 +71,22 @@ public class DLMatFile {
 		return matrix;
 	}
 	
+	/**
+	 * Get a Matrix object from a double[][] array. 
+	 * @param specData - the double[][] array to convert. 
+	 * @return the matrix object. 
+	 */
+	public static Matrix array2Matrix(float[][] arrayD) {
+		Matrix matrix = Mat5.newMatrix(arrayD[0].length, arrayD.length);
+		for (int i=0; i<arrayD.length; i++) {
+			for (int j=0; j<arrayD[0].length; j++) {
+				matrix.setDouble(j,i, arrayD[i][j]);
+			}
+		}
+		
+		return matrix;
+	}
+	
 
 	/**
 	 * Get a Matrix object from a double[] array. 
@@ -78,6 +94,20 @@ public class DLMatFile {
 	 * @return the matrix object. 
 	 */
 	public static Matrix array2Matrix(double[] arrayD) {
+		Matrix matrix = Mat5.newMatrix(arrayD.length, 1);
+		for (int i=0; i<arrayD.length; i++) {
+			matrix.setDouble(i,0, arrayD[i]);
+		}
+		
+		return matrix;
+	}
+	
+	/**
+	 * Get a Matrix object from a double[] array. 
+	 * @param specData - the double array to convert. 
+	 * @return the matrix object. 
+	 */
+	public static Matrix array2Matrix(float[] arrayD) {
 		Matrix matrix = Mat5.newMatrix(arrayD.length, 1);
 		for (int i=0; i<arrayD.length; i++) {
 			matrix.setDouble(i,0, arrayD[i]);
