@@ -14,11 +14,6 @@ import org.jamdev.jpamutils.wavFiles.AudioData;
 public class Spectrogram {
 
 	/**
-	 * The wave to calculate a spectrogram for.
-	 */
-	private AudioData wave;
-
-	/**
 	 * The FFT length in samples.
 	 */
 	private int fftLength = 1024;

@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>jdl4pam</artifactId>
-	<version>0.0.99d</version>
+	<version>0.0.99e</version>
 	<packaging>jar</packaging>
 
 	<name>jdl4pam</name>
@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>ai.djl</groupId>
 			<artifactId>api</artifactId>
-			<version>0.26.0</version>
+			<version>0.30.0</version>
 		</dependency>
 
 		<!-- Java FFT library -->
@@ -59,7 +59,7 @@
 		<dependency>
 			<groupId>ai.djl.pytorch</groupId>
 			<artifactId>pytorch-engine</artifactId>
-			<version>0.26.0</version>
+			<version>0.30.0</version>
 <!-- 			<scope>runtime</scope> -->
 		</dependency>
 		
@@ -81,7 +81,7 @@
 		<dependency>
 			<groupId>ai.djl.tensorflow</groupId>
 			<artifactId>tensorflow-engine</artifactId>
-			<version>0.26.0</version>
+			<version>0.30.0</version>
 <!-- 			<scope>runtime</scope> -->
 		</dependency>
 		
@@ -93,12 +93,12 @@
 		    <scope>runtime</scope>
 		</dependency>
 		
-		<!-- https://mvnrepository.com/artifact/ai.djl.tflite/tflite-native-cpu -->
+		<!-- https://mvnrepository.com/artifact/ai.djl.tflite/tflite-native-cpu 
 		<dependency>
 		    <groupId>ai.djl.tflite</groupId>
 		    <artifactId>tflite-native-cpu</artifactId>
 	    <version>2.6.2</version>		
-	    </dependency>
+	    </dependency>-->
 
 		<!-- <dependency> -->
 		<!-- <groupId>ai.djl.tensorflow</groupId> -->
