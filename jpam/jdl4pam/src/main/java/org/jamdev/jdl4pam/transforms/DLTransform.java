@@ -11,17 +11,25 @@ public interface DLTransform {
 	/**
 	 * Type of waveform transform that are available. {@link #PREEMPHSIS}
 	 * {@link #DECIMATE} {@link #TRIM}
-	 * 
+	 * <p>
 	 * Type of frequency transform that are available. {@link #SPECTROGRAM}
 	 * {@link #SPECCROPINTERP} {@link #SPECNORMALISE} {@link #SPECNORMALISEROWSUM}
 	 * {@link #SPEC2DB}
-	 * 
+	 * <p>
+	 * If adding a new transform then there are a few additional classes that should be updated. 
+	 * <ul>
+	 * <li>Add default parameters to @see org.jamdev.jdl4pam.DLTransformsFactory </li>
+	 * <li>Add ability to convert to JSON to @see org.jamdev.jdl4pam.jsonfile.DLTransformsParser </li>
+	 * </ul>
 	 * Note when adding a new transform also add required implementation to transforms.jsonfile.DLTransformParser2;
 	 * 
 	 * @author Jamie Macaulay
 	 *
 	 */
 	public enum DLTransformType {
+		
+		/****Wave Transforms****/
+
 
 		/**
 		 * Basic filter which reduces lower frequencies.
@@ -68,6 +76,38 @@ public interface DLTransform {
 		 * 
 		 */
 		PEAK_TRIM("Peak trim", "peak_trim"),
+		
+		/**
+		 * Normalises the waveform to zero mean and standard deviation of 1.
+		 * 
+		 * <p>
+		 * Three associated parameters - the target mean and std for the nomralization e.g. 0 and 1 are often used. 
+		 * Parameter 3 is an integer which defines which type of normalisation to use. 
+		 * KETOSNORM is the ketos method.
+		 * PGNORM is the PAMGuard method.
+		 * MEANNORM is a standard subtract the mean and divide by absolute value. 
+		 */
+		NORMALISE_WAV("Normalise Waveform", "normalize_wav"), 
+		
+		/**
+		 * Filter a waveform. 
+		 * 
+		 * <p>
+		 * Five associated parameters 
+		 *  <ul>
+			  <li>Filter type (int) - low pass = 0, high pass = 1, band pass = 2  </li>
+			  <li>Filter order(int) - the filter order.	</li>
+			  <li>Filter method (int) - Butterworth = 0, Chebyshev = 1</li>
+			  <li>Low cut frequency - ignored when using low pass</li>
+			  <li>High cut frequency - ignored when using high pass</li>
+			</ul> 
+		 * 
+		 */
+		FILTER("Filter", "filter_wav"), 
+		
+		
+		/****Spectrogram Transforms****/
+
 
 		/**
 		 * Converts a waveform to a spectrogram
@@ -229,34 +269,6 @@ public interface DLTransform {
 		 */
 		FILTER_ISOLATED_SPOTS("Filter Isolated Spots", "filter_isolated_spots"), 
 		
-		
-		/**
-		 * Normalises the waveform to zero mean and standard deviation of 1.
-		 * 
-		 * <p>
-		 * Three associated parameters - the target mean and std for the nomralization e.g. 0 and 1 are often used. 
-		 * Parameter 3 is an integer which defines which type of normalisation to use. 
-		 * KETOSNORM is the ketos method.
-		 * PGNORM is the PAMGuard method.
-		 * MEANNORM is a standard subtract the mean and divide by absolute value. 
-		 */
-		NORMALISE_WAV("Normalise Waveform", "normalize_wav"), 
-		
-		/**
-		 * Filter a waveform. 
-		 * 
-		 * <p>
-		 * Five associated parameters 
-		 *  <ul>
-			  <li>Filter type (int) - low pass = 0, high pass = 1, band pass = 2  </li>
-			  <li>Filter order(int) - the filter order.	</li>
-			  <li>Filter method (int) - Butterworth = 0, Chebyshev = 1</li>
-			  <li>Low cut frequency - ignored when using low pass</li>
-			  <li>High cut frequency - ignored when using high pass</li>
-			</ul> 
-		 * 
-		 */
-		FILTER("Filter", "filter_wav"), 
 
 		/**
 		 * Resize the spectrgram so that the frequency and time axis are a certian
@@ -295,9 +307,38 @@ public interface DLTransform {
 		 * result in the original image.</li>
 		 * </ul>
 		 */
-		CLAHE("CLAHE Spectrogram", "clahe");
-
+		CLAHE("CLAHE Spectrogram", "clahe"),
 		
+		/****Spectrum Transforms****/
+		
+		/**
+		 * Fast Fourier transform of a waveform. 
+		 * 
+		 * One associated parameter.
+		 * <ul>
+		 * <li>The FFT length in samples</li>
+		 * </ul>
+		 */
+		FFT("FFT", "fft"),
+		
+		/**
+		 * Down sample the spectrum by taking the mean of a N points. 
+		 * 
+		 * One associated parameter.
+		 * <ul>
+		 * <li>Integer down sample rate e.g. 3 indicates that every three points are averaged</li>
+		 * </ul>
+		 */
+		SPECTRUM_DOWNSAMPLE_MEAN("Downsample Spectrum", "spectrum_downsample_mean"),
+
+
+		/**
+		 * Normalise a spectrum by dividing by the sum
+		 * 
+		 * No associated parameters. 
+		 */
+		SPECTRUM_NORMALISE_SUM("Normalise Spectrum", "spectrum_normalise_sum");
+
 		
 		/**
 		 * Then name of the transform.

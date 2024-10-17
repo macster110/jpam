@@ -271,6 +271,15 @@ public class DLTransformsParser {
 			paramsObject.put("time_bins", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
 			paramsObject.put("freq_bins", ((SimpleTransformParams) dlTransfromParams).params[1].intValue());
 			break;
+		case FFT:
+			paramsObject.put("fftlength", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
+			break;
+		case SPECTRUM_DOWNSAMPLE_MEAN:
+			paramsObject.put("factor", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
+			break;
+		case SPECTRUM_NORMALISE_SUM:
+			//nothing to add here - no params. 
+			break;
 		default:
 			break;
 		}
@@ -461,6 +470,20 @@ public class DLTransformsParser {
 			break;
 		case SPECFLIP:
 			dlTransformParams = new SimpleTransformParams(dlTransformType); 
+		case FFT:
+			number = new Number[1]; 
+			number[0] = jsonObjectParams.getInt("fftlength"); 
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
+			break;
+		case SPECTRUM_DOWNSAMPLE_MEAN:
+			number = new Number[1]; 
+			number[0] = jsonObjectParams.getInt("factor"); 
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
+			break;
+		case SPECTRUM_NORMALISE_SUM:
+			dlTransformParams = new SimpleTransformParams(dlTransformType); 
+
+			break;
 		default:
 			dlTransformParams = new SimpleTransformParams(dlTransformType); 
 			break;

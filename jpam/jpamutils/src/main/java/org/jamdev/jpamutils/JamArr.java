@@ -1157,7 +1157,7 @@ public class JamArr {
 	 * @param b - the number that is divided
 	 * @return an array were b is divided by all elements in the array. 
 	 */
-	private static double[] divide(double b, double[] array) {
+	public static double[] divide(double b, double[] array) {
 		double[] arrayD = new double[array.length]; 
 		for (int j=0;j<array.length;j++) {
 			arrayD[j]=b/array[j]; 

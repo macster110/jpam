@@ -17,7 +17,7 @@ public class DLTransformsFactory {
 	/**
 	 * Generate a default DLTransfrom object from a DLtransforms type. The transforms will have default parameters. 
 	 * @param dlTransformType - the transform type
-	 * @param sR- tghe sample rate in samples per seconds.
+	 * @param sR- THE sample rate in samples per seconds.
 	 */
 	public static DLTransform makeDLTransform(DLTransformType dlTransformType, float sR) {
 
@@ -91,6 +91,15 @@ public class DLTransformsFactory {
 		case SPECFLIP:
 			dlTransform = new FreqTransform(dlTransformType, null); 
 			break;
+		case FFT:
+			dlTransform = new SpectrumTransform(dlTransformType, new Number[] {2048}); 
+			break;
+		case SPECTRUM_NORMALISE_SUM:
+			dlTransform = new SpectrumTransform(dlTransformType, null); 
+			break;
+		case SPECTRUM_DOWNSAMPLE_MEAN:
+			dlTransform = new SpectrumTransform(dlTransformType, new Number[] {2}); 
+			break;
 		default:
 			break;
 
@@ -100,9 +109,9 @@ public class DLTransformsFactory {
 
 
 	/**
-	 * Generate a DLTransfrom object from DL transfrom parameters. 
-	 * @param dlTransfromParams
-	 * @return
+	 * Generate a DLTransfrom object from DL transform from parameters. 
+	 * @param dlTransfromParams - paramters object. 
+	 * @return DL transform. 
 	 */
 	public static DLTransform makeDLTransform(DLTransfromParams dlTransfromParams) {
 
@@ -117,6 +126,11 @@ public class DLTransformsFactory {
 		case NORMALISE_WAV:
 		case PEAK_TRIM:
 			dlTransform = new WaveTransform(dlTransfromParams.dltransfromType, ((SimpleTransformParams) dlTransfromParams).params); 
+			break;
+		case FFT:
+		case SPECTRUM_NORMALISE_SUM:
+		case SPECTRUM_DOWNSAMPLE_MEAN:
+			dlTransform = new SpectrumTransform(dlTransfromParams.dltransfromType, ((SimpleTransformParams) dlTransfromParams).params); 
 			break;
 		default:
 			dlTransform = new FreqTransform(dlTransfromParams.dltransfromType, ((SimpleTransformParams) dlTransfromParams).params); 
