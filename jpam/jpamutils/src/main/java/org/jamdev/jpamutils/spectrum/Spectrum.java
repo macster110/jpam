@@ -12,29 +12,22 @@ import org.jamdev.jpamutils.wavFiles.AudioData;
  * @author Jamie Macaulay
  */
 public class Spectrum {
+
+	/**
+	 * The minimum frequency of the spectrum in Hz. 
+	 * <p>
+	 * Having a min. and max. frequency his is more robust then having the FFT length and sample rates
+	 * as transforms may trim the spectrum.
+	 */
+	private float minFreq;
 	
-	public int getFftLength() {
-		return fftLength;
-	}
-
-
-	public void setFftLength(int fftLength) {
-		this.fftLength = fftLength;
-	}
-
-
-	public float getsR() {
-		return sR;
-	}
-
-
-	public void setsR(float sR) {
-		this.sR = sR;
-	}
-
-	private int fftLength;
-	
-	private float sR;
+	/**
+	 * The maximum frequency of the spectrum in Hz. 
+	 * <p>
+	 * Having a min. and max. frequency his is more robust then having the FFT length and sample rates
+	 * as transforms may trim the spectrum.
+	 */
+	private float maxFreq;
 	
 	/**
 	 * The spectrum with c
@@ -44,8 +37,8 @@ public class Spectrum {
 	private ComplexArray complexSpectrogram;
 
 	public Spectrum(AudioData wave, int fftLength) {
-		this.sR = wave.getSampleRate();
-		this.fftLength = fftLength;
+		this.minFreq = 0;
+		this.maxFreq = wave.getSampleRate()/2;
 		this.buildFFT(wave, fftLength);
 	}
 	
@@ -56,8 +49,8 @@ public class Spectrum {
 	 * @param sR - the sampler rate in samples per second
 	 */
 	public Spectrum(double [] spectrum, double[] phase, float sR) {
-		this.sR = sR;
-		this.fftLength = spectrum.length;
+		this.minFreq = 0;
+		this.maxFreq = sR/2;
 		if (phase==null) {
 			//phase is zero. 
 			phase= new double[spectrum.length]; 
@@ -134,6 +127,38 @@ public class Spectrum {
 		}
 		
 		return downSample; 
+	}
+	
+	/**
+	 * Get the minimum frequency of the spectrum in Hz
+	 * @return the minimum frequency of the spectrum in Hz. 
+	 */
+	public float getMinFreq() {
+		return minFreq;
+	}
+
+	/**
+	 * Set the minimum frequency of the spectrum in Hz
+	 * @param the minimum frequency of the spectrum in Hz. 
+	 */
+	public void setMinFreq(float minFreq) {
+		this.minFreq = minFreq;
+	}
+
+	/**
+	 * Get the maximum frequency of the spectrum in Hz
+	 * @return the maximum frequency of the spectrum in Hz. 
+	 */
+	public float getMaxFreq() {
+		return maxFreq;
+	}
+
+	/**
+	 * Set the maximum frequency of the spectrum in Hz
+	 * @param the maximum frequency of the spectrum in Hz. 
+	 */
+	public void setMaxFreq(float maxFreq) {
+		this.maxFreq = maxFreq;
 	}
 	
 	
