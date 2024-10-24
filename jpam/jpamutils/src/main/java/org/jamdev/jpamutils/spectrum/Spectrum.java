@@ -28,13 +28,8 @@ public class Spectrum {
 	 * as transforms may trim the spectrum.
 	 */
 	private float maxFreq;
-	
-	/**
-	 * The spectrum with c
-	 */
-	private ComplexArray spectrum;
-	
-	private ComplexArray complexSpectrogram;
+		
+	private ComplexArray complexSpectrum;
 
 	public Spectrum(AudioData wave, int fftLength) {
 		this.minFreq = 0;
@@ -55,7 +50,7 @@ public class Spectrum {
 			//phase is zero. 
 			phase= new double[spectrum.length]; 
 		}
-		complexSpectrogram = new ComplexArray(spectrum, phase);
+		complexSpectrum = new ComplexArray(spectrum, phase);
 	}
 
 	/**
@@ -64,7 +59,7 @@ public class Spectrum {
 	 */
 	private void buildFFT(AudioData wave, int fftLength ) {
 		FastFFT fastFFT = new FastFFT();
-		complexSpectrogram = fastFFT.rfftFull(wave.getScaledSampleAmplitudes(),fftLength);
+		complexSpectrum = fastFFT.rfftFull(wave.getScaledSampleAmplitudes(),fftLength);
 	}
 
 
@@ -72,9 +67,9 @@ public class Spectrum {
 	 * Normalise the spectrum by dividing by it's sum. 
 	 */
 	public Spectrum normaliseSpectrumSum() {
-		double[] norm = normaliseSpectrumSum(complexSpectrogram.getReal()); 		
-		for (int i=0; i<complexSpectrogram.length(); i++) {
-			complexSpectrogram.setReal(i, norm[i]);
+		double[] norm = normaliseSpectrumSum(complexSpectrum.getReal()); 		
+		for (int i=0; i<complexSpectrum.length(); i++) {
+			complexSpectrum.setReal(i, norm[i]);
 		}
 		return this;
 	}
@@ -84,9 +79,9 @@ public class Spectrum {
 	 * @param factor - down sample factor e.g. 3 indicates a spectrum one third of the size. 
 	 */
 	public Spectrum downSampleSpectrumMean(int factor) {
-		double[] downspec = downSampleSpectrumMean(complexSpectrogram.getReal(), factor); 
+		double[] downspec = downSampleSpectrumMean(complexSpectrum.getReal(), factor); 
 		//lost the phase info. 
-		complexSpectrogram = new ComplexArray(downspec, new double[downspec.length]);
+		complexSpectrum = new ComplexArray(downspec, new double[downspec.length]);
 		return this;
 	}
 	
@@ -161,6 +156,30 @@ public class Spectrum {
 		this.maxFreq = maxFreq;
 	}
 	
+	/**
+	 * Get the spectrum. This includes amplitude (real) and phase (imaginary) info.
+	 * @return the spectrum
+	 */
+	public ComplexArray getSpectrum() {
+		return complexSpectrum;
+	}
+
+	/**
+	 * Set the spectrum. This should include the amplitude (real) and phase (imaginary) info packaged into a Complex Array object.
+	 * @param the spectrum.
+	 */
+	public void setSpectrum(ComplexArray complexSpectrogram) {
+		this.complexSpectrum = complexSpectrogram;
+	}
+
+
+	/**
+	 * Get the real part of the spectrum i.e. the frequency versus amplitude
+	 * @return - the amplitude for each frequency bin.
+	 */
+	public double[] getRealSpectrum() {
+		return complexSpectrum.getReal();
+	}
 	
 
 }

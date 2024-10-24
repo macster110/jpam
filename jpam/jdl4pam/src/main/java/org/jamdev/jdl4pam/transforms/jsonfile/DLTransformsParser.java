@@ -470,6 +470,7 @@ public class DLTransformsParser {
 			break;
 		case SPECFLIP:
 			dlTransformParams = new SimpleTransformParams(dlTransformType); 
+			break;
 		case FFT:
 			number = new Number[1]; 
 			number[0] = jsonObjectParams.getInt("fftlength"); 
@@ -482,7 +483,6 @@ public class DLTransformsParser {
 			break;
 		case SPECTRUM_NORMALISE_SUM:
 			dlTransformParams = new SimpleTransformParams(dlTransformType); 
-
 			break;
 		default:
 			dlTransformParams = new SimpleTransformParams(dlTransformType); 

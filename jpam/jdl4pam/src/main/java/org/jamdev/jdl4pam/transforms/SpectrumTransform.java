@@ -46,17 +46,17 @@ public class SpectrumTransform extends SimpleTransform {
 	@Override
 	public DLTransform transformData(DLTransform transform) {
 
-		switch (transform.getDLTransformType()) {
+		switch (flag) {
 		case FFT:			
 			//make a spectrogram 
 			Spectrum spectrum = new Spectrum(((WaveTransform) transform).getWaveData(), (int) params[0]); 
 			this.spectrum = spectrum;
 			break;
 		case SPECTRUM_NORMALISE_SUM:
-			spectrum = this.spectrum.normaliseSpectrumSum();
+			this.spectrum = ((SpectrumTransform) transform).getSpectrum().normaliseSpectrumSum();
 			break;
 		case SPECTRUM_DOWNSAMPLE_MEAN:
-			spectrum = this.spectrum.downSampleSpectrumMean((int) params[0]); 
+			this.spectrum = ((SpectrumTransform) transform).getSpectrum().downSampleSpectrumMean((int) params[0]); 
 			break;
 		default:
 			break;
