@@ -337,7 +337,39 @@ public interface DLTransform {
 		 * 
 		 * No associated parameters. 
 		 */
-		SPECTRUM_NORMALISE_SUM("Normalise Spectrum", "spectrum_normalise_sum");
+		SPECTRUM_NORMALISE_SUM("Normalise Spectrum", "spectrum_normalise_sum"),
+		
+
+		/**
+		 * Trim a spectrum by frequency limits
+		 * 
+		 *
+		 * Two associated parameters.
+		 * <ul>
+		 * <li>Double - lower frequency in Hz</li>
+		 * <li>Double - upper frequency in Hz</li>
+		 * </ul>
+		 */
+		SPECTRUM_TRIM_FREQ("Trim Spectrum", "spectrum_trim_freq"),
+		
+
+		/**
+		 * Convert a spectrum to decibels
+		 *
+		 */
+		SPECTRUM_dB("Spectrum dB", "spectrum_dB"),
+		
+		/**
+		 * Smooth a spectrum using a rolling average
+		 * 
+		 *
+		 * One associated parameters.
+		 * <ul>
+		 * <li>Integer - the window size to smooth over.</li>
+		 * TODO - add type param for different window based smoothing
+		 * </ul>
+		 */
+		SPECTRUM_SMOOTH("Smooth Spectrum", "spectrum_smooth");
 
 		
 		/**

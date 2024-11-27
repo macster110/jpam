@@ -54,6 +54,14 @@ public class Spectrum {
 		}
 		complexSpectrum = new ComplexArray(spectrum, phase);
 	}
+	
+	/**
+	 * Get the length of the spectrum in bins. 
+	 * @return the lengthmin bins. 
+	 */
+	public int length() {
+		return complexSpectrum.getReal().length;
+	}
 
 	/**
 	 * Create the FFT from audio data. 
@@ -87,6 +95,9 @@ public class Spectrum {
 		double[] trimmedPhase = trim(complexSpectrum.getImag(), new double[] {minFreq, maxFreq}, newFreqLims); 
 		
 		complexSpectrum = new ComplexArray(trimmed, trimmedPhase);
+		
+		this.minFreq = (float) newFreqLims[0];
+		this.maxFreq = (float) newFreqLims[1];
 
 		return this;
 	}
@@ -102,6 +113,37 @@ public class Spectrum {
 		return this;
 	}
 	
+	
+	/**
+	 * Smooth the spectrum by a moving average filter. 
+	 * @param - the window size of the moving average. 
+	 */
+	public Spectrum smoothSpectrum(int windowSizw) {
+		double[] smoth = smooth(complexSpectrum.getReal(), windowSizw); 		
+		for (int i=0; i<complexSpectrum.length(); i++) {
+			complexSpectrum.setReal(i, smoth[i]);
+		}
+		return this;
+	}
+	
+	
+	/**
+	 * Convert the spectrum to dB. 
+	 * @param - subtractMin - true to minus the min dB so the min. dB start at 0. 
+	 */
+	public Spectrum spectrumdB(boolean subtractMin) {
+		double[] spectrumdB = spectrumdB(complexSpectrum.getReal()); 		
+		
+		if (subtractMin) {
+			spectrumdB = JamArr.subtract(spectrumdB, JamArr.min(spectrumdB)); 
+		}
+		
+		complexSpectrum = new ComplexArray(spectrumdB, complexSpectrum.getImag());
+
+
+		return this;
+	}
+	
 	/**
 	 * Normalise the spectrum by dividing by it's sum. 
 	 * @param spectrum - the spectrum to normalise. 
@@ -111,6 +153,28 @@ public class Spectrum {
 		double[] normSpectrum = JamArr.divide(spectrum, JamArr.sum(spectrum));
 		return normSpectrum;
 	}
+	
+	
+	/**
+	 * Smooth using a moving average filter. 
+	 * @param spectrum - the spectrum to smooh
+	 * @param windowSize - the window size. 
+	 * @return the smoothed spectrum
+	 */
+	public static double[] smooth(double[] spectrum, int windowSize) {
+
+		MovingAverageByCircularBuffer movingAv = new MovingAverageByCircularBuffer(windowSize); 
+		
+		double[] spectrumSmooth = new double[spectrum.length];
+		
+		for (int i=0; i<spectrum.length; i++) {
+			movingAv.add(i);
+			spectrumSmooth[i] = movingAv.getMovingAverage();
+		}
+		
+		return spectrumSmooth;
+	}
+	
 	
 	/**
 	 * Trim a spectrum between an upper and lower frequency
@@ -127,20 +191,21 @@ public class Spectrum {
 		double freqRange =freqLims[1] - freqLims[0];
 
 		//find the index to trim between. 
-		int indexlow = (int) ((newFreqLims[0]-freqLims[0])/freqRange); 
-		int indexhigh = (int) ((newFreqLims[1]-freqLims[0])/freqRange); 
+		int indexlow = (int) (((newFreqLims[0]-freqLims[0])/freqRange)*spectrum.length); 
+		int indexhigh = (int) (((newFreqLims[1]-freqLims[0])/freqRange)*spectrum.length); 
 
-		if (indexlow > 0 && indexhigh < spectrum.length) {
+		if (indexlow >= 0 && indexhigh < spectrum.length && indexhigh!=indexlow) {
 
 			double[] trimmedSpectrum = Arrays.copyOfRange(spectrum, indexlow, indexhigh);
 
 			return trimmedSpectrum; 
 		}
 		else {
-			System.out.println("Spectrum: trim: Invalid position.");
+			System.out.println("Spectrum: trim: Invalid position: indexlow: " + indexhigh + " indexhigh: " + indexhigh);
 			return null;
 		}
 	}
+	
 	
 	
 	/**
@@ -169,6 +234,24 @@ public class Spectrum {
 		}
 		
 		return downSample; 
+	}
+	
+	
+	/**
+	 * Convert a spectrum to decibels
+	 * @param spectrum - the spectrum to convert
+	 * @return the new spectrum in decibels. 
+	 */
+	public static double[] spectrumdB(double[] spectrum) {
+		
+		
+		double[] spectrumdB = new double[spectrum.length]; 
+		
+		for (int i=0; i<spectrum.length; i++) {
+			spectrumdB[i] = 20*Math.log10(spectrum[i]);
+		}
+		
+		return spectrumdB; 
 	}
 	
 	/**
@@ -228,5 +311,43 @@ public class Spectrum {
 		return complexSpectrum.getReal();
 	}
 	
+	
+	public static class MovingAverageByCircularBuffer {
+
+	    private final double[] buffer;
+	    private int head;
+	    private int count;
+
+	    public MovingAverageByCircularBuffer(int windowSize) {
+	        this.buffer = new double[windowSize];
+	    }
+
+	    public void add(double value) {
+	        buffer[head] = value;
+	        head = (head + 1) % buffer.length;
+	        if (count < buffer.length) {
+	            count++;
+	        }
+	    }
+
+	    public double getMovingAverage() {
+	        if (count == 0) {
+	            return Double.NaN;
+	        }
+	        double sum = 0;
+	        for (int i = 0; i < count; i++) {
+	            sum += buffer[i];
+	        }
+	        return sum / count;
+	    }
+	}
+	
+	public static void main(String[] args) {
+		double[] freqLimits = new double[] {10000., 40000.};
+
+		 double[] result =  trim(new double[512], new double[] {0., 48000.}, new double[] {10000., 40000.}); 
+		 
+		 System.out.println("Trimmed array: " + result); 
+	}
 
 }
