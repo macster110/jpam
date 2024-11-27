@@ -1,5 +1,7 @@
 package org.jamdev.jpamutils.spectrum;
 
+import java.util.Arrays;
+
 import org.jamdev.jpamutils.JamArr;
 import org.jamdev.jpamutils.spectrogram.ComplexArray;
 import org.jamdev.jpamutils.spectrogram.FastFFT;
@@ -75,6 +77,21 @@ public class Spectrum {
 	}
 	
 	/**
+	 * Trim a spectrum between an upper and lower frequency
+
+	 * @param newFreqLims - the new frequency limits in Hz. 
+	 * @return the trimmed spectrum. 
+	 */
+	public Spectrum trimSpectrum(double[] newFreqLims) {
+		double[] trimmed = trim(complexSpectrum.getReal(), new double[] {minFreq, maxFreq}, newFreqLims); 
+		double[] trimmedPhase = trim(complexSpectrum.getImag(), new double[] {minFreq, maxFreq}, newFreqLims); 
+		
+		complexSpectrum = new ComplexArray(trimmed, trimmedPhase);
+
+		return this;
+	}
+	
+	/**
 	 * Down sample a spectrum array. This is NOT decimating. 
 	 * @param factor - down sample factor e.g. 3 indicates a spectrum one third of the size. 
 	 */
@@ -93,6 +110,36 @@ public class Spectrum {
 	public static double[] normaliseSpectrumSum(double[] spectrum) {
 		double[] normSpectrum = JamArr.divide(spectrum, JamArr.sum(spectrum));
 		return normSpectrum;
+	}
+	
+	/**
+	 * Trim a spectrum between an upper and lower frequency
+	 * 
+	 * @param spectrum    - the spectrum to trim.
+	 * @param freqLims    - the current frequency limits of the spectrum in Hz with
+	 *                    the first element the lower frequency and the second
+	 *                    element the upper frequency.
+	 * @param newFreqLims - the new frequency limits
+	 * @return the trimmed spectrum.
+	 */
+	public static double[] trim(double[] spectrum, double[] freqLims, double[] newFreqLims) {
+
+		double freqRange =freqLims[1] - freqLims[0];
+
+		//find the index to trim between. 
+		int indexlow = (int) ((newFreqLims[0]-freqLims[0])/freqRange); 
+		int indexhigh = (int) ((newFreqLims[1]-freqLims[0])/freqRange); 
+
+		if (indexlow > 0 && indexhigh < spectrum.length) {
+
+			double[] trimmedSpectrum = Arrays.copyOfRange(spectrum, indexlow, indexhigh);
+
+			return trimmedSpectrum; 
+		}
+		else {
+			System.out.println("Spectrum: trim: Invalid position.");
+			return null;
+		}
 	}
 	
 	
