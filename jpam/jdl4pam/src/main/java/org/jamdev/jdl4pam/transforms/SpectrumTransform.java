@@ -58,6 +58,19 @@ public class SpectrumTransform extends SimpleTransform {
 		case SPECTRUM_DOWNSAMPLE_MEAN:
 			this.spectrum = ((SpectrumTransform) transform).getSpectrum().downSampleSpectrumMean((int) params[0]); 
 			break;
+		case SPECTRUM_SMOOTH:
+			this.spectrum = ((SpectrumTransform) transform).getSpectrum().smoothSpectrum((int) params[0]);
+			break;
+		case SPECTRUM_dB:
+			boolean subtractMin = true;
+			if (params!=null && params[0]!=null) {
+				subtractMin = params[0].intValue()==0 ? false : true;
+			}
+			this.spectrum = ((SpectrumTransform) transform).getSpectrum().spectrumdB(subtractMin); 
+			break;
+		case SPECTRUM_TRIM_FREQ:
+			this.spectrum = ((SpectrumTransform) transform).getSpectrum().trimSpectrum(new double[] {(double) params[0], (double) params[1]});
+			break;
 		default:
 			break;
 		}

@@ -280,6 +280,16 @@ public class DLTransformsParser {
 		case SPECTRUM_NORMALISE_SUM:
 			//nothing to add here - no params. 
 			break;
+		case SPECTRUM_TRIM_FREQ:
+			paramsObject.put("fmin", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue()); 
+			paramsObject.put("fmax", ((SimpleTransformParams) dlTransfromParams).params[1].doubleValue());
+			break;
+		case SPECTRUM_dB:
+			paramsObject.put("subtract_min", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
+			break;
+		case SPECTRUM_SMOOTH:
+			paramsObject.put("window", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
+			break;
 		default:
 			break;
 		}
@@ -483,6 +493,27 @@ public class DLTransformsParser {
 			break;
 		case SPECTRUM_NORMALISE_SUM:
 			dlTransformParams = new SimpleTransformParams(dlTransformType); 
+			break;
+		case SPECTRUM_TRIM_FREQ:
+			number = new Number[2]; 
+			number[0] = jsonObjectParams.getDouble("fmin"); 
+			number[1] = jsonObjectParams.getDouble("fmax"); 
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
+			break;
+		case SPECTRUM_dB:
+			number = new Number[1]; 
+			if (jsonObjectParams.has("subtract_min")){
+				number[0] = jsonObjectParams.getDouble("subtract_min"); 
+			}
+			else {
+				number[0] = 1; //default is true for subtracting min
+			}
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
+			break;
+		case SPECTRUM_SMOOTH:
+			number = new Number[1]; 
+			number[0] = jsonObjectParams.getInt("window"); 
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
 			break;
 		default:
 			dlTransformParams = new SimpleTransformParams(dlTransformType); 

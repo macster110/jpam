@@ -5,6 +5,9 @@ import java.io.File;
 import org.jamdev.jdl4pam.genericmodel.GenericModelParams;
 import org.json.JSONObject;
 
+/**
+ * Test to see that a file can be read!
+ */
 public class DLTransformImportTest {
 
 	public static void main(String[] args) {

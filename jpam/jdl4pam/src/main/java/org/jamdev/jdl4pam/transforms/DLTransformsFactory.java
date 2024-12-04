@@ -24,6 +24,8 @@ public class DLTransformsFactory {
 		DLTransform dlTransform = null; 
 
 		switch (dlTransformType) {
+			//-----Wave Transforms----
+
 		case DECIMATE:
 			dlTransform = new WaveTransform(dlTransformType, new Number[] {sR}); 
 			break;
@@ -43,6 +45,9 @@ public class DLTransformsFactory {
 			FilterParams filtParams = new FilterParams(); //default params
 			dlTransform = new WaveTransform(dlTransformType, WaveTransform.filterParams2transform(filtParams)); 
 			break;
+			
+			//-----Spectrogram Transforms----
+
 		case SPEC2DB:
 			dlTransform = new FreqTransform(dlTransformType, null); 
 			break;
@@ -91,6 +96,8 @@ public class DLTransformsFactory {
 		case SPECFLIP:
 			dlTransform = new FreqTransform(dlTransformType, null); 
 			break;
+			
+			//-----Spectrum Transforms----
 		case FFT:
 			dlTransform = new SpectrumTransform(dlTransformType, new Number[] {2048}); 
 			break;
@@ -100,6 +107,16 @@ public class DLTransformsFactory {
 		case SPECTRUM_DOWNSAMPLE_MEAN:
 			dlTransform = new SpectrumTransform(dlTransformType, new Number[] {2}); 
 			break;
+		case SPECTRUM_TRIM_FREQ:
+			dlTransform = new SpectrumTransform(dlTransformType, new Number[] {0., sR/2}); 
+			break;
+		case SPECTRUM_dB:
+			dlTransform = new SpectrumTransform(dlTransformType, new Number[] {1}); 
+			break;
+		case SPECTRUM_SMOOTH:
+			dlTransform = new SpectrumTransform(dlTransformType, new Number[] {3}); 
+			break;
+			
 		default:
 			break;
 
@@ -130,6 +147,9 @@ public class DLTransformsFactory {
 		case FFT:
 		case SPECTRUM_NORMALISE_SUM:
 		case SPECTRUM_DOWNSAMPLE_MEAN:
+		case SPECTRUM_TRIM_FREQ:
+		case SPECTRUM_dB:
+		case SPECTRUM_SMOOTH:
 			dlTransform = new SpectrumTransform(dlTransfromParams.dltransfromType, ((SimpleTransformParams) dlTransfromParams).params); 
 			break;
 		default:

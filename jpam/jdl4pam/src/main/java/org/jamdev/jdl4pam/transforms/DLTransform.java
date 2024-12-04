@@ -363,13 +363,16 @@ public interface DLTransform {
 		 * Smooth a spectrum using a rolling average
 		 * 
 		 *
-		 * One associated parameters.
+		 * One associated parameter.
 		 * <ul>
 		 * <li>Integer - the window size to smooth over.</li>
-		 * TODO - add type param for different window based smoothing
+		 * TODO - add type param for different window based smoothing?
 		 * </ul>
 		 */
 		SPECTRUM_SMOOTH("Smooth Spectrum", "spectrum_smooth");
+		
+
+
 
 		
 		/**
