@@ -168,7 +168,7 @@ public class Spectrum {
 		double[] spectrumSmooth = new double[spectrum.length];
 		
 		for (int i=0; i<spectrum.length; i++) {
-			movingAv.add(i);
+			movingAv.add(spectrum[i]);
 			spectrumSmooth[i] = movingAv.getMovingAverage();
 		}
 		
@@ -210,24 +210,33 @@ public class Spectrum {
 	
 	/**
 	 * Down sample a spectrum array. This is NOT decimating. 
+	 * 
 	 * @param spectrum - down sample a spectrum arra by a factor of 2 
 	 * @return the down sampled array. 
 	 */
 	public static double[] downSampleSpectrumMean(double[] spectrum, int factor) {
 		
-		int newlen = (int) Math.floor(((double) spectrum.length)/factor); 
+		int newlen = (int) Math.ceil(((double) spectrum.length)/factor); 
 		
 		double[] downSample = new double[newlen]; 
 		
 		int n=0; 
 		double mean =0; 
+		int divisor = factor;
 		for (int i=0; i<spectrum.length; i+=factor) {
 			
 			mean=0;
+			divisor=0;
 			for (int j=0; j<factor; j++) {
+				if ((i+j) >=spectrum.length ) {
+					//just take the mean of the remaining elements at the end
+					continue;
+				}
 				mean += spectrum[i+j]; 
+				divisor++;
 			}
-			mean =mean/factor; 
+			
+			mean =mean/divisor; 
 			
 			downSample[n]=mean;
 			n++; 
@@ -347,7 +356,12 @@ public class Spectrum {
 
 		 double[] result =  trim(new double[512], new double[] {0., 48000.}, new double[] {10000., 40000.}); 
 		 
-		 System.out.println("Trimmed array: " + result); 
+		 System.out.println("Trimmed array: " + result.length + "  " + result[0]); 
+		 
+		 result = downSampleSpectrumMean(result, 2); 
+		 
+		 System.out.println("Down sampled array: " + result.length + " " + + result[0]); 
+
 	}
 
 }
