@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>jdl4pam</artifactId>
-	<version>0.0.99e</version>
+	<version>0.0.99f</version>
 	<packaging>jar</packaging>
 
 	<name>jdl4pam</name>

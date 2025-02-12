@@ -523,7 +523,7 @@ public class JamArr {
 
 	/**
 	 * Transpose a double[][] matrix
-	 * @param m - the matrix transdpose
+	 * @param m - the matrix transpose
 	 * @return the transposed matrix
 	 */
 	public static double[][] transposeMatrix(double [][] m){
@@ -533,6 +533,21 @@ public class JamArr {
 				temp[j][i] = m[i][j];
 		return temp;
 	}
+	
+	
+	/**
+	 * Transpose a float[][] matrix
+	 * @param m - the matrix transpose
+	 * @return the transposed matrix
+	 */
+	public static float[][] transposeMatrix(float [][] m){
+		float[][] temp = new float[m[0].length][m.length];
+		for (int i = 0; i < m.length; i++)
+			for (int j = 0; j < m[i].length; j++)
+				temp[j][i] = m[i][j];
+		return temp;
+	}
+
 
 
 	/**
@@ -1727,6 +1742,22 @@ public class JamArr {
 		return outInt;
 	}
 	
+	
+	/**
+	 * Convert a float array to a double array. 
+	 * @param arrd - the double array
+	 * @return a double array containing the same numbers as arrf. 
+	 */
+	public static float[] doubleToFloat(double[] arrd) {
+		float[] arr = new float[arrd.length]; 
+		for (int i=0; i<arr.length; i++) {
+			arr[i] = (float) arrd[i]; 
+		}
+		return arr;
+	}
+	
+	
+
 
 	
 

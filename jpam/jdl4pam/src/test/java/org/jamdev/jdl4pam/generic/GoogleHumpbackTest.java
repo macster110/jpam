@@ -1,6 +1,7 @@
 package org.jamdev.jdl4pam.generic;
 
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,7 +15,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import org.jamdev.jdl4pam.genericmodel.HumpbackGoogle;
 import org.jamdev.jdl4pam.utils.DLUtils;
 import org.jamdev.jpamutils.wavFiles.AudioData;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import ai.djl.Model;
 

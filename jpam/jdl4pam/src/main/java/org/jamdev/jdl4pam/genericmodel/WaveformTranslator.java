@@ -82,7 +82,7 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 			shapeL[i] =1L;
 		}
 
-		//		System.out.println("Shape: " + shapes.get(shapeAudioIndex).getValue() + " " + shapeL.length);
+		//System.out.println("Shape: " + shapes.get(shapeAudioIndex).getValue() + " " + shapeL.length);
 
 		//two scenarios here with shape - either a model has some shape like (-1, 512) which specifies
 		//a stack of waves or a model has a shape of (-1) or say (512) specifying the input is a 1D array. 
@@ -103,12 +103,11 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 
 
 		//		NDArray array = manager.create(data); 
-		//		System.out.println("NDArray size: " + array.size()); 
+		//System.out.println("NDArray size: " + array.size() + " " + data[0][0]); 
 
 		ArrayList<NDArray> arrays = new ArrayList<NDArray>();
 
-		//		System.out.println("Shape size: " + shapes.size());
-
+		//System.out.println("Shape size: " + shapes.size());
 
 		//		//this is a little bit of a weird one 
 		//		if (shapes.size()>1) {

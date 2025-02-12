@@ -8,6 +8,7 @@ import org.apache.commons.io.FilenameUtils;
 import ai.djl.MalformedModelException;
 import ai.djl.Model;
 import ai.djl.engine.Engine;
+import ai.djl.engine.EngineException;
 import ai.djl.inference.Predictor;
 import ai.djl.ndarray.types.Shape;
 import ai.djl.translate.TranslateException;
@@ -65,7 +66,7 @@ public class GenericModel {
 	 * @throws MalformedModelException 
 	 * @throws IOException
 	 */
-	public GenericModel(String modelPath) throws MalformedModelException, IOException {
+	public GenericModel(String modelPath) throws MalformedModelException, IOException, EngineException {
 		this(modelPath, null);
 	}
 
@@ -78,7 +79,7 @@ public class GenericModel {
 	 * @throws MalformedModelException
 	 * @throws IOException
 	 */
-	public GenericModel(String modelPath, Integer inputShapeIndex) throws MalformedModelException, IOException{
+	public GenericModel(String modelPath, Integer inputShapeIndex) throws MalformedModelException, IOException, EngineException {
 
 		/**
 		 * Load the model. 
@@ -127,7 +128,7 @@ public class GenericModel {
 	 * @throws MalformedModelException
 	 * @throws IOException
 	 */
-	public Model loadModel(String modelPath) throws MalformedModelException, IOException {
+	public Model loadModel(String modelPath) throws MalformedModelException, IOException, EngineException {
 		File file = new File(modelPath); 
 
 		//String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JAMIE.pk"; 
