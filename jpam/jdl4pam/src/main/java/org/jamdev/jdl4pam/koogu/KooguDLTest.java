@@ -14,6 +14,7 @@ import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
 import org.jamdev.jdl4pam.transforms.WaveTransform;
 import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 import org.jamdev.jdl4pam.utils.DLUtils;
+import org.jamdev.jpamutils.JamArr;
 import org.jamdev.jpamutils.wavFiles.AudioData;
 
 import ai.djl.Model;
@@ -45,6 +46,8 @@ public class KooguDLTest {
 
 		long totaltime1 = System.currentTimeMillis();
 
+//		System.out.println("Data input size pre transform: " + soundData.samples.length + " max sample: " + JamArr.max(soundData.samples));
+
 		//run the tansforms. 
 		DLTransform transform = transforms.get(0); 
 		for (int i=0; i<transforms.size(); i++) {
@@ -52,20 +55,19 @@ public class KooguDLTest {
 
 			transform = transforms.get(i).transformData(transform); 
 			long trandformtime2 = System.currentTimeMillis();
-//			System.out.println("Total time for transform: " + transforms.get(i).getDLTransformType()  + "  " +  (trandformtime2-trandformtime1) + " ms"); 
+//			System.out.println("Total time for transform: " + transforms.get(i).getDLTransformType()  + "  " + 
+//			(trandformtime2-trandformtime1) + " ms " + JamArr.max(((WaveTransform) transforms.get(i)).getWaveData().getSampleAmplitudes()));
 		}
 
 
 		double[] dataD = ((WaveTransform) transform).getWaveData().getScaledSampleAmplitudes();
 //		int[] dataD = ((WaveTransform) transform).getWaveData().getSampleAmplitudes();
-
-
+		
 		float[] dataF = new float[dataD.length]; 
 		for (int i=0; i<dataF.length; i++) {
 			dataF[i]= (float) dataD[i];
 		}
-
-//		System.out.println("Data input size: " + dataF.length + " max sample: " + JamArr.max(dataF));
+		//System.out.println("Data input size post transform: " + dataF.length + " max sample: " + JamArr.max(dataF));
 
 		int nBatch = 1; //the number of batches. 
 		float[] output = null; 

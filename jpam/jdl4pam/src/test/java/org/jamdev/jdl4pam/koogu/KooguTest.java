@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
 
 import org.jamdev.jdl4pam.genericmodel.GenericModel;
 import org.jamdev.jdl4pam.genericmodel.GenericModelParams;
-import org.jamdev.jdl4pam.genericmodel.HumpbackGoogle;
 import org.jamdev.jdl4pam.transforms.DLTransfromParams;
 import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
 import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
@@ -108,7 +106,7 @@ public class KooguTest {
 	@Test
 	public void kooguTestBlueWhale() {
 
-		System.out.println("Koogu - test Blue Whale model"); 
+		System.out.println("Koogu - test Blue Whale model --- "); 
 
 		//relative paths to the resource folders.
 		String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/blue_whale/BmD_24_tf_model/koogu/saved_model.pb";
@@ -334,7 +332,7 @@ public class KooguTest {
 				dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.TRIM, startChunck, startChunck+chunkSize));
 				dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.NORMALISE_WAV));
 				
-//				System.out.println(dlTransformParamsArr);
+				//System.out.println(dlTransformParamsArr);
 
 
 				float[] output = KooguDLTest.runGenericWaveModel(model, soundData, dlTransformParamsArr, nRuns);
@@ -358,6 +356,7 @@ public class KooguTest {
 				if (out0 && out1) {
 					truecount++;
 				}
+										
 			}
 
 			double percTrue = 100*((double) truecount)/predictions.length; 
@@ -368,6 +367,8 @@ public class KooguTest {
 			// Precentage results true: 83.31  count 1498 - without scipy
 
 			assertTrue(percTrue>0.8);
+			
+			model.getModel().close();
 
 			return results; 
 

@@ -341,6 +341,16 @@ public class AudioData {
 		double[] wavArray = getScaledSampleAmplitudes();
 
 		double[] intperarr = wavInterpolator.interpolate(wavArray, this.sampleRate, interpSr);
+		
+//		if (interpSr>this.sampleRate) {
+//			//low pass filter at previous samplerate
+//			Cascade filter = createLowPassFilter( BUTTERWORTH,  4,   sampleRate/2); 
+//			double[] ampsFilt = new double[intperarr.length];
+//			for (int i=0; i<intperarr.length; i++) {
+//				ampsFilt[i]=filter.filter(intperarr[i]);
+//			}		
+//			intperarr = ampsFilt;
+//		}
 
 		int[] samplesDecimated = new int[intperarr.length];
 
@@ -348,8 +358,14 @@ public class AudioData {
 		for (int i=0; i<intperarr.length; i++) {
 			samplesDecimated[i]=(int) (bitSize*intperarr[i]);
 		}
+		
+		AudioData soundTmp =  new AudioData(samplesDecimated, interpSr);
 
-		return new AudioData(samplesDecimated, interpSr);
+		if (interpSr>this.sampleRate) {
+			soundTmp = soundTmp.filter(BUTTERWORTH, LOWPASS, 4, 0, this.sampleRate/2); 
+		}
+		
+		return soundTmp;
 	}
 
 	/**
@@ -367,10 +383,24 @@ public class AudioData {
 		int n_samples = (int) Math.ceil(wavArray.length * ratio);
 
 		double[] wavArrayResampled = wavInterpolator.fourierResample(wavArray, n_samples);
+		
+//		if (target_sr>this.sampleRate) {
+//			//low pass filter at previous samplerate
+//			Cascade filter = createLowPassFilter( BUTTERWORTH,  4,   sampleRate/2); 
+//			double[] ampsFilt = new double[wavArrayResampled.length];
+//			for (int i=0; i<wavArrayResampled.length; i++) {
+//				ampsFilt[i]=filter.filter(wavArrayResampled[i]);
+//			}		
+//			wavArrayResampled = ampsFilt;
+//		}
 
 		//System.out.println("Audio samples: " + wavArray.length + " "  +wavArrayResampled.length); 
 
 		AudioData soundTmp = new AudioData(wavArrayResampled, target_sr);
+		
+		if (target_sr>this.sampleRate) {
+			soundTmp = soundTmp.filter(BUTTERWORTH, LOWPASS, 4, 0, this.sampleRate/2); 
+		}
 
 		return soundTmp;
 	}
@@ -561,11 +591,11 @@ public class AudioData {
 			double[] samplesNormD = new double[ samples.length];
 			for (int i = 0; i < samples.length; i++) {
 				// PAMGuard version
-				samplesNormD[i] =  (double) (samples[i]) - meanSamples;
+				samplesNormD[i] =  ((double) samples[i]) - meanSamples;
 
 			}
-			//			System.out.println("Max: " + JamArr.max(samplesNorm));
-			samplesNormD =  JamArr.divide(samplesNorm, JamArr.max(samplesNorm)); 
+			samplesNormD =  JamArr.divide(samplesNormD, JamArr.max(samplesNormD)); 
+			//System.out.println("Max: " + JamArr.max(samplesNormD) + " " + JamArr.max(samples) + " " + samples.length + "  " + meanSamples);
 			return new AudioData(samplesNormD, this.sampleRate);
 		}
 

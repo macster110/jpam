@@ -3,6 +3,7 @@ package org.jamdev.jpamutils.wavFiles;
 import java.util.Arrays;
 
 import org.apache.commons.math3.analysis.UnivariateFunction;
+import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
@@ -161,6 +162,12 @@ public class WavInterpolator {
 		} 
 
 		UnivariateInterpolator interpolator = new SplineInterpolator(); 
+		
+		if (l > x.length) {
+			//if up sampling then us linear interpolation
+			interpolator = new LinearInterpolator();
+		}
+		
 		interp = interpolator.interpolate(indices, x); 
 
 		double[] stretched = new double[l]; 
