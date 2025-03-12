@@ -51,7 +51,7 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], ArrayL
 		//System.out.println("Hello: 1 " ); 
 		NDManager manager = ctx.getNDManager();
 
-		//this is for the soundspot - different models probablu have difference shapes. 
+		//this is for the soundspot - different models probably have difference shapes. 
 		//Shape shape = new Shape(data.length, 1L, data[0].length, data[0][0].length); 
 
 		//this is for right whale tensorflow classiife.r 
