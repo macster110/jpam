@@ -261,6 +261,16 @@ public class DLTransformsParser {
 			//nothing to add here - no params. 
 			break;
 		case NORMALISE_WAV:
+			//the type of normalisation
+			if (((SimpleTransformParams) dlTransfromParams).params!=null) {
+				if (((SimpleTransformParams) dlTransfromParams).params.length==3) {
+					paramsObject.put("type", ((SimpleTransformParams) dlTransfromParams).params[2].intValue()); 
+				}
+				if (((SimpleTransformParams) dlTransfromParams).params.length>=2) {
+					paramsObject.put("mean", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue()); 
+					paramsObject.put("std" , ((SimpleTransformParams) dlTransfromParams).params[1].doubleValue()); 
+				}
+			}
 			break;
 		case SPECTROGRAMKETOS:
 			paramsObject.put("fft", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
@@ -332,7 +342,22 @@ public class DLTransformsParser {
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
 			break;
 		case NORMALISE_WAV:
-			dlTransformParams = new SimpleTransformParams(dlTransformType); 
+			
+			Number[] normNumber = null;
+			if (jsonObjectParams.has("type")) {
+				normNumber = new Number[3]; 
+				normNumber[2] = jsonObjectParams.getInt("type"); 
+			}
+			if (jsonObjectParams.has("mean")) {
+				if (normNumber==null) normNumber=new Number[2]; 
+				normNumber[0] = jsonObjectParams.getDouble("mean"); 
+			}
+			if (jsonObjectParams.has("std")) {
+				if (normNumber==null) normNumber=new Number[2]; 
+				normNumber[1] = jsonObjectParams.getDouble("std"); 
+			}
+			
+			dlTransformParams = new SimpleTransformParams(dlTransformType, normNumber); 
 			break;
 		case FILTER:
 			FilterParams filterParams = new FilterParams();

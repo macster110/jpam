@@ -40,6 +40,23 @@ public class SimpleTransformParams extends DLTransfromParams {
 		case DECIMATE_SCIPY:
 			string = dltransfromType.toString() + " sR: " + params[0];
 			break;
+		case PEAK_TRIM:
+			string = dltransfromType.toString() + " pad: " + params[0] + " type: " + params[1];
+			break;
+		case NORMALISE_WAV:
+			string = dltransfromType.toString() ;
+			if (params==null) {
+				string+=" null"; 
+				break;
+			}
+			if (params.length>=2) {
+				string+=" mean: " + params[0]; 
+				string+=" std: " + params[1]; 
+			}
+			if (params.length>=3) {
+				string+=" type: " + params[2]; 
+			}
+			break;
 		case PREEMPHSIS:
 			string = dltransfromType.toString() + " factor: " + params[0];
 			break;

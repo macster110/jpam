@@ -417,14 +417,22 @@ public class AudioData {
 	 * @param targetLength The desired length of the output waveform.
 	 * @return The cut or padded waveform as a double array.
 	 */
-	private int[] cutOrPadWaveform(int[] waveform, int targetLength) {
+	private static int[] cutOrPadWaveform(int[] waveform, int targetLength) {
 		int currentLength = waveform.length;
 
 		if (currentLength > targetLength) {
 			int maxIndex = JamArr.maxIndex(waveform);
 			int start = Math.max(0, maxIndex - targetLength / 2);
 			int end = Math.min(currentLength, start + targetLength);
-			return Arrays.copyOfRange(waveform, start, end);
+			
+			int[] trimmedArr =Arrays.copyOfRange(waveform, start, end);
+			if ((end-start)>targetLength) {
+				return trimmedArr;
+			}
+			else {
+				//System.out.println(trimmedArr.length + " start " + start + " end " + end);
+				return padArray(trimmedArr, 0, targetLength-trimmedArr.length);
+			}
 		} else if (currentLength < targetLength) {
 			int maxIndex = JamArr.maxIndex(waveform);
 			int padBefore = Math.max(0, targetLength / 2 - maxIndex);
@@ -445,7 +453,7 @@ public class AudioData {
 	 * @param array The input array.
 	 * @return The index of the maximum value.
 	 */
-	private int[] padArray(int[] array, int padBefore, int padAfter) {
+	private static int[] padArray(int[] array, int padBefore, int padAfter) {
 		int[] paddedArray = new int[array.length + padBefore + padAfter];
 		System.arraycopy(array, 0, paddedArray, padBefore, array.length);
 		return paddedArray;
@@ -454,7 +462,7 @@ public class AudioData {
 	/**
 	 * Select  a peak and pad it. 
 	 * @param targetLen - the number of samples to pad with. i.e. if padding is 128 then 64 bins before the peak and 64 bins after the peak are selected. Must be even.
-	 * @param type - the type of peak finding to use. 
+	 * @param type - the type of peak finding to use e.g. PEAK_MAX
 	 * @return AudioData object containing interpolated data and sample rate.
 	 */
 	public AudioData selectPeak(int targetLen, int type) {
@@ -775,6 +783,14 @@ public class AudioData {
 		return filter;
 	}
 
+	public static void main(String[] args) {
+		int[] waveform = new int[50]; 
+		waveform[3] = 3;
+		
+		int[] results  = AudioData.cutOrPadWaveform(waveform, 64) ;
+			
+		System.out.println("Reesulting len: " + results.length);
+	}
 
 
 }
