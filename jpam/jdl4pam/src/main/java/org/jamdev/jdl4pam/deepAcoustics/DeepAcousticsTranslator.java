@@ -23,7 +23,7 @@ import ai.djl.translate.TranslatorContext;
  * <p>
  * @author Jamie Macaulay
  */
-public class DeepAcousticsTranslator implements Translator<float[][][][], ArrayList<DeepAcousticsResult>> {
+public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAcousticResultArray> {
 
 
 	/**
@@ -73,29 +73,32 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], ArrayL
 	}
 
 	@Override
-	public ArrayList<DeepAcousticsResult>  processOutput(TranslatorContext ctx, NDList list) {
+	public DeepAcousticResultArray  processOutput(TranslatorContext ctx, NDList list) {
 
 		//System.out.println("Output: " + list.size()); 
-		ArrayList<DeepAcousticsResult> boundingBoxes= new ArrayList<DeepAcousticsResult>(); 
+		DeepAcousticResultArray boundingBoxes= new DeepAcousticResultArray(); 
 
 		//first conactonate all the results into a single matrix of bounding box results. 
 		for (int j=0; j<list.size(); j++) {
 			NDArray temp_arr = list.get(j);
 
-//			System.out.println("Shape: " + temp_arr.getShape() + " size " + temp_arr.toFloatArray().length);
+			System.out.println("Shape: " + temp_arr.getShape() + " size " + temp_arr.toFloatArray().length);
 
 			temp_arr=temp_arr.reshape(temp_arr.getShape());
+			
 			float[] newArr = temp_arr.flatten().toFloatArray();
 
 			float[] dataPoint;
 			for (int i = 0; i<newArr.length; i+=6) {
 				dataPoint = Arrays.copyOfRange(newArr, i, i+6);
-//				System.out.println("");
-//				for (int ii=0; ii<dataPoint.length; ii++) {
-//					System.out.print(dataPoint[ii] + " ");
-//				}
+				System.out.println("");
+				for (int ii=0; ii<dataPoint.length; ii++) {
+					System.out.print(dataPoint[ii] + " ");
+				}
 				boundingBoxes.add(new DeepAcousticsResult(dataPoint));
 			}
+			
+			boundingBoxes.addRawScores(newArr);
 		}
 
 		return boundingBoxes; 

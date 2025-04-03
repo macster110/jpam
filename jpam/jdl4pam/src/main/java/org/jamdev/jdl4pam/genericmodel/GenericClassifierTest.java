@@ -146,7 +146,7 @@ public class GenericClassifierTest {
 		//the model path
 //		String modelPath = "C:/Users/Jamie Macaulay/git/PAMGuard/src/test/resources/rawDeepLearningClassifier/Generic/risso_click/uniform_model/saved_model.pb";
 		String modelPath  = "/Users/au671271/git/PAMGuard/src/test/resources/rawDeepLearningClassifier/Generic/risso_click/uniform_model/saved_model.pb";
-		//modelPath = Paths.get(modelPath).toAbsolutePath().normalize().toString();;
+		//modelPath = Paths.get(modelPath).toAbsolutePath().normalize().toString();
 
 		//Load a small wav file with click data export from PAMGuard. 
 //		String wavFilePath = "C:/Users/Jamie Macaulay/git/PAMGuard/src/test/resources/rawDeepLearningClassifier/Generic/risso_click/clickwave_1.wav";
