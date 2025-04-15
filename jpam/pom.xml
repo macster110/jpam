@@ -154,7 +154,7 @@
 							<goal>sign</goal>
 						</goals>
 						<configuration>
-							        <skip>true</skip>
+							<skip>true</skip>
 							<keyname>${gpg.keyname}</keyname>
 							<passphraseServerId>${gpg.keyname}</passphraseServerId>
 						</configuration>

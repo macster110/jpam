@@ -191,3 +191,4 @@ bin/org/jamdev/jdl4pam/animalSpot/AnimalSpotModel$SpectrogramTranslator.class
 bin/org/jamdev/jdl4pam/animalSpot/AnimalSpotClassifier.class
 jpam/.DS_Store
 jpam/.classpath
+jpam/settings.xml

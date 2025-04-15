@@ -20,7 +20,7 @@ import ai.djl.util.PairList;
 /**
  * The translator for the model. Ensure the input data is compatible for the model and the output  data 
  * is properly organised. This translator is specifically for models which accept raw waveforms rather than
- * the more common spectrogram images. The input is a batch of waveforms i.e float[batch size][no. samples]; 
+ * the more common spectrogram images. The input is a batch of waveforms i.e float[batch size][samples]; 
  * 
  * @author Jamie Macaulay 
  *

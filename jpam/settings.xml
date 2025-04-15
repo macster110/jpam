@@ -11,7 +11,7 @@
       </activation>
       <properties>
         <gpg.executable>gpg2</gpg.executable>
-        <gpg.keyname>0x9C0118D2</gpg.keyname>
+        <gpg.keyname>Jamie Macaulay 2</gpg.keyname>
         <gpg.passphrase>@64TahariveilaNBHF</gpg.passphrase>
     	<gpg.executable>/usr/local/bin/gpg</gpg.executable>
       </properties>

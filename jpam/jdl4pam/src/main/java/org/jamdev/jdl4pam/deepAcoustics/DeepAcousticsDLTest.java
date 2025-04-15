@@ -435,12 +435,12 @@ public class DeepAcousticsDLTest {
 //			
 //		}
 		
-		String matOut = "/home/jamiemac/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/TensorFlow/testResizxeImIN_scores_java.mat";
+		String matOut = "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/TensorFlow/testResizxeImIN_scores_java.mat";
 
 		//Test an image so that we are sure wqe get the same ouput from Pythoing and Java
-		String matFilePath= "/home/jamiemac/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/TensorFlow/testResizeImIn.mat";
-		String modelPath = "/home/jamiemac/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/ModelExports/Test_TFSavedModel_DarkNet_250307/saved_model.pb";
-		
+		String matFilePath= "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/TensorFlow/testResizeImIn.mat";
+		//String modelPath = "/home/jamiemac/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/ModelExports/Test_TFSavedModel_DarkNet_250307/saved_model.pb";
+		String modelPath = "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/ModelExports/Test_TFSavedModel_DarkNet_250404/saved_model.pb";
 		imageTest( modelPath,  matFilePath, matOut);
 		
 	}

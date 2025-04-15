@@ -93,6 +93,15 @@
 		    <scope>runtime</scope>
 		</dependency>
 		
+		<!-- https://mvnrepository.com/artifact/ai.djl.tflite/tflite-native-auto -->
+		<dependency>
+		    <groupId>ai.djl.onnxruntime</groupId>
+		    <artifactId>onnxruntime-engine</artifactId>
+		    <version>0.32.0</version>
+		    <scope>runtime</scope>
+		</dependency>
+
+		
 		<!-- https://mvnrepository.com/artifact/ai.djl.tflite/tflite-native-cpu 
 		<dependency>
 		    <groupId>ai.djl.tflite</groupId>
