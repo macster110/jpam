@@ -146,6 +146,10 @@ public class GenericModel {
 			model = Model.newInstance(modelPath, "TensorFlow"); 
 			model.load(modelDir, modelName);
 			break; 
+		case "h5":
+			model = Model.newInstance(modelPath, "TensorFlow"); 
+			model.load(modelDir, modelName);
+			break; 
 		case "py":
 			model = Model.newInstance(modelName);
 			model.load(modelDir, modelName);

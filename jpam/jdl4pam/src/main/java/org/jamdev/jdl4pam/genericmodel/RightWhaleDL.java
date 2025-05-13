@@ -57,8 +57,8 @@ public class RightWhaleDL {
 			System.out.println(Engine.getAllEngines()); 
 
 			Model model = Model.newInstance(modelPath, "TensorFlow"); 
-
-			model.load(modelDir, "saved_model.pb");
+			
+			model.load(modelDir, modelName);
 
 			System.out.println("Input: " + model.describeInput().values()); 
 			System.out.println("Output: " + model.describeOutput().values()); 

@@ -24,6 +24,9 @@ public class RightWhaleTest {
 	@Test
 	public void rightWhaleTest()
 	{
+		
+		System.out.println("Run right whale saved_model.pb test"); 
+
     	//relative paths to the resource folders.
     	String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/rightwhale/model_lenet_dropout_input_conv_all/saved_model.pb";
 		String relWavPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/rightwhale/sar98_trk3_8000.wav";
@@ -50,5 +53,44 @@ public class RightWhaleTest {
 		assertTrue( output[1]>0.98 ); //right whale
 
 	}
+	
+	
+	/**
+	 * Test a right whale classifier from Marie Roch's group. 
+	 */
+	@Test
+	public void rightWhaleTest2()
+	{
+		
+		System.out.println("Run right whale hdf5 test"); 
+    	//relative paths to the resource folders.
+    	String relModelPath  =	"./Users/jdjm/Library/CloudStorage/Dropbox/PAMGuard_dev/Deep_Learning/Right_whales_DG/model_lenet_dropout_input_conv_all.hdf5";
+		String relWavPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/generic/rightwhale/sar98_trk3_8000.wav";
+ 
+		Path path = Paths.get(relModelPath);
+		//note that normalize gets rid of all the redundant elements (e.g. .)
+		String modelPath = path.toAbsolutePath().normalize().toString();
+		
+		path = Paths.get(relWavPath);
+		String wavFilePath = path.toAbsolutePath().normalize().toString();
+
+		float sr = 2000; 
+		int startchunk =  (int) (181.2*sr); //right whale call
+
+		//run the right whale model. 
+		float[] output  = RightWhaleDL.runRightWhaleDL(modelPath, wavFilePath, startchunk); 
+
+		for (int j = 0; j<output.length; j++) {
+			System.out.println("Output: " + j + " : " + output[j]);
+		}
+	
+		//the wav file contains a right whale detection at 181.2 seconds into the file. 
+		assertTrue( output[0]<0.01 ); //noise
+		assertTrue( output[1]>0.98 ); //right whale
+
+	}
+	
+	
+	
 
 }

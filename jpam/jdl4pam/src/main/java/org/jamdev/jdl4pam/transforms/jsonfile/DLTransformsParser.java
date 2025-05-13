@@ -207,7 +207,7 @@ public class DLTransformsParser {
 			paramsObject.put("peak_method", ((SimpleTransformParams) dlTransfromParams).params[1].intValue());
 			break;
 		case SPEC2DB:
-			if (((SimpleTransformParams) dlTransfromParams).params[0]!=null) {
+			if (((SimpleTransformParams) dlTransfromParams).params!=null && ((SimpleTransformParams) dlTransfromParams).params[0]!=null) {
 				paramsObject.put("min_db", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue()); 
 			}
 			//otherwise nothing to add here - no params. 

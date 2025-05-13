@@ -66,6 +66,12 @@ public class DLTransformsFactory {
 		case SPECTROGRAM:
 			dlTransform = new FreqTransform(dlTransformType, new Number[] {1024, 8}); 
 			break;
+		case SPECRESIZE:
+			dlTransform = new FreqTransform(dlTransformType, new Number[] {160, 160}); 
+			break;
+		case SPECTROGRAMKETOS:
+			dlTransform = new FreqTransform(dlTransformType, new Number[] {1024, 8, 0.2}); 
+			break;
 		case TRIM:
 			dlTransform = new WaveTransform(dlTransformType, new Number[] {0, 2048}); 
 			break;
@@ -96,7 +102,9 @@ public class DLTransformsFactory {
 		case SPECFLIP:
 			dlTransform = new FreqTransform(dlTransformType, null); 
 			break;
-			
+		case CLAHE:
+			dlTransform = new FreqTransform(dlTransformType,  new Number[] {12, 255, 2f}); 
+			break;
 			//-----Spectrum Transforms----
 		case FFT:
 			dlTransform = new SpectrumTransform(dlTransformType, new Number[] {2048}); 
@@ -116,7 +124,7 @@ public class DLTransformsFactory {
 		case SPECTRUM_SMOOTH:
 			dlTransform = new SpectrumTransform(dlTransformType, new Number[] {3}); 
 			break;
-			
+		
 		default:
 			break;
 
