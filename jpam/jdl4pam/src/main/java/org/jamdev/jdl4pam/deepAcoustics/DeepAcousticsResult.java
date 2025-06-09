@@ -1,6 +1,6 @@
 package org.jamdev.jdl4pam.deepAcoustics;
 
-import java.util.Arrays;
+
 
 /**
  * A single bounding box result from a DeepAcoustic classifier. Note that multiple results are returned for each input 
@@ -39,21 +39,40 @@ public class DeepAcousticsResult {
 	 * The height of the bounding box in pixels of input image. 
 	 */
 	private float width; 
-	
 
-	/**
-	 * Create a deep acoustics results form the raw output from the model. 
-	 * @param result
-	 */
-	public DeepAcousticsResult(float[] result){
-		confidence =  result[0];
-		x =  result[1];
-		y =  result[2];
-		width = result[3];
-		height =  result[4];
-		predicitions = Arrays.copyOfRange(result, 5, (int) result.length-1);
-	}
 	
+	
+	
+	public DeepAcousticsResult(double[] ds, float f, float[] scores) {
+		this.confidence = (float) ds[0];
+		this.y = (float) ds[1];
+		this.x = (float) ds[2];
+		this.height = (float) ds[3];
+		this.width = (float) ds[4];
+		this.predicitions = scores;
+		
+		if (this.predicitions == null || this.predicitions.length == 0) {
+			this.predicitions = new float[] {f}; //if no predictions then just return the confidence score
+		}
+		
+		if (this.predicitions.length != scores.length) {
+			throw new IllegalArgumentException("Predictions length does not match scores length");
+		}
+		
+		if (this.confidence < 0 || this.confidence > 1) {
+			throw new IllegalArgumentException("Confidence must be between 0 and 1");
+		}
+		
+		if (this.height <= 0 || this.width <= 0) {
+			throw new IllegalArgumentException("Height and width must be greater than zero");
+		}
+		
+		if (this.y < 0 || this.x < 0) {
+			throw new IllegalArgumentException("Y and X coordinates must be non-negative");
+		}
+	}
+
+
 	/**
 	 * Get the confidence the bounding box contains a call. 
 	 * @return confidence score from 0 to 1. 

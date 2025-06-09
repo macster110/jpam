@@ -35,7 +35,7 @@ public class DLTransformImportTest {
 		JSONObject object;
 		for (int i=0; i< transfroms.length; i++) {
 
-			System.out.println("Transform: " + transfroms[i]);
+			System.out.println("Transform: " + transfroms[i] + "  " + transfroms[i].name());
 			SimpleTransform transform = (SimpleTransform) DLTransformsFactory.makeDLTransform(transfroms[i],  sR); 
 
 			object = new JSONObject();

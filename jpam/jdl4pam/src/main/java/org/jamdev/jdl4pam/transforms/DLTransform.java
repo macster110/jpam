@@ -271,7 +271,7 @@ public interface DLTransform {
 		
 
 		/**
-		 * Resize the spectrgram so that the frequency and time axis are a certian
+		 * Resize the spectrogram so that the frequency and time axis are a certian
 		 * number of bins
 		 * <p>
 		 * Two associated parameters. *

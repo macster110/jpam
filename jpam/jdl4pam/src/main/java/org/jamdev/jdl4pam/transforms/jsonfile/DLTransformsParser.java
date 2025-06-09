@@ -226,6 +226,7 @@ public class DLTransformsParser {
 		case SPECNORMALISE:
 			paramsObject.put("min_db", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue()); 
 			paramsObject.put("ref_db", ((SimpleTransformParams) dlTransfromParams).params[1].doubleValue()); 
+			break;
 		case SPECTROGRAM:		
 			paramsObject.put("fft", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
 			paramsObject.put("hop", ((SimpleTransformParams) dlTransfromParams).params[1].intValue()); 

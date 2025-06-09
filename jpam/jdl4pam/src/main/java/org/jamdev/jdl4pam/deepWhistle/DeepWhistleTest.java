@@ -19,15 +19,27 @@ import ai.djl.translate.TranslateException;
 public class DeepWhistleTest {
 
 	/**
-	 * Some quick tests for silbido profundo
+	 * Some quick tests for deepWhistle
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
 		loadPyTorchdeepWhistle();
+	}
+	
+	
+	/**
+	 * Tests that the model resturns the same output as MATLAB
+	 */
+	public static void testPyTorchdeepWhistle() {
+		
+		
 	}
 
 
+
+	/**
+	 * Simple function which loads up the deep PyTorch whistle model and then runs it on completely random data
+	 */
 	public static void loadPyTorchdeepWhistle() {
 		Path modelDirectory = Paths.get("/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/deepWhistle/"); 
 		// 2. Define the name of your ONNX model file
@@ -52,7 +64,7 @@ public class DeepWhistleTest {
 
 			// 3. Call Model.load() using the configured Criteria
 			//    Use try-with-resources for automatic resource management (model.close())
-			int FFT_LEN =100;
+			int FFT_LEN =361;
 			int N_RUNS =1400; 
 
 
@@ -102,7 +114,9 @@ public class DeepWhistleTest {
 
 	}
 
-
+	/**
+	 * Simple function which loads up the ONXX  whistle model and then runs it on completely random data
+	 */
 	public static void loadONNXdeepWhistle() {
 
 		Path modelDirectory = Paths.get("/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/Silbido/"); 

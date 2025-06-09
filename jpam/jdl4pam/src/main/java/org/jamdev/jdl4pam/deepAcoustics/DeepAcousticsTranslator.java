@@ -1,10 +1,10 @@
 package org.jamdev.jdl4pam.deepAcoustics;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
+import org.jamdev.jdl4pam.deepAcoustics.Pred2BoxDJL3.Network;
+import org.jamdev.jdl4pam.deepAcoustics.Pred2BoxDJL3.YoloPostProcessorResult;
 import org.jamdev.jdl4pam.utils.DLUtils;
+import org.jamdev.jpamutils.JamArr;
 
 import ai.djl.ndarray.NDArray;
 import ai.djl.ndarray.NDList;
@@ -29,7 +29,7 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAc
 	/**
 	 * Create the shape 
 	 */
-	private Shape shape;
+	private Network network;
 
 	/**
 	 * The audio shape index
@@ -41,8 +41,8 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAc
 	 * Constructor for the spectrogram translator. The translator is essentially 
 	 * @param shape -the shape to set. 
 	 */
-	public DeepAcousticsTranslator(Shape shape) {
-		this.shape = shape; 
+	public DeepAcousticsTranslator(Network shape) {
+		this.network = shape; 
 	}
 
 
@@ -59,13 +59,13 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAc
 		//Shape shape = new Shape(data.length, data[0].length, data[0][0].length, 1L); 
 		Shape shape; 
 
-		shape = new Shape(data.length, this.shape.get(1), this.shape.get(2), this.shape.get(3)); 
+		shape = new Shape(data.length, this.network.imShape.get(1), this.network.imShape.get(2), this.network.imShape.get(3)); 
 
 		//need to the first element to be the number of data frames  Input: [(-1, 40, 40, 1)]
 
 		float[] specgramFlat = DLUtils.flattenDoubleArrayF(data); 
 		
-		System.out.println("Input shape " + shape);
+		//System.out.println("Input shape " + shape);
 
 		NDArray array = manager.create(specgramFlat, shape); 
 
@@ -77,29 +77,47 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAc
 
 		//System.out.println("Output: " + list.size()); 
 		DeepAcousticResultArray boundingBoxes= new DeepAcousticResultArray(); 
-
-		//first conactonate all the results into a single matrix of bounding box results. 
-		for (int j=0; j<list.size(); j++) {
-			NDArray temp_arr = list.get(j);
-
-			System.out.println("Shape: " + temp_arr.getShape() + " size " + temp_arr.toFloatArray().length);
-
-			//temp_arr=temp_arr.reshape(temp_arr.getShape());
+	
+		
+		 YoloPostProcessorResult result  = Pred2BoxDJL3.yoloPostProcess(
+				 ctx.getNDManager(), // Parent manager
+				 list,    // Input as NDList
+		         network);
+		
+		System.out.println("Result: " + result.bboxes.length + " bounding boxes found");
+		
+		for (int i=0; i<result.bboxes.length; i++) {
+			//System.out.println("Result: " + result.bboxes[i].getShape()); 
+			System.out.println("Result: boxes: " +  i);
+			JamArr.printArray(result.bboxes[i]);
+			System.out.println("	 " );
 			
-			float[] newArr = temp_arr.flatten().toFloatArray();
-
-			float[] dataPoint;
-			for (int i = 0; i<newArr.length; i+=6) {
-				dataPoint = Arrays.copyOfRange(newArr, i, i+6);
-//				System.out.println("");
-//				for (int ii=0; ii<dataPoint.length; ii++) {
-//					System.out.print(dataPoint[ii] + " ");
-//				}
-				boundingBoxes.add(new DeepAcousticsResult(dataPoint));
-			}
+			System.out.println("Result: Confidence: " +  i);
+			JamArr.printArray(result.scores);
+			System.out.println("	 " );
 			
-			boundingBoxes.addRawScores(newArr);
+			System.out.println("Result: classes: " +  i);
+			JamArr.printArray(result.classes);
+			System.out.println("	 " );
 		}
+		//System.out.println("Result: " + result.getBoundingBoxes().get(0).getShape());
+
+		//Now we need to convert the result to a bounding box array.
+		
+		if (result==null || result.bboxes == null || result.bboxes.length == 0) {
+			System.out.println("No bounding boxes found");
+			return boundingBoxes; 
+		}
+		
+//		DeepAcousticsResult dAResult;
+//		for (int i=0; i<result.bboxes.length; i++) {
+//			//System.out.println("Result: " + result.bboxes[i].getShape()); 
+//			dAResult = new DeepAcousticsResult(result.bboxes[i], result.classes[i], result.scores);
+//			
+//		
+//			boundingBoxes.add(result);
+//		}
+		
 
 		return boundingBoxes; 
 	}
@@ -117,16 +135,8 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAc
 	 * Get the default input shape. 
 	 * @return the default input shape. 
 	 */
-	public Shape getShape() {
-		return shape;
-	}
-
-	/**
-	 * Set the shape. 
-	 * @param the input shape. 
-	 */
-	public void setShape(Shape shape) {
-		this.shape = shape;
+	public Network getNetwrok() {
+		return network;
 	}
 
 	/**

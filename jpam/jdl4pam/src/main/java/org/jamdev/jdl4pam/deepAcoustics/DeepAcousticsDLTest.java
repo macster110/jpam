@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import org.jamdev.jdl4pam.deepAcoustics.Pred2BoxDJL3.Network;
 import org.jamdev.jdl4pam.transforms.DLTransform;
 import org.jamdev.jdl4pam.transforms.DLTransformsFactory;
 import org.jamdev.jdl4pam.transforms.DLTransfromParams;
@@ -39,7 +40,7 @@ import us.hebi.matlab.mat.types.Matrix;
 public class DeepAcousticsDLTest {
 	
 	
-	/*8
+	/**
 	 * Simply tests whether we get the same results from an image
 	 */
 	public static void imageTest(String modelPath, String matFilePath, String matFileOut){
@@ -57,8 +58,17 @@ public class DeepAcousticsDLTest {
 
 			System.out.println("Input: " + model.describeInput().values()); 
 			System.out.println("Output: " + model.describeOutput().values()); 
+			
+			ArrayList<double[][]> anchorBoxes = new ArrayList<double[][]>();
+			
+			anchorBoxes.add(new double[][]{{26.,19.}});
+			anchorBoxes.add(new double[][]{{89.,18.}});
+			anchorBoxes.add(new double[][]{{86.,51.}});
 
-			DeepAcousticsTranslator translator = new DeepAcousticsTranslator(model.describeInput().get(0).getValue());
+			Network network = new Network(model.describeInput().get(0).getValue(), anchorBoxes);
+			
+
+			DeepAcousticsTranslator translator = new DeepAcousticsTranslator(network);
 
 			//predictor for the model
 			Predictor<float[][][][], DeepAcousticResultArray> predictor = model.newPredictor(translator);
@@ -86,10 +96,10 @@ public class DeepAcousticsDLTest {
 				results = predictor.predict(data); 
 				long time2 = System.currentTimeMillis();
 				System.out.println("Time to run model: " + (time2-time1) + " ms"); 
-				for (int j=0; j<results.size(); j++) {
-					System.out.println(String.format("Confidence %.2f x %.2f, y %.2f, width %.2f, height %.2f", 
-							results.get(i).getConfidence(), results.get(i).getX(), results.get(i).getY(), results.get(i).getWidth(), results.get(i).getHeight()));
-				}
+//				for (int j=0; j<results.size(); j++) {
+//					System.out.println(String.format("Confidence %.2f x %.2f, y %.2f, width %.2f, height %.2f", 
+//							results.get(j).getConfidence(), results.get(j).getX(), results.get(j).getY(), results.get(j).getWidth(), results.get(j).getHeight()));
+//				}
 
 
 			}
@@ -101,6 +111,8 @@ public class DeepAcousticsDLTest {
 				for (int i=0; i< results.getRawScores().size(); i++) {
 					matFile.addArray(
 							("scores_" + i), DLMatFile.array2Matrix(results.getRawScores().get(i))); 
+		
+					
 				}
 				float[][] im = new float[dataF3.length ][dataF3[0].length];
 				
@@ -115,6 +127,8 @@ public class DeepAcousticsDLTest {
 	
 				Mat5.writeToFile(matFile, matFileOut); 
 			}
+			
+			model.close();
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -155,7 +169,7 @@ public class DeepAcousticsDLTest {
                         //System.out.printf("Element (%d, %d, %d) = %.4f\n", i, j, k, value);
 
                         // You can store these values in a Java 3D array if needed:
-                        myJavaArray[j][i][k] = value;
+                        myJavaArray[i][j][k] = value;
                     }
                 }
             }
@@ -286,8 +300,17 @@ public class DeepAcousticsDLTest {
 
 			System.out.println("Input: " + model.describeInput().values()); 
 			System.out.println("Output: " + model.describeOutput().values()); 
+			
+	ArrayList<double[][]> anchorBoxes = new ArrayList<double[][]>();
+			
+			anchorBoxes.add(new double[][]{{26.,19.}});
+			anchorBoxes.add(new double[][]{{89.,18.}});
+			anchorBoxes.add(new double[][]{{86.,51.}});
 
-			DeepAcousticsTranslator translator = new DeepAcousticsTranslator(model.describeInput().get(0).getValue());
+			Network network = new Network(model.describeInput().get(0).getValue(), anchorBoxes);
+			
+
+			DeepAcousticsTranslator translator = new DeepAcousticsTranslator(network);
 
 			//predictor for the model
 			Predictor<float[][][][], DeepAcousticResultArray> predictor = model.newPredictor(translator);

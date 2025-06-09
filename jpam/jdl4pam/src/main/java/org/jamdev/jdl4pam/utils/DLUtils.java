@@ -16,6 +16,10 @@ import org.jamdev.jpamutils.JamArr;
 import org.jamdev.jpamutils.wavFiles.AudioData;
 import org.jamdev.jpamutils.wavFiles.WavFile;
 
+import ai.djl.ndarray.NDArray;
+import ai.djl.ndarray.types.DataType;
+import ai.djl.ndarray.types.Shape;
+
 
 /**
  * Contains useful functions. 
@@ -449,7 +453,98 @@ public class DLUtils {
 		WavFile wavFile = new  WavFile(new File(path));
 		return loadwavFile(wavFile);
 	}
+	
+	
+	 /**
+     * Converts a 4-dimensional DJL NDArray to a Java double[][][][].
+     *
+     * @param ndArray The input NDArray. Must be 4-dimensional.
+     * @return A double[][][][] representation of the NDArray data.
+     * @throws IllegalArgumentException if the ndArray is null or not 4-dimensional.
+     */
+    public static double[][][][] toDouble4D(NDArray ndArray) {
+        if (ndArray == null) {
+            throw new IllegalArgumentException("Input NDArray cannot be null.");
+        }
+        Shape shape = ndArray.getShape();
+        if (shape.dimension() != 4) {
+            throw new IllegalArgumentException(
+                "NDArray must be 4-dimensional to convert to double[][][][]. Actual dimensions: "
+                + shape.dimension());
+        }
 
+        long dim0 = shape.get(0);
+        long dim1 = shape.get(1);
+        long dim2 = shape.get(2);
+        long dim3 = shape.get(3);
+
+        // Handle arrays with any zero dimension by returning an appropriately shaped empty array
+        // This also implicitly handles the case where the total number of elements is 0.
+        if (dim0 == 0 || dim1 == 0 || dim2 == 0 || dim3 == 0) {
+            return new double[(int) dim0][(int) dim1][(int) dim2][(int) dim3];
+        }
+
+        double[][][][] result = new double[(int) dim0][(int) dim1][(int) dim2][(int) dim3];
+        DataType dtype = ndArray.getDataType();
+
+        if (dtype == DataType.FLOAT64) {
+            double[] flatData = ndArray.toDoubleArray();
+            int flatIndex = 0;
+            for (int i = 0; i < dim0; i++) {
+                for (int j = 0; j < dim1; j++) {
+                    for (int k = 0; k < dim2; k++) {
+                        for (int l = 0; l < dim3; l++) {
+                            result[i][j][k][l] = flatData[flatIndex++];
+                        }
+                    }
+                }
+            }
+        } else if (dtype == DataType.FLOAT32) {
+            float[] flatData = ndArray.toFloatArray();
+            int flatIndex = 0;
+            for (int i = 0; i < dim0; i++) {
+                for (int j = 0; j < dim1; j++) {
+                    for (int k = 0; k < dim2; k++) {
+                        for (int l = 0; l < dim3; l++) {
+                            result[i][j][k][l] = (double) flatData[flatIndex++];
+                        }
+                    }
+                }
+            }
+        } else {
+            // Generic case: convert to a FLOAT64 NDArray first, then extract data.
+            // This handles other types like INT32, BOOLEAN, etc., by converting them to double.
+            NDArray tempDoubleNdArray = null;
+            try {
+                // Convert the NDArray to FLOAT64. This might create a new NDArray instance.
+                tempDoubleNdArray = ndArray.toType(DataType.FLOAT64, false);
+                double[] flatData = tempDoubleNdArray.toDoubleArray();
+                int flatIndex = 0;
+                for (int i = 0; i < dim0; i++) {
+                    for (int j = 0; j < dim1; j++) {
+                        for (int k = 0; k < dim2; k++) {
+                            for (int l = 0; l < dim3; l++) {
+                                result[i][j][k][l] = flatData[flatIndex++];
+                            }
+                        }
+                    }
+                }
+            } finally {
+                // If toType created a new NDArray instance, it should be closed
+                // to free its native resources.
+                if (tempDoubleNdArray != null && tempDoubleNdArray != ndArray) {
+                    tempDoubleNdArray.close();
+                }
+            }
+        }
+        return result;
+    }
+
+    
+    // Sigmoid activation function
+    public static float sigmoid(float x) {
+        return (float) (1.0 / (1.0 + Math.exp(-x)));
+    }
 
 
 }
