@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.jamdev.jpamutils.JamArr;
 import org.jamdev.jpamutils.clahe.Clahe;
+import org.jamdev.jpamutils.clahe.Clahe2;
 import org.jamdev.jpamutils.clahe.FastBitmap;
 import org.jamdev.jpamutils.interpolation.Bicubic;
 import org.jamdev.jpamutils.interpolation.Bilinear;
@@ -65,7 +66,7 @@ public class SpecTransform {
 		this.spectrgram = spectrgram;
 		initialiseSpecData();
 	}
-	
+
 	/**
 	 * Constructor for the spectrogram transform. Only use for subclassing. 
 	 * 
@@ -147,7 +148,7 @@ public class SpecTransform {
 		if (this.specData == null)
 			initialiseSpecData();
 		this.specData = normaliseMinMax(this.specData);
-//		System.out.println("Min max: 2" + JamArr.min(specData)); 
+		//		System.out.println("Min max: 2" + JamArr.min(specData)); 
 		if (maintainPhase)
 			absSpec2Complex(); // set the new data in the complex spectrogram
 		return this;
@@ -350,13 +351,13 @@ public class SpecTransform {
 	 * Use a bilinear interpolation.
 	 */
 	public final static int RESIZE_BILINEAR = 0; 
-	
+
 
 	/**
 	 * Use a nearest neighbour interpolation.
 	 */
 	public final static int RESIZE_NEAREST = 1; 
-	
+
 
 	/**
 	 * Use a bicubic interpolation.
@@ -379,7 +380,7 @@ public class SpecTransform {
 
 		return this;
 	}
-	
+
 	/**
 	 * Flip the spectrogram along the frequency axis. 
 	 * @return the fliped spectrogram. 
@@ -416,6 +417,46 @@ public class SpecTransform {
 			initialiseSpecData();
 
 		this.specData = clahe(this.specData, blockRadius, bins, slope);
+
+		return this;
+	}
+	
+	
+	/**
+	 * Contrast Limited Adaptive Histogram Equalization which follows the MATLAB adapthistq function
+	 * @param clipLimit - the clip limit for the histogram equalization.
+	 * @param alpha - the alpha parameter for the Rayleigh distribution.
+	 * @return the histogram equalized spectrgram. 
+	 */
+	public SpecTransform clahe2( double clipLimit, double alpha) {
+		if (specData == null)
+			initialiseSpecData();
+		
+		//calculate xTile and yTile from image size
+		int xTile=(int) Math.ceil(this.specData[0].length/50.);
+		int yTile=(int) Math.ceil(this.specData.length/50.);
+		
+		System.out.println("xTile: " + xTile + " yTile: " + yTile);
+
+		this.specData = clahe2(this.specData,  xTile,  yTile,  clipLimit,  alpha);
+
+		return this;
+	}
+	
+	/**
+	 * Contrast Limited Adaptive Histogram Equalization which follows the MATLAB adapthistq function
+	 * @param blockRadius
+	 * @param xTile - the number of tiles in the x direction.
+	 * @param yTile - the number of tiles in the y direction.
+	 * @param clipLimit - the clip limit for the histogram equalization.
+	 * @param alpha - the alpha parameter for the Rayleigh distribution.
+	 * @return the histogram equalized spectrgram.
+	 */
+	public SpecTransform clahe2(int blockRadius, int xTile, int yTile, double clipLimit, float alpha) {
+		if (specData == null)
+			initialiseSpecData();
+
+		this.specData = clahe2(this.specData,  xTile,  yTile,  clipLimit,  alpha);
 
 		return this;
 	}
@@ -513,8 +554,8 @@ public class SpecTransform {
 
 		return arrCopy;
 	}
-	
-	
+
+
 
 	/**
 	 * Flip an array along it's y axis. 
@@ -523,14 +564,14 @@ public class SpecTransform {
 	 * @return the flipped array
 	 */
 	public static double[][] flip(double[][] array) {
-		
+
 		double[][] arrCopy = new double[array.length][array[0].length];
 
 		double[] arr;
 		for (int i = 0; i < array.length; i++) {
-			
+
 			arr = new double[array[i].length];
-			
+
 			for (int j=0; j<arr.length; j++) {
 				arr[arr.length-j-1] = array[i][j];
 			}
@@ -659,9 +700,9 @@ public class SpecTransform {
 
 		return JamArr.floatToDouble(resizeArr);
 	}
-	
-	
-	
+
+
+
 
 	/**
 	 * Perform a nearest neighbour interpolation of a 1D array of evenly spaced
@@ -765,7 +806,7 @@ public class SpecTransform {
 	 */
 	public static double[][] normaliseStd(double[][] img, double mean, double std) {
 
-//		System.out.println("Normalise Std: " + mean + "  " + std + "  " + JamArr.max(img));
+		//		System.out.println("Normalise Std: " + mean + "  " + std + "  " + JamArr.max(img));
 
 		double std_orig = JamArr.std(img);
 
@@ -1127,7 +1168,7 @@ public class SpecTransform {
 	 * @return histogram equalized image. 
 	 */
 	public static double[][] clahe(double[][] dataF, int bloackRadius, int bins, float slope) {
-		
+
 		FastBitmap fastBitMap = new FastBitmap(dataF[0].length, dataF.length); 
 
 		for (int i=0; i<dataF.length; i++) {
@@ -1135,20 +1176,44 @@ public class SpecTransform {
 				fastBitMap.setGray(i, j, (int) (255.*dataF[i][j]));
 			}
 		}
-		
+
 		Clahe clahe = new  Clahe(bloackRadius, bins, slope); 
-		
-		
+
 		clahe.applyInPlace(fastBitMap);
-		
+
 		double[][] dataClahe = new double[dataF.length][dataF[0].length];
 		for (int i=0; i<dataF.length; i++) {
 			for (int j=0; j<dataF[0].length; j++) {
 				dataClahe[i][j] = fastBitMap.getGray(i, j)/255.;
 			}
 		}
-		
+
 		return dataClahe;
+	}
+
+
+	/**
+	 * Contrast Limited Adaptive Histogram Equalization which is more analogous to the 
+	 * adapthisteq function in MATLAB
+	 * 
+	 * <br>
+	 * References:
+	 * http://en.wikipedia.org/wiki/Adaptive_histogram_equalization#Contrast_Limited_AHE
+	 * 
+	 * Three associated parameters.
+	 * @param dataF - the data to apply the CLAHE to.
+	 * @param xTile - the number of tiles in the x direction.
+	 * @param yTile - the number of tiles in the y direction.
+	 * @param clipLimit - the clip limit for the histogram.
+	 * @param alpha - the alpha value for the CLAHE.
+	 *
+	 */
+	public static double[][] clahe2(double[][] dataF, int xTile, int yTile, double clipLimit, double alpha) {
+
+		double[][] resultImage = Clahe2.transform(dataF, xTile, yTile, clipLimit, alpha);
+
+		return resultImage;
+
 	}
 
 
@@ -1184,7 +1249,7 @@ public class SpecTransform {
 	public void setComplexData(ComplexArray[] complexData) {
 		this.complexData = complexData;
 	}
-	
+
 
 	/**
 	 * Get the sample rate of the spectrogram in samples per second. 

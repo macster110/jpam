@@ -6,6 +6,8 @@ import ai.djl.ndarray.types.*;
 import ai.djl.nn.Activation;
 import java.util.*;
 
+import org.jamdev.jpamutils.JamArr;
+
 public class Pred2BoxDJL3  {
 	
 
@@ -28,7 +30,7 @@ public class Pred2BoxDJL3  {
 		 * Class indices for each bounding box.
 		 * This indicates the class of the detected object.
 		 */
-		public float[] classes;     // [N]
+		public float[][] classes;     // [N]
 	}
 
 	/**
@@ -42,7 +44,8 @@ public class Pred2BoxDJL3  {
 	public static YoloPostProcessorResult yoloPostProcess(
 			NDManager manager,
 			NDList scoreTf, // List of NDArray, each [1, H, W, C]
-			Network network
+			Network network,
+			float thresh
 			) {
 		int nDetHeads = scoreTf.size();
 		List<List<NDArray>> output = new ArrayList<>(nDetHeads);
@@ -226,7 +229,7 @@ public class Pred2BoxDJL3  {
 		ccdets[5] = classIdx;
 
 		// 7. Filter by score >= 0.5
-		NDArray indKeep = ccdets[0].gte(0.5f);
+		NDArray indKeep = ccdets[0].gte(thresh);
 		float[] scorePred = ccdets[0].get(indKeep).toFloatArray();
 		int nKeep = scorePred.length;
 
@@ -242,8 +245,19 @@ public class Pred2BoxDJL3  {
 		    bboxesTmp[i][2] = wArr[i];
 		    bboxesTmp[i][3] = hArr[i];
 		}
-
-		float[] classPred = ccdets[5].get(indKeep).toFloatArray();
+		
+		// iterate thorugh class array - the classes are in the last element of ccdets
+		float[][] classPredAll = new float[ccdets.length-5][];
+		int n=0; 
+		for (int i = 5; i< ccdets.length; i++) {
+			classPredAll[n] = ccdets[i].get(indKeep).toFloatArray();
+			n++;
+		}
+		
+		
+		//now we have the class prediction where each row in the array is all the prediction of a particular class for all boxes. 
+		//Easier to have this as each row is all the class predicitons for a particular box so trnaspose the array.
+		classPredAll = JamArr.transposeMatrix(classPredAll);
 
 		
 		// 8. Scale boxes to input image size
@@ -264,7 +278,7 @@ public class Pred2BoxDJL3  {
 		YoloPostProcessorResult result = new YoloPostProcessorResult();
 		result.bboxes = bboxTmpSc;
 		result.scores =  Arrays.copyOf(scorePred, nKeep);
-		result.classes = Arrays.copyOf(classPred, nKeep);
+		result.classes = classPredAll; 
 		return result;
 	}
 

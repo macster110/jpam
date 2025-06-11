@@ -161,7 +161,7 @@ public class FreqTransform extends SimpleTransform {
 			freqlims = ((FreqTransform) transform).freqlims; 
 			break;
 		case SPECRESIZE:
-			int resizeType=0; //default is bilinear
+			int resizeType=SpecTransform.RESIZE_BILINEAR; //default is bilinear
 			if (params.length>=3) {
 				resizeType= params[2].intValue();
 			}
@@ -174,6 +174,10 @@ public class FreqTransform extends SimpleTransform {
 			break;
 		case CLAHE:
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().clahe(params[0].intValue(), params[1].intValue(), params[2].floatValue());
+			freqlims = ((FreqTransform) transform).freqlims; 
+			break;
+		case CLAHE2:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().clahe2(params[0].doubleValue(), params[1].doubleValue());
 			freqlims = ((FreqTransform) transform).freqlims; 
 			break;
 		default:

@@ -309,6 +309,30 @@ public interface DLTransform {
 		 */
 		CLAHE("CLAHE Spectrogram", "clahe"),
 		
+		
+		/**
+		 * Contrast Limited Adaptive Histogram Equalization which follows the methods used by 
+		 * the adapthisteq function in Matlab.For example
+		 * 
+		 * ```
+		 * im = adapthisteq(flipud(pow),'NumTiles',[xTile yTile],'ClipLimit',.005,'Distribution','rayleigh','Alpha',.4);
+		 * ```
+		 * 
+		 * <br>
+		 * References:
+		 * http://en.wikipedia.org/wiki/Adaptive_histogram_equalization#Contrast_Limited_AHE
+		 * 
+		 * Two associated parameters.
+		 * <ul>
+		 * <li>clip limits - Float - Real scalar of double data type from 0 to 1.
+                  'ClipLimit' limits contrast enhancement. Higher numbers
+                  result in more contrast.</li>
+		 * <li>alpha - Float -  is a distribution parameter, which can be supplied
+                  when 'Dist' is set to either 'rayleigh' or 'exponential'.</li>
+		 */
+		CLAHE2("CLAHE2 Spectrogram", "clahe2"),
+		
+		
 		/****Spectrum Transforms****/
 		
 		/**
@@ -371,9 +395,6 @@ public interface DLTransform {
 		 */
 		SPECTRUM_SMOOTH("Smooth Spectrum", "spectrum_smooth");
 		
-
-
-
 		
 		/**
 		 * Then name of the transform.

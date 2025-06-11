@@ -42,34 +42,21 @@ public class DeepAcousticsResult {
 
 	
 	
-	
-	public DeepAcousticsResult(double[] ds, float f, float[] scores) {
-		this.confidence = (float) ds[0];
-		this.y = (float) ds[1];
-		this.x = (float) ds[2];
-		this.height = (float) ds[3];
-		this.width = (float) ds[4];
-		this.predicitions = scores;
+	/**
+	 * Constructor for the DeepAcousticsResult. 
+	 * @param boundingBox - the bounding box in the format [x, y width, height] in pixels of input image. 
+	 * @param confidence - the confidence score from 0 to 1. 
+	 * @param predictions - the predictions for different species in the bounding box. 
+	 */
+	public DeepAcousticsResult(double[] boundingBox, float confidence, float[] predictions) {
 		
-		if (this.predicitions == null || this.predicitions.length == 0) {
-			this.predicitions = new float[] {f}; //if no predictions then just return the confidence score
-		}
+		this.confidence = confidence;
+		this.x = (float) boundingBox[0];
+		this.y = (float) boundingBox[1];
+		this.width = (float) boundingBox[2];
+		this.height = (float) boundingBox[3];
+		this.predicitions = predictions;
 		
-		if (this.predicitions.length != scores.length) {
-			throw new IllegalArgumentException("Predictions length does not match scores length");
-		}
-		
-		if (this.confidence < 0 || this.confidence > 1) {
-			throw new IllegalArgumentException("Confidence must be between 0 and 1");
-		}
-		
-		if (this.height <= 0 || this.width <= 0) {
-			throw new IllegalArgumentException("Height and width must be greater than zero");
-		}
-		
-		if (this.y < 0 || this.x < 0) {
-			throw new IllegalArgumentException("Y and X coordinates must be non-negative");
-		}
 	}
 
 
@@ -125,6 +112,17 @@ public class DeepAcousticsResult {
 	 */
 	public float getWidth() {
 		return width;
+	}
+
+	/**
+	 * Convenience function for the bounding box in the format [x, y, width, height] in pixels of input image. 
+	 * 
+	 * Preferably, use the individual getters for x, y, width and height.
+	 * 
+	 * @return the bounding box as a double array
+	 */
+	public double[] getBoundingBox() {
+		return new double[] {x,y,width,height};
 	}
 
 }

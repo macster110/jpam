@@ -36,6 +36,8 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAc
 	 */
 	private Integer shapeIndex;
 
+	private float thresh = 0.01f;  //default threshold for bounding boxes.
+
 
 	/**
 	 * Constructor for the spectrogram translator. The translator is essentially 
@@ -82,7 +84,7 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAc
 		 YoloPostProcessorResult result  = Pred2BoxDJL3.yoloPostProcess(
 				 ctx.getNDManager(), // Parent manager
 				 list,    // Input as NDList
-		         network);
+		         network, thresh);
 		
 		System.out.println("Result: " + result.bboxes.length + " bounding boxes found");
 		
@@ -97,7 +99,7 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAc
 			System.out.println("	 " );
 			
 			System.out.println("Result: classes: " +  i);
-			JamArr.printArray(result.classes);
+			JamArr.printArray(result.classes[i]);
 			System.out.println("	 " );
 		}
 		//System.out.println("Result: " + result.getBoundingBoxes().get(0).getShape());
@@ -109,17 +111,25 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAc
 			return boundingBoxes; 
 		}
 		
-//		DeepAcousticsResult dAResult;
-//		for (int i=0; i<result.bboxes.length; i++) {
-//			//System.out.println("Result: " + result.bboxes[i].getShape()); 
-//			dAResult = new DeepAcousticsResult(result.bboxes[i], result.classes[i], result.scores);
-//			
-//		
-//			boundingBoxes.add(result);
-//		}
+		DeepAcousticsResult dAResult;
+		for (int i=0; i<result.bboxes.length; i++) {
+			//System.out.println("Result: " + result.bboxes[i].getShape()); 
+			dAResult = new DeepAcousticsResult(result.bboxes[i], result.scores[i], result.classes[i]);
+			boundingBoxes.add(dAResult);
+		}
 		
 
 		return boundingBoxes; 
+	}
+
+
+	public float getThresh() {
+		return thresh;
+	}
+
+
+	public void setThresh(float thresh) {
+		this.thresh = thresh;
 	}
 
 
@@ -127,6 +137,8 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAc
 	public Batchifier getBatchifier() {
 		// The Batchifier describes how to combine a batch together
 		// Stacking, the most common batchifier, takes N [X1, X2, ...] arrays to a single [N, X1, X2, ...] array
+		
+		//This must be null for the DeepAcousticsTranslator
 		return null;
 	}
 
@@ -137,27 +149,6 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAc
 	 */
 	public Network getNetwrok() {
 		return network;
-	}
-
-	/**
-	 * Get the audio shape index. This can be null in which case the shape with the largest
-	 * dimensions will be assumed to be the input data. Note that often only one input shape 
-	 * is retrieved from the model in which case this index is redundant. 
-	 * @param shapeIndex - the shape index. 
-	 */
-	public Integer getAudioShapeIndex() {
-		return shapeIndex;
-	}
-
-
-	/**
-	 * Set the audio shape index.  This can be null in which case the shape with the largest
-	 * dimensions will be assumed to be the input data.  Note that often only one input shape 
-	 * is retrieved from the model in which case this index is redundant. 
-	 * @param shapeIndex - the shape index. 
-	 */
-	public void setAudioShapeIndex(Integer shapeIndex) {
-		this.shapeIndex = shapeIndex;
 	}
 
 }
