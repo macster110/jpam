@@ -233,7 +233,7 @@ public class DeepAcousticsDLTest {
 		//transforms
 		//the clip length is three seconds
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.TRIM, 0, chunkSize));
-		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAMKETOS, 1009, 202, 3.0)); 
+		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECFREQTRIM, 0, 22000)); 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPEC2DB));
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECNORMALISE_MINIMAX)); 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECFLIP)); 

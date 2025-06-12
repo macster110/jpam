@@ -460,6 +460,55 @@ public class SpecTransform {
 
 		return this;
 	}
+	
+	
+	/**
+	 * Trim the frequency range of the spectrogram.
+	 * 
+	 * @param minFreq  - the minimum frequency in Hz.
+	 * @param maxFreq  - the maximum frequency in Hz.
+	 * @return reference to the trimmed spectrogram.
+	 */
+	public SpecTransform freqtrim(double minFreq, double maxFreq) {
+		if (specData == null)
+			initialiseSpecData();
+		
+		this.specData = freqtrim(this.specData, minFreq,  maxFreq, this.spectrgram.getSampleRate());
+		
+		return this;
+
+	}
+	
+	
+	/**
+	 * Trim the frequency range of the spectrogram.
+	 * 
+	 * @param minFreq  - the minimum frequency in Hz.
+	 * @param maxFreq  - the maximum frequency in Hz.
+	 * @return reference to the trimmed spectrogram.
+	 */
+	public static double[][] freqtrim(double[][] array, double minFreq, double maxFreq, float sampleRate) {
+		// interpolate a spectrogram
+		int fftlen = array[0].length;
+
+		// find the minimum bin
+		int minIndex = (int) Math.max(0, fftlen * (minFreq / (sampleRate/ 2)));
+		int maxIndex = (int) Math.min(fftlen, fftlen * (maxFreq / (sampleRate / 2)));
+
+		double[][] specInterp = new double[array.length][];
+		double[] fftSliceInterp;
+
+		if (minIndex == 0 && maxIndex == fftlen) {
+			return array; // no change
+		}
+
+		for (int i = 0; i < array.length; i++) {
+			fftSliceInterp = Arrays.copyOfRange(array[i], minIndex, maxIndex);
+			specInterp[i] = fftSliceInterp;
+		}
+
+		return specInterp;
+	}
 
 	/**
 	 * Convert a spectrogram to dB.
@@ -1266,6 +1315,8 @@ public class SpecTransform {
 	public void setSampleRate(float sampleRate) {
 		this.sampleRate = sampleRate;
 	}
+
+
 
 
 

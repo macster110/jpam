@@ -180,6 +180,10 @@ public class FreqTransform extends SimpleTransform {
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().clahe2(params[0].doubleValue(), params[1].doubleValue());
 			freqlims = ((FreqTransform) transform).freqlims; 
 			break;
+		case SPECFREQTRIM:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().freqtrim(params[0].doubleValue(), params[1].doubleValue());
+			freqlims = ((FreqTransform) transform).freqlims; 
+			break;
 		default:
 			break;
 		}

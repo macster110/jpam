@@ -139,6 +139,17 @@ public interface DLTransform {
 		 * number
 		 */
 		SPECCROPINTERP("Interp. Spectrogram", "freq_compression"),
+		
+
+		/**
+		 * Crops a spectrogram image between two frequency values.
+		 * <p>
+		 * Two associated parameters;
+		 * <li>Minimum frequency in Hz
+		 * <li>Maximum frequency in Hz
+		 * number
+		 */
+		SPECFREQTRIM("Interp. Spectrogram", "freq_trim"),
 
 		/**
 		 * Normalises the spectrogram

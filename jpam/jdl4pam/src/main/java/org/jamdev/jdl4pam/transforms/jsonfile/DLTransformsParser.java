@@ -273,6 +273,10 @@ public class DLTransformsParser {
 				}
 			}
 			break;
+		case SPECFREQTRIM:		
+			paramsObject.put("fmin", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue()); 
+			paramsObject.put("fmax", ((SimpleTransformParams) dlTransfromParams).params[1].doubleValue());
+			break;
 		case SPECTROGRAMKETOS:
 			paramsObject.put("fft", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
 			paramsObject.put("hop", ((SimpleTransformParams) dlTransfromParams).params[1].intValue());
@@ -502,6 +506,12 @@ public class DLTransformsParser {
 			number = new Number[2]; 
 			number[0] = jsonObjectParams.getInt("time_bins"); 
 			number[1] = jsonObjectParams.getInt("freq_bins"); 
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
+			break;
+		case SPECFREQTRIM:		
+			number = new Number[2]; 
+			number[0] = jsonObjectParams.getDouble("fmin"); 
+			number[1] = jsonObjectParams.getDouble("fmax"); 
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
 			break;
 		case SPECFLIP:
