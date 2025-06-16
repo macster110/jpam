@@ -63,6 +63,7 @@ public class DeepAcousticsDLTest {
 
 
 			DeepAcousticsTranslator translator = new DeepAcousticsTranslator(network);
+			translator.setThresh(0.4f);
 
 			//predictor for the model
 			Predictor<float[][][][], DeepAcousticResultArray> predictor = model.newPredictor(translator);
@@ -142,12 +143,7 @@ public class DeepAcousticsDLTest {
 				MatFile matFile = Mat5.newMatFile();
 
 
-				Struct matResults = Mat5.newStruct(1, results.size()); 
-				for (int i=0; i< results.size(); i++) {
-					matResults.set("boundingbox", i, DLMatFile.array2Matrix(results.get(i).getBoundingBox())); 
-					matResults.set("confidence", i, Mat5.newScalar(results.get(i).getConfidence())); 
-					matResults.set("predictions", i, DLMatFile.array2Matrix(results.get(i).getPredicitions())); 
-				}
+				Struct matResults =results2Mat( results);
 
 				float[][] im = new float[dataF3.length ][dataF3[0].length];
 
@@ -158,8 +154,10 @@ public class DeepAcousticsDLTest {
 				}
 
 				matFile.addArray(
-						("im_java"), DLMatFile.array2Matrix(im)); 
-
+						("im_java"), DLMatFile.array2Matrix(im));
+				matFile.addArray(
+						("results_java"), matResults);
+				
 				Mat5.writeToFile(matFile, matFileOut); 
 			}
 
@@ -233,12 +231,13 @@ public class DeepAcousticsDLTest {
 		//transforms
 		//the clip length is three seconds
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.TRIM, 0, chunkSize));
-		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECFREQTRIM, 0, 22000)); 
+		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAMKETOS, 1009, 202, 3.0)); 
+		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECFREQTRIM, 2000, 22000)); 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPEC2DB));
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECNORMALISE_MINIMAX)); 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECFLIP)); 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.CLAHE2, 0.005f, 0.4f)); 
-		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECRESIZE, 160, 160, SpecTransform.RESIZE_BICUBIC)); 
+		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECRESIZE, 160, 160, SpecTransform.RESIZE_BILINEAR)); 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECNORMALISE_MINIMAX)); 
 
 		//generate the transforms. 
@@ -254,6 +253,8 @@ public class DeepAcousticsDLTest {
 		DLTransform transform = transforms.get(0); 
 		double[][] dataD;
 		for (int i=0; i<transforms.size(); i++) {
+					System.out.println("Transform " + i + ": " + transforms.get(i).getDLTransformType().getJSONString());
+
 			transform = transforms.get(i).transformData(transform); 
 
 			if (transform instanceof FreqTransform) {
@@ -266,6 +267,7 @@ public class DeepAcousticsDLTest {
 		}
 
 		float[][] dataF =  DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
+		dataF = JamArr.transposeMatrix(dataF); //transpose to make it [height, width] for the model input.
 		//		System.out.println("Data input size: " + dataF.length + " x " + dataF[0].length);
 		//			
 		//			
@@ -292,7 +294,7 @@ public class DeepAcousticsDLTest {
 		//			Matrix matrixSpecClahe=  DLMatFile.array2Matrix(dataClahe);
 		//			matFile.addArray("clahe", matrixSpecClahe); 
 		if (matFile!=null) {
-			Matrix matrixSpec=  DLMatFile.array2Matrix(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
+			Matrix matrixSpec=  DLMatFile.array2Matrix(dataF);
 
 			matFile.addArray("inputimage", matrixSpec); 
 
@@ -399,6 +401,24 @@ public class DeepAcousticsDLTest {
 	//		return filtResults;	
 	//	}
 
+	
+	/**
+	 * Convert deep acoustic results to a MATLAB struct. 
+	 * @param results - the results to convert
+	 * @return a MATLAB struct with the results
+	 */
+	public static Struct results2Mat(DeepAcousticResultArray results) {
+		Struct matResults = Mat5.newStruct(1, results.size());
+		
+		for (int i=0; i< results.size(); i++) {
+			matResults.set("boundingbox", i, DLMatFile.array2Matrix(results.get(i).getBoundingBox())); 
+			matResults.set("confidence", i, Mat5.newScalar(results.get(i).getConfidence())); 
+			matResults.set("predictions", i, DLMatFile.array2Matrix(results.get(i).getPredicitions())); 
+		}
+		
+		return matResults;
+	 }
+	 
 
 
 
@@ -412,13 +432,14 @@ public class DeepAcousticsDLTest {
 
 		/*** Run a simple image test to check that the model works. ***/
 
-		String matOut = "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/TensorFlow/testResizxeImIN_scores_java.mat";
+		String matOut = "/Users/jdjm/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/deepAcoustics/testResizxeImIN_scores_java.mat";
 
-		//Test an image so that we are sure wqe get the same ouput from Pythoing and Java
+		//Test an image so that we are sure we get the same ouput from Pythoing and Java
 		String matFilePath= "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/DarkNet_11_Whsitles/testResizeImIn.mat";
+		
 		//String modelPath = "/home/jamiemac/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/ModelExports/Test_TFSavedModel_DarkNet_250307/saved_model.pb";
 		String modelPath = "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/ModelExports/Test_TFSavedModel_DarkNet_250404/saved_model.pb";
-//		imageDLTest( modelPath,  matFilePath, matOut);
+		imageDLTest( modelPath,  matFilePath, matOut);
 
 		/** Run a transforms test to check that the transforms work. ***/
 
@@ -435,8 +456,21 @@ public class DeepAcousticsDLTest {
 			float[][] image = transformsTest(soundData, outMatPath);
 			
 			DeepAcousticResultArray results = runDolphinDL( modelPath,  wavFilePath) ; 
+		
+			//Append the bounding box results to the transformed data. 
+			
+			   // Read the existing MAT file
+	        MatFile matFile = Mat5.readFromFile(outMatPath);
 
-//			System.out.println("Transforms test completed.  " + results.size() + " results found. ");
+	        // Create a new scalar variable
+	        Struct newStruct =  results2Mat(results) ;
+
+	        // Add the new variable to the MatFile object
+	        matFile.addArray("java_results", newStruct);
+
+	        // Write the modified MatFile object back to the file.
+	        // This will overwrite the file but include the new variable and retain old ones.
+	        Mat5.writeToFile(matFile, outMatPath);
 		
 		} catch (IOException | UnsupportedAudioFileException e) {
 			// TODO Auto-generated catch block
