@@ -44,7 +44,7 @@ public class Pred2BoxDJL3  {
 	public static YoloPostProcessorResult yoloPostProcess(
 			NDManager manager,
 			NDList scoreTf, // List of NDArray, each [1, H, W, C]
-			Network network,
+			DeepAcousticsNetwork network,
 			float thresh
 			) {
 		int nDetHeads = scoreTf.size();
@@ -348,7 +348,7 @@ public class Pred2BoxDJL3  {
 	/**
 	 *  Network class (remains the same as defined in the previous response)
 	 */
-	public static class Network {
+	public static class DeepAcousticsNetwork {
 //	    int imLength;
 //	    int[] inputImageSize; // [height, width, channels]
 //	    int[] InputSize;      // [height, width, channels]
@@ -362,7 +362,7 @@ public class Pred2BoxDJL3  {
 //	        this.anchorBoxes = anchorBoxes;
 //	    }
 
-		public Network(Shape imShape, List<double[][]> anchorBoxes) {
+		public DeepAcousticsNetwork(Shape imShape, List<double[][]> anchorBoxes) {
 			this.anchorBoxes = anchorBoxes;
 			this.imShape = imShape;
 		}

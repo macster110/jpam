@@ -8,13 +8,15 @@ import java.util.ArrayList;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import org.jamdev.jdl4pam.deepAcoustics.Pred2BoxDJL3.Network;
+import org.jamdev.jdl4pam.deepAcoustics.Pred2BoxDJL3.DeepAcousticsNetwork;
 import org.jamdev.jdl4pam.transforms.DLTransform;
 import org.jamdev.jdl4pam.transforms.DLTransformsFactory;
 import org.jamdev.jdl4pam.transforms.DLTransfromParams;
 import org.jamdev.jdl4pam.transforms.FreqTransform;
 import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
 import org.jamdev.jdl4pam.transforms.WaveTransform;
+import org.jamdev.jdl4pam.transforms.jsonfile.DLTransformParser2;
+import org.jamdev.jdl4pam.transforms.jsonfile.DLTransformsParser;
 import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 import org.jamdev.jdl4pam.utils.DLMatFile;
 import org.jamdev.jdl4pam.utils.DLUtils;
@@ -23,6 +25,7 @@ import org.jamdev.jpamutils.clahe.Clahe;
 import org.jamdev.jpamutils.clahe.FastBitmap;
 import org.jamdev.jpamutils.spectrogram.SpecTransform;
 import org.jamdev.jpamutils.wavFiles.AudioData;
+import org.json.JSONObject;
 
 import ai.djl.MalformedModelException;
 import ai.djl.Model;
@@ -59,7 +62,7 @@ public class DeepAcousticsDLTest {
 			anchorBoxes.add(new double[][]{{89.,18.}});
 			anchorBoxes.add(new double[][]{{86.,51.}});
 
-			Network network = new Network(model.describeInput().get(0).getValue(), anchorBoxes);
+			DeepAcousticsNetwork network = new DeepAcousticsNetwork(model.describeInput().get(0).getValue(), anchorBoxes);
 
 
 			DeepAcousticsTranslator translator = new DeepAcousticsTranslator(network);
@@ -233,7 +236,7 @@ public class DeepAcousticsDLTest {
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.TRIM, 0, chunkSize));
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAMKETOS, 1009, 202, 3.0)); 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECFREQTRIM, 2000, 22000)); 
-		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPEC2DB));
+		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPEC2DB, null));
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECNORMALISE_MINIMAX)); 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECFLIP)); 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.CLAHE2, 0.005f, 0.4f)); 
@@ -242,6 +245,10 @@ public class DeepAcousticsDLTest {
 
 		//generate the transforms. 
 		ArrayList<DLTransform> transforms =	DLTransformsFactory.makeDLTransforms(dlTransformParamsArr); 
+		
+		JSONObject jsonObject = new JSONObject();
+		jsonObject = DLTransformParser2.writeJSONTransforms(dlTransformParamsArr, jsonObject);
+		System.out.println(jsonObject.toString(1));
 
 		((WaveTransform) transforms.get(0)).setWaveData(soundData); 
 

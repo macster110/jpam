@@ -1,7 +1,7 @@
 package org.jamdev.jdl4pam.deepAcoustics;
 
 
-import org.jamdev.jdl4pam.deepAcoustics.Pred2BoxDJL3.Network;
+import org.jamdev.jdl4pam.deepAcoustics.Pred2BoxDJL3.DeepAcousticsNetwork;
 import org.jamdev.jdl4pam.deepAcoustics.Pred2BoxDJL3.YoloPostProcessorResult;
 import org.jamdev.jdl4pam.utils.DLUtils;
 import org.jamdev.jpamutils.JamArr;
@@ -29,7 +29,7 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAc
 	/**
 	 * Create the shape 
 	 */
-	private Network network;
+	private DeepAcousticsNetwork network;
 
 	/**
 	 * The audio shape index
@@ -43,7 +43,7 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAc
 	 * Constructor for the spectrogram translator. The translator is essentially 
 	 * @param shape -the shape to set. 
 	 */
-	public DeepAcousticsTranslator(Network shape) {
+	public DeepAcousticsTranslator(DeepAcousticsNetwork shape) {
 		this.network = shape; 
 	}
 
@@ -147,7 +147,7 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAc
 	 * Get the default input shape. 
 	 * @return the default input shape. 
 	 */
-	public Network getNetwrok() {
+	public DeepAcousticsNetwork getNetwrok() {
 		return network;
 	}
 
