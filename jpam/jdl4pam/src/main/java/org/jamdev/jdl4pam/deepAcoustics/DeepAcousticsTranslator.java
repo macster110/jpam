@@ -4,7 +4,6 @@ package org.jamdev.jdl4pam.deepAcoustics;
 import org.jamdev.jdl4pam.deepAcoustics.Pred2BoxDJL3.DeepAcousticsNetwork;
 import org.jamdev.jdl4pam.deepAcoustics.Pred2BoxDJL3.YoloPostProcessorResult;
 import org.jamdev.jdl4pam.utils.DLUtils;
-import org.jamdev.jpamutils.JamArr;
 
 import ai.djl.ndarray.NDArray;
 import ai.djl.ndarray.NDList;
@@ -77,7 +76,7 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAc
 	@Override
 	public DeepAcousticResultArray  processOutput(TranslatorContext ctx, NDList list) {
 
-		//System.out.println("Output: " + list.size()); 
+//		System.out.println("Output: " + list.size()); 
 		DeepAcousticResultArray boundingBoxes= new DeepAcousticResultArray(); 
 	
 		
@@ -86,22 +85,22 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAc
 				 list,    // Input as NDList
 		         network, thresh);
 		
-		System.out.println("Result: " + result.bboxes.length + " bounding boxes found");
-		
-		for (int i=0; i<result.bboxes.length; i++) {
-			//System.out.println("Result: " + result.bboxes[i].getShape()); 
-			System.out.println("Result: boxes: " +  i);
-			JamArr.printArray(result.bboxes[i]);
-			System.out.println("	 " );
-			
-			System.out.println("Result: Confidence: " +  i);
-			JamArr.printArray(result.scores);
-			System.out.println("	 " );
-			
-			System.out.println("Result: classes: " +  i);
-			JamArr.printArray(result.classes[i]);
-			System.out.println("	 " );
-		}
+//		System.out.println("Result: " + result.bboxes.length + " bounding boxes found");
+//		
+//		for (int i=0; i<result.bboxes.length; i++) {
+//			//System.out.println("Result: " + result.bboxes[i].getShape()); 
+//			System.out.println("Result: boxes: " +  i);
+//			JamArr.printArray(result.bboxes[i]);
+//			System.out.println("	 " );
+//			
+//			System.out.println("Result: Confidence: " +  i);
+//			JamArr.printArray(result.scores);
+//			System.out.println("	 " );
+//			
+//			System.out.println("Result: classes: " +  i);
+//			JamArr.printArray(result.classes[i]);
+//			System.out.println("	 " );
+//		}
 		//System.out.println("Result: " + result.getBoundingBoxes().get(0).getShape());
 
 		//Now we need to convert the result to a bounding box array.

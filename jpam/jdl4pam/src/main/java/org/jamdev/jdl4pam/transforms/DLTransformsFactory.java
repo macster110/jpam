@@ -124,9 +124,15 @@ public class DLTransformsFactory {
 		case SPECTRUM_SMOOTH:
 			dlTransform = new SpectrumTransform(dlTransformType, new Number[] {3}); 
 			break;
-		
+		case CLAHE2:
+			dlTransform = new SpectrumTransform(dlTransformType, new Number[] {0.005, 0.4}); 
+			break;
+		case SPECFREQTRIM:
+			dlTransform = new SpectrumTransform(dlTransformType, new Number[] {0, (double) sR/2}); 
+			break;
 		default:
 			break;
+
 
 		}
 		return dlTransform;

@@ -305,8 +305,18 @@ public class DLTransformsParser {
 		case SPECTRUM_SMOOTH:
 			paramsObject.put("window", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
 			break;
+		case CLAHE:
+			break;
+		case CLAHE2:
+			paramsObject.put("cliplimit", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue()); 
+			paramsObject.put("alpha", ((SimpleTransformParams) dlTransfromParams).params[1].doubleValue());
+			break;
+		case SPECFLIP:
+			//no params to add here - no params.
+			break;
 		default:
 			break;
+
 		}
 
 		return paramsObject; 
@@ -377,7 +387,10 @@ public class DLTransformsParser {
 			break;
 		case SPEC2DB:
 			number = new Number[1]; 
-			number[0] = jsonObjectParams.getDouble("min_db"); 
+			if (jsonObjectParams.has("min_db")) {
+				//if the min_db is not set then it is not used. 
+				number[0] = jsonObjectParams.getDouble("min_db"); 
+			}
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number[0] == null? null : number); 
 			break;
 		case SPECNORMALISEROWSUM:
@@ -496,7 +509,7 @@ public class DLTransformsParser {
 			//TODO
 			break;
 		case SPECTROGRAMKETOS:
-			number = new Number[2]; 
+			number = new Number[3]; 
 			number[0] = jsonObjectParams.getInt("fft"); 
 			number[1] = jsonObjectParams.getInt("hop"); 
 			number[2] = jsonObjectParams.getDouble("window_size"); 
@@ -516,6 +529,12 @@ public class DLTransformsParser {
 			break;
 		case SPECFLIP:
 			dlTransformParams = new SimpleTransformParams(dlTransformType); 
+			break;
+		case CLAHE2:
+			number = new Number[2]; 
+			number[0] = jsonObjectParams.getDouble("cliplimit"); 
+			number[1] = jsonObjectParams.getDouble("alpha"); 
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
 			break;
 		case FFT:
 			number = new Number[1]; 
@@ -554,7 +573,8 @@ public class DLTransformsParser {
 		default:
 			dlTransformParams = new SimpleTransformParams(dlTransformType); 
 			break;
-
+		case CLAHE:
+			break;
 		}
 
 		return dlTransformParams; 

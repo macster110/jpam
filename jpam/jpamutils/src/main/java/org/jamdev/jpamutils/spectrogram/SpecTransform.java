@@ -436,7 +436,7 @@ public class SpecTransform {
 		int xTile=(int) Math.ceil(this.specData[0].length/50.);
 		int yTile=(int) Math.ceil(this.specData.length/50.);
 		
-		System.out.println("xTile: " + xTile + " yTile: " + yTile);
+		//System.out.println("xTile: " + xTile + " yTile: " + yTile);
 
 		this.specData = clahe2(this.specData,  xTile,  yTile,  clipLimit,  alpha);
 
