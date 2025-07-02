@@ -3,7 +3,6 @@ package org.jamdev.jdl4pam.transforms.jsonfile;
 import java.io.File;
 
 import org.jamdev.jdl4pam.genericmodel.GenericModelParams;
-import org.jamdev.jdl4pam.transforms.DLTransform;
 import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 import org.jamdev.jdl4pam.transforms.DLTransformsFactory;
 import org.jamdev.jdl4pam.transforms.SimpleTransform;

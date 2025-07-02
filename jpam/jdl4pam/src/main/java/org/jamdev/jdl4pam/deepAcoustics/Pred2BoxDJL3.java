@@ -39,13 +39,15 @@ public class Pred2BoxDJL3  {
 	 * @param manager the NDManager to create NDArray objects
 	 * @param scoreTf List of NDArray, each [1, H, W, C] representing the output of detection heads
 	 * @param network the Network object containing anchor boxes and image shape
+	 * @param index the index of the detection head to process
 	 * @return YoloPostProcessorResult containing bounding boxes, scores, and classes
 	 */
 	public static YoloPostProcessorResult yoloPostProcess(
 			NDManager manager,
 			NDList scoreTf, // List of NDArray, each [1, H, W, C]
 			DeepAcousticsNetwork network,
-			float thresh
+			float thresh,
+			int index
 			) {
 		int nDetHeads = scoreTf.size();
 		List<List<NDArray>> output = new ArrayList<>(nDetHeads);
@@ -87,42 +89,42 @@ public class Pred2BoxDJL3  {
 	                // x
 	                nNewInd = 0;
 	                for (int iAnch : xIds) {
-	                    float v = head.get(new NDIndex("0," + dim1 + "," + dim2 + "," + iAnch)).toFloatArray()[0];
+	                    float v = head.get(new NDIndex(index + "," + dim1 + "," + dim2 + "," + iAnch)).toFloatArray()[0];
 	                    xArr[dim1][dim2][nNewInd] = (float) Activation.sigmoid(manager.create(new float[]{v})).toFloatArray()[0];
 	                    nNewInd++;
 	                }
 	                // y
 	                nNewInd = 0;
 	                for (int iAnch : yIds) {
-	                    float v = head.get(new NDIndex("0," + dim1 + "," + dim2 + "," + iAnch)).toFloatArray()[0];
+	                    float v = head.get(new NDIndex(index + "," + dim1 + "," + dim2 + "," + iAnch)).toFloatArray()[0];
 	                    yArr[dim1][dim2][nNewInd] = (float) Activation.sigmoid(manager.create(new float[]{v})).toFloatArray()[0];
 	                    nNewInd++;
 	                }
 	                // w
 	                nNewInd = 0;
 	                for (int iAnch : wIds) {
-	                    float v = head.get(new NDIndex("0," + dim1 + "," + dim2 + "," + iAnch)).toFloatArray()[0];
+	                    float v = head.get(new NDIndex(index + "," + dim1 + "," + dim2 + "," + iAnch)).toFloatArray()[0];
 	                    wArr[dim1][dim2][nNewInd] = (float) Math.exp(v);
 	                    nNewInd++;
 	                }
 	                // h
 	                nNewInd = 0;
 	                for (int iAnch : hIds) {
-	                    float v = head.get(new NDIndex("0," + dim1 + "," + dim2 + "," + iAnch)).toFloatArray()[0];
+	                    float v = head.get(new NDIndex(index + "," + dim1 + "," + dim2 + "," + iAnch)).toFloatArray()[0];
 	                    hArr[dim1][dim2][nNewInd] = (float) Math.exp(v);
 	                    nNewInd++;
 	                }
 	                // obj
 	                nNewInd = 0;
 	                for (int iAnch : cIds) {
-	                    float v = head.get(new NDIndex("0," + dim1 + "," + dim2 + "," + iAnch)).toFloatArray()[0];
+	                    float v = head.get(new NDIndex(index + "," + dim1 + "," + dim2 + "," + iAnch)).toFloatArray()[0];
 	                    objArr[dim1][dim2][nNewInd] = (float) Activation.sigmoid(manager.create(new float[]{v})).toFloatArray()[0];
 	                    nNewInd++;
 	                }
 	                // class
 	                nNewInd = 0;
 	                for (int iAnch : classIds) {
-	                    float v = head.get(new NDIndex("0," + dim1 + "," + dim2 + "," + iAnch)).toFloatArray()[0];
+	                    float v = head.get(new NDIndex(index + "," + dim1 + "," + dim2 + "," + iAnch)).toFloatArray()[0];
 	                    classArr[dim1][dim2][nNewInd] = (float) Activation.sigmoid(manager.create(new float[]{v})).toFloatArray()[0];
 	                    nNewInd++;
 	                }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -16,25 +17,19 @@ import org.jamdev.jdl4pam.transforms.FreqTransform;
 import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
 import org.jamdev.jdl4pam.transforms.WaveTransform;
 import org.jamdev.jdl4pam.transforms.jsonfile.DLTransformParser2;
-import org.jamdev.jdl4pam.transforms.jsonfile.DLTransformsParser;
 import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 import org.jamdev.jdl4pam.utils.DLMatFile;
 import org.jamdev.jdl4pam.utils.DLUtils;
 import org.jamdev.jpamutils.JamArr;
-import org.jamdev.jpamutils.clahe.Clahe;
-import org.jamdev.jpamutils.clahe.FastBitmap;
 import org.jamdev.jpamutils.spectrogram.SpecTransform;
 import org.jamdev.jpamutils.wavFiles.AudioData;
 import org.json.JSONObject;
 
-import ai.djl.MalformedModelException;
 import ai.djl.Model;
 import ai.djl.engine.Engine;
 import ai.djl.inference.Predictor;
-import ai.djl.ndarray.types.Shape;
 import us.hebi.matlab.mat.format.Mat5;
 import us.hebi.matlab.mat.format.Mat5File;
-import us.hebi.matlab.mat.types.Array;
 import us.hebi.matlab.mat.types.MatFile;
 import us.hebi.matlab.mat.types.Matrix;
 import us.hebi.matlab.mat.types.Struct;
@@ -43,15 +38,27 @@ import us.hebi.matlab.mat.types.Struct;
  * A test class for DeepAcousticsModel
  */
 public class DeepAcousticsDLTest {
+	
+	
+	/**
+	 * Process an image with the model. 
+	 * @param model - the model to use.
+	 * @param dataF3 - the input data in the format [height, width, channels] where channels is 3 for RGB.
+	 * @return the results from the model.
+	 */
+	public static List<DeepAcousticResultArray> processDLImage(Model model, float[][][] dataF3){
+		return processDLImage( model, dataF3,  1);
+	}
 
 
 	/**
 	 * Process an image with the model. 
-	 * @param model - the model to use
-	 * @param dataF3 - the input data in the format [height, width, channels] where channels is 3 for RGB
-	 * @return the results from the model
+	 * @param model - the model to use.
+	 * @param dataF3 - the input data in the format [height, width, channels] where channels is 3 for RGB.
+	 * @param nSpec - the number of spectrograms to process (usually 1). If more than 1 then duplicate spectrograms are used. 
+	 * @return the results from the model.
 	 */
-	public static DeepAcousticResultArray processDLImage(Model model, float[][][] dataF3){
+	public static List<DeepAcousticResultArray> processDLImage(Model model, float[][][] dataF3, int nSpec){
 
 		try {
 
@@ -69,20 +76,19 @@ public class DeepAcousticsDLTest {
 			translator.setThresh(0.4f);
 
 			//predictor for the model
-			Predictor<float[][][][], DeepAcousticResultArray> predictor = model.newPredictor(translator);
+			Predictor<float[][][][], List<DeepAcousticResultArray>> predictor = model.newPredictor(translator);
 
 			int nRuns = 1;
 
-			System.out.println("Length arr: " + dataF3.length + " " + dataF3[0].length + " " + dataF3[0][0].length);
+			//System.out.println("Length arr: " + dataF3.length + " " + dataF3[0].length + " " + dataF3[0][0].length);
 
 
 			float[][][][] data;
-			DeepAcousticResultArray results = null;
+			List<DeepAcousticResultArray> results = null;
 			for (int i=0; i<nRuns; i++) {
 				long time1 = System.currentTimeMillis();
 				//				data = DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
 				//				System.out.println("Data input size: " + data.length + "   " + data[0].length);
-				int nSpec = 10;
 				data = new float[nSpec][][][]; 
 				for (int j=0; j<nSpec; j++) {
 					//data[j]=  DLUtils.makeDummySpectrogram(40, 40); 
@@ -91,7 +97,7 @@ public class DeepAcousticsDLTest {
 
 				results = predictor.predict(data); 
 				long time2 = System.currentTimeMillis();
-				System.out.println("Time to run model " + nSpec +  " times: " + (time2-time1) + " ms"); 
+				System.out.println("Time to run model " + nSpec +  " times: " + (time2-time1) + " ms" + " input: "+ data.length + " output: " + results.size()); 
 				//				for (int j=0; j<results.size(); j++) {
 				//					System.out.println(String.format("Confidence %.2f x %.2f, y %.2f, width %.2f, height %.2f", 
 				//							results.get(j).getConfidence(), results.get(j).getX(), results.get(j).getY(), results.get(j).getWidth(), results.get(j).getHeight()));
@@ -138,7 +144,7 @@ public class DeepAcousticsDLTest {
 			System.out.println("Input: " + model.describeInput().values()); 
 			System.out.println("Output: " + model.describeOutput().values()); 
 			
-			DeepAcousticResultArray results = processDLImage(model, dataF3);
+			List<DeepAcousticResultArray> results = processDLImage(model, dataF3);
 
 			//Create a mat file with the results.
 			if (matFileOut!=null) {
@@ -146,7 +152,7 @@ public class DeepAcousticsDLTest {
 				MatFile matFile = Mat5.newMatFile();
 
 
-				Struct matResults =results2Mat( results);
+				Struct matResults =results2Mat( results.get(0));
 
 				float[][] im = new float[dataF3.length ][dataF3[0].length];
 
@@ -324,7 +330,7 @@ public class DeepAcousticsDLTest {
 	 * @param startChunck - the location to start form in the file (in samples). 
 	 * @return predicitons. 
 	 */
-	public static DeepAcousticResultArray runDolphinDL(String modelPath, String wavFilePath) {
+	public static  List<DeepAcousticResultArray> runDolphinDL(String modelPath, String wavFilePath) {
 
 		//Run the model a number of times to get an average time.
 		int nRuns = 2; 
@@ -365,8 +371,8 @@ public class DeepAcousticsDLTest {
 			}
 
 
-			//			System.out.println("Data input size: " + dataF3.length + " x " + dataF3[0].length + " x " + dataF3[0][0].length);//
-			DeepAcousticResultArray  results = null;
+//					System.out.println("Data input size: " + dataF3.length + " x " + dataF3[0].length + " x " + dataF3[0][0].length);//
+			List<DeepAcousticResultArray>  results = null;
 			for (int i=0; i<nRuns; i++) {
 				results = processDLImage(model, dataF3);
 			}
@@ -446,7 +452,7 @@ public class DeepAcousticsDLTest {
 		
 		//String modelPath = "/home/jamiemac/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/ModelExports/Test_TFSavedModel_DarkNet_250307/saved_model.pb";
 		String modelPath = "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/ModelExports/Test_TFSavedModel_DarkNet_250404/saved_model.pb";
-		imageDLTest( modelPath,  matFilePath, matOut);
+		//imageDLTest( modelPath,  matFilePath, matOut);
 
 		/** Run a transforms test to check that the transforms work. ***/
 
@@ -458,11 +464,15 @@ public class DeepAcousticsDLTest {
 		String outMatPath = "/Users/jdjm/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/deepAcoustics/deepAcoustic_spec_test.mat";
 
 		try {
+			//System.out.println("Hello Deep Acoustics DL Test");
+
 			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
 
 			float[][] image = transformsTest(soundData, outMatPath);
 			
-			DeepAcousticResultArray results = runDolphinDL( modelPath,  wavFilePath) ; 
+			List<DeepAcousticResultArray> results = runDolphinDL( modelPath,  wavFilePath) ; 
+			
+//			System.out.println("Hello Deep Acoustics DL Test results: " + results.size() + " " + results.get(0).getBoundingBox().length);
 		
 			//Append the bounding box results to the transformed data. 
 			
@@ -470,7 +480,7 @@ public class DeepAcousticsDLTest {
 	        MatFile matFile = Mat5.readFromFile(outMatPath);
 
 	        // Create a new scalar variable
-	        Struct newStruct =  results2Mat(results) ;
+	        Struct newStruct =  results2Mat(results.get(0)) ;
 
 	        // Add the new variable to the MatFile object
 	        matFile.addArray("java_results", newStruct);

@@ -1,6 +1,9 @@
 package org.jamdev.jdl4pam.deepAcoustics;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jamdev.jdl4pam.deepAcoustics.Pred2BoxDJL3.DeepAcousticsNetwork;
 import org.jamdev.jdl4pam.deepAcoustics.Pred2BoxDJL3.YoloPostProcessorResult;
 import org.jamdev.jdl4pam.utils.DLUtils;
@@ -22,7 +25,7 @@ import ai.djl.translate.TranslatorContext;
  * <p>
  * @author Jamie Macaulay
  */
-public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAcousticResultArray> {
+public class DeepAcousticsTranslator implements Translator<float[][][][], List<DeepAcousticResultArray>> {
 
 
 	/**
@@ -74,17 +77,44 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAc
 	}
 
 	@Override
-	public DeepAcousticResultArray  processOutput(TranslatorContext ctx, NDList list) {
+	public List<DeepAcousticResultArray>  processOutput(TranslatorContext ctx, NDList list) {
 
-//		System.out.println("Output: " + list.size()); 
-		DeepAcousticResultArray boundingBoxes= new DeepAcousticResultArray(); 
+		//System.out.println("List size: " + list.size()); 
+		
+		//each result is a bounding box array for one spectrogram segment.
+		// Multiple segments can be processed at once, so we return an ArrayList of DeepAcousticResultArray objects.
+		ArrayList<DeepAcousticResultArray> results = new ArrayList<DeepAcousticResultArray>();
+
+		DeepAcousticResultArray boundingBoxes;
 	
+		YoloPostProcessorResult result; 
 		
-		 YoloPostProcessorResult result  = Pred2BoxDJL3.yoloPostProcess(
-				 ctx.getNDManager(), // Parent manager
-				 list,    // Input as NDList
-		         network, thresh);
+		long nResults = list.get(0).getShape().get(0);
 		
+		for (int i=0; i<nResults; i++) {			
+			result = Pred2BoxDJL3.yoloPostProcess(
+					 ctx.getNDManager(), // Parent manager
+					 list,    // Input as NDList
+			         network, thresh, i);
+			
+			if (result==null || result.bboxes == null || result.bboxes.length == 0) {
+				System.out.println("No bounding boxes found");
+				results.add(new DeepAcousticResultArray());
+				continue;
+			}
+			
+			boundingBoxes = new DeepAcousticResultArray(); 
+			DeepAcousticsResult dAResult;
+			for (int j=0; j<result.bboxes.length; j++) {
+				//System.out.println("Result: " + result.bboxes[i].getShape()); 
+				dAResult = new DeepAcousticsResult(result.bboxes[j], result.scores[j], result.classes[j]);
+				boundingBoxes.add(dAResult);
+			}
+			
+			results.add(boundingBoxes);
+			
+		}
+		 
 //		System.out.println("Result: " + result.bboxes.length + " bounding boxes found");
 //		
 //		for (int i=0; i<result.bboxes.length; i++) {
@@ -105,20 +135,7 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], DeepAc
 
 		//Now we need to convert the result to a bounding box array.
 		
-		if (result==null || result.bboxes == null || result.bboxes.length == 0) {
-			System.out.println("No bounding boxes found");
-			return boundingBoxes; 
-		}
-		
-		DeepAcousticsResult dAResult;
-		for (int i=0; i<result.bboxes.length; i++) {
-			//System.out.println("Result: " + result.bboxes[i].getShape()); 
-			dAResult = new DeepAcousticsResult(result.bboxes[i], result.scores[i], result.classes[i]);
-			boundingBoxes.add(dAResult);
-		}
-		
-
-		return boundingBoxes; 
+		return results; 
 	}
 
 
