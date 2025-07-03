@@ -33,10 +33,6 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], List<D
 	 */
 	private DeepAcousticsNetwork network;
 
-	/**
-	 * The audio shape index
-	 */
-	private Integer shapeIndex;
 
 	private float thresh = 0.01f;  //default threshold for bounding boxes.
 
@@ -104,6 +100,9 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], List<D
 			}
 			
 			boundingBoxes = new DeepAcousticResultArray(); 
+			boundingBoxes.setImageHeight((int) this.network.imShape.get(1));
+			boundingBoxes.setImageWidth((int) this.network.imShape.get(2));
+
 			DeepAcousticsResult dAResult;
 			for (int j=0; j<result.bboxes.length; j++) {
 				//System.out.println("Result: " + result.bboxes[i].getShape()); 
