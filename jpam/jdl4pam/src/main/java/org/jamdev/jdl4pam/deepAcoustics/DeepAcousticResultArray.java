@@ -48,6 +48,35 @@ public class DeepAcousticResultArray extends ArrayList<DeepAcousticsResult> {
 	public int getImWidth() {
 		return imWidth;
 	}
+	
+	/**
+	 * Calculate the bounding box start time in milliseconds based on the segment start time, segment duration, and the bounding box. 
+	 * @param segStart - the start time of the segment in millis.
+	 * @param segDurationMillis - the duration of the segment in millis.
+	 * @param deepAcousticsResult - the DeepAcousticsResult object containing the bounding box information.
+	 * 
+	 * @param deepAcousticsResult
+	 */
+	public long calcBoundingBoxMillis(long segStart, double segDurationMillis, DeepAcousticsResult deepAcousticsResult) {
+		 //calculate the bounding box time in milliseconds
+		long startTime = (long) (segStart + (deepAcousticsResult.getX() / imWidth) * segDurationMillis);
+		
+		return startTime;
+	}
+	
+	/**
+	 * Calculate the bounding box start time in samples based on the segment start time, segment duration, and the bounding box. 
+	 * @param segStartSamples - the start time of the segment in samples.
+	 * @param segDurationSamples - the duration of the segment in samples.
+	 * @param deepAcousticsResult - the DeepAcousticsResult object containing the bounding box information.
+	 * @return the start time in samples
+	 */
+	public long calcBoundingBoxSampleStart(long segStartSamples, double segDurationSamples, DeepAcousticsResult deepAcousticsResult) {
+		 //calculate the bounding box time in milliseconds
+		long startSamples = (long) (segStartSamples + (deepAcousticsResult.getX() / imWidth) * segDurationSamples);
+		
+		return startSamples;
+	}
 
 
 }
