@@ -59,7 +59,7 @@ public class DeepAcousticResultArray extends ArrayList<DeepAcousticsResult> {
 	 */
 	public static long calcBoundingBoxMillis(long segStart, double segDurationMillis, DeepAcousticsResult deepAcousticsResult, int imWidth) {
 		 //calculate the bounding box time in milliseconds
-		long startTime = (long) (segStart + (deepAcousticsResult.getX() / imWidth) * segDurationMillis);
+		long startTime = (long) (segStart + ((double) deepAcousticsResult.getX() / imWidth) * segDurationMillis);
 		
 		return startTime;
 	}
@@ -73,7 +73,7 @@ public class DeepAcousticResultArray extends ArrayList<DeepAcousticsResult> {
 	 */
 	public static long calcBoundingBoxSampleStart(long segStartSamples, double segDurationSamples, DeepAcousticsResult deepAcousticsResult, int imWidth) {
 		 //calculate the bounding box time in milliseconds
-		long startSamples = (long) (segStartSamples + (deepAcousticsResult.getX() / imWidth) * segDurationSamples);
+		long startSamples = (long) (segStartSamples + ((double) deepAcousticsResult.getX() / imWidth) * segDurationSamples);
 		
 		return startSamples;
 	}

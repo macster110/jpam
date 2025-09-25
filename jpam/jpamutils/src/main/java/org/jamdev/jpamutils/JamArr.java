@@ -1757,6 +1757,19 @@ public class JamArr {
 	}
 	
 	
+	/**
+	 * Convert a long array to a float array. 
+	 * @param arrd - the long array
+	 * @return a double array containing the same numbers as arrf. 
+	 */
+	public static float[] longToFloat(long[] arrd) {
+		float[] arr = new float[arrd.length]; 
+		for (int i=0; i<arr.length; i++) {
+			arr[i] = (float) arrd[i]; 
+		}
+		return arr;
+	}
+	
 
 
 	

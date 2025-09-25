@@ -339,9 +339,11 @@ public class AudioMothTFile {
 		
 //		System.out.println("fileName: " + fileName); 
 //		System.out.println("fileString: " + fileString); 
-		
+//		System.out.println("file length: " + fileName.length()); 
+//		System.out.println("file length: " + fileName.length()); 
+
 		//think this should probably cover everything. 
-		if (fileName.length()==16 && fileString.equals("WAV") && fileName.endsWith("T")) {
+		if (fileName.length()==16 && fileString.toLowerCase().equals("wav") && fileName.endsWith("T")) {
 			return true;
 		}
 
@@ -353,8 +355,8 @@ public class AudioMothTFile {
 
 		//test the algorithm on a file and export as MATLAB structure. 
 
-		String file = "/Users/au671271/Google Drive/SoundSort_dev/audiomoth/20200530_210400T.WAV";
-		String exportToFile = "/Users/au671271/Google Drive/Programming/MATLAB/Instruments/audiomoth/audiomothchunk.mat"; 
+		String file = "/Users/jdjm/Dropbox/SoundSort_dev/audiomoth/triggered_recordings/20200530_210400T.wav";
+		String exportToFile = null;
 
 		boolean isFile = isAudioMothTFile(new File(file)); 
 //		boolean isFile = isAudioMothTFile(new File("/Users/au671271/Google Drive/SoundSort_dev/audiomoth/20200530_210400.WAV")); 
@@ -375,10 +377,11 @@ public class AudioMothTFile {
 				System.out.println("Max amp: " + max(triggerChunk.wave));
 			}
 
-			MatFile matFile = write2MAT(triggerChunks); 
-
-			// Serialize to disk using default configurations
-			Mat5.writeToFile(matFile,exportToFile);
+			if (exportToFile!=null) {
+				MatFile matFile = write2MAT(triggerChunks); 
+				// Serialize to disk using default configurations
+				Mat5.writeToFile(matFile,exportToFile);
+			}
 		} 
 		catch (UnsupportedAudioFileException e) {
 			e.printStackTrace();

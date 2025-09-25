@@ -39,16 +39,20 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], List<D
 
 	/**
 	 * Constructor for the spectrogram translator. The translator is essentially 
-	 * @param shape -the shape to set. 
+	 * @param network -the shape to set. 
 	 */
-	public DeepAcousticsTranslator(DeepAcousticsNetwork shape) {
-		this.network = shape; 
+	public DeepAcousticsTranslator(DeepAcousticsNetwork network) {
+		this.network = network; 
 	}
 
 
 	@Override
 	public NDList processInput(TranslatorContext ctx, float[][][][] data) {
-		//System.out.println("Hello: 1 " ); 
+		
+		
+		//System.out.println("DeepAcousticsTranslator: Processing input data with shape: " + data.length + " x " + data[0].length + " x " + data[0][0].length + " x " + data[0][0][0].length);
+		
+		
 		NDManager manager = ctx.getNDManager();
 
 		//this is for the soundspot - different models probably have difference shapes. 
@@ -65,7 +69,7 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], List<D
 
 		float[] specgramFlat = DLUtils.flattenDoubleArrayF(data); 
 		
-		//System.out.println("Input shape " + shape);
+		//System.out.println("DeepAcousticsTranslator: expected network shape " + shape);
 
 		NDArray array = manager.create(specgramFlat, shape); 
 

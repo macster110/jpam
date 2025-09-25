@@ -234,6 +234,16 @@ public class Pred2BoxDJL3  {
 		NDArray indKeep = ccdets[0].gte(thresh);
 		float[] scorePred = ccdets[0].get(indKeep).toFloatArray();
 		int nKeep = scorePred.length;
+		
+		
+		if (nKeep==0) {
+			// No detections above threshold
+			YoloPostProcessorResult result = new YoloPostProcessorResult();
+			result.bboxes = new double[0][0];
+			result.scores = new float[0];
+			result.classes = new float[0][0];
+			return result;
+		}	
 
 		float[] xArr = ccdets[1].get(indKeep).toFloatArray();
 		float[] yArr = ccdets[2].get(indKeep).toFloatArray();
@@ -249,10 +259,12 @@ public class Pred2BoxDJL3  {
 		}
 		
 		// iterate thorugh class array - the classes are in the last element of ccdets
+		System.out.println("Number of boxes kept after thresholding: " + nKeep);
 		float[][] classPredAll = new float[ccdets.length-5][];
 		int n=0; 
 		for (int i = 5; i< ccdets.length; i++) {
-			classPredAll[n] = ccdets[i].get(indKeep).toFloatArray();
+			classPredAll[n] = JamArr.longToFloat(ccdets[i].get(indKeep).toLongArray());
+										
 			n++;
 		}
 		
