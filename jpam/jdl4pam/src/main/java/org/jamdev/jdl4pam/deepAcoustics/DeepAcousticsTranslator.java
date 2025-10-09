@@ -34,7 +34,7 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], List<D
 	private DeepAcousticsNetwork network;
 
 
-	private float thresh = 0.01f;  //default threshold for bounding boxes.
+	private float thresh = 0.5f;  //default threshold for bounding boxes.
 
 
 	/**

@@ -13,7 +13,6 @@ public class Pred2BoxDJL3  {
 
 	public static class YoloPostProcessorResult {
 		
-		
 		/**
 		 * Bounding boxes in the format [x, y, width, height]
 		 * where (x, y) is the left corner of the box.
@@ -27,10 +26,10 @@ public class Pred2BoxDJL3  {
 		public float[] scores;   // [N]
 		
 		/**
-		 * Class indices for each bounding box.
-		 * This indicates the class of the detected object.
+		 * Class probabilities for each bounding box.
+		 * Each row contains the probability for each class.
 		 */
-		public float[][] classes;     // [N]
+		public float[][] classProbs; // [N, numClasses]
 	}
 
 	/**
@@ -220,60 +219,49 @@ public class Pred2BoxDJL3  {
 
 		// 5. Class probabilities and indices
 		NDArray classProbs, classIdx;
+		int numClasses = 1;
 		if (ccdets[5].getShape().dimension() == 2) {
-			classProbs = ccdets[5].max(new int[]{1});
+			classProbs = ccdets[5]; // [numDetections, numClasses]
+			numClasses = (int) ccdets[5].getShape().get(1);
 			classIdx = ccdets[5].argMax(1);
 		} else {
-			classProbs = ccdets[5];
+			classProbs = ccdets[5].reshape(-1, 1); // [numDetections, 1]
 			classIdx = manager.zeros(classProbs.getShape());
 		}
-		ccdets[0] = ccdets[0].mul(classProbs);
-		ccdets[5] = classIdx;
+		NDArray maxClassProb = classProbs.max(new int[]{1});
+		ccdets[0] = ccdets[0].mul(maxClassProb); // confidence * max class prob
 
 		// 7. Filter by score >= 0.5
 		NDArray indKeep = ccdets[0].gte(thresh);
 		float[] scorePred = ccdets[0].get(indKeep).toFloatArray();
 		int nKeep = scorePred.length;
-		
-		
 		if (nKeep==0) {
 			// No detections above threshold
 			YoloPostProcessorResult result = new YoloPostProcessorResult();
 			result.bboxes = new double[0][0];
 			result.scores = new float[0];
-			result.classes = new float[0][0];
+			result.classProbs = new float[0][0];
 			return result;
-		}	
-
+		}
 		float[] xArr = ccdets[1].get(indKeep).toFloatArray();
 		float[] yArr = ccdets[2].get(indKeep).toFloatArray();
 		float[] wArr = ccdets[3].get(indKeep).toFloatArray();
 		float[] hArr = ccdets[4].get(indKeep).toFloatArray();
-
 		double[][] bboxesTmp = new double[nKeep][4];
 		for (int i = 0; i < nKeep; i++) {
-		    bboxesTmp[i][0] = xArr[i];
-		    bboxesTmp[i][1] = yArr[i];
-		    bboxesTmp[i][2] = wArr[i];
-		    bboxesTmp[i][3] = hArr[i];
+			bboxesTmp[i][0] = xArr[i];
+			bboxesTmp[i][1] = yArr[i];
+			bboxesTmp[i][2] = wArr[i];
+			bboxesTmp[i][3] = hArr[i];
 		}
-		
-		// iterate thorugh class array - the classes are in the last element of ccdets
-		System.out.println("Number of boxes kept after thresholding: " + nKeep);
-		float[][] classPredAll = new float[ccdets.length-5][];
-		int n=0; 
-		for (int i = 5; i< ccdets.length; i++) {
-			classPredAll[n] = JamArr.longToFloat(ccdets[i].get(indKeep).toLongArray());
-										
-			n++;
+		// Get class probabilities for kept detections
+		float[][] classProbsArr = new float[nKeep][numClasses];
+		float[] flatClassProbs = classProbs.get(indKeep).toFloatArray();
+		for (int i = 0; i < nKeep; i++) {
+			for (int j = 0; j < numClasses; j++) {
+				classProbsArr[i][j] = flatClassProbs[i * numClasses + j];
+			}
 		}
-		
-		
-		//now we have the class prediction where each row in the array is all the prediction of a particular class for all boxes. 
-		//Easier to have this as each row is all the class predicitons for a particular box so trnaspose the array.
-		classPredAll = JamArr.transposeMatrix(classPredAll);
-
-		
 		// 8. Scale boxes to input image size
 		double[] scale = new double[]{ network.imShape.get(2),  network.imShape.get(1),  network.imShape.get(2), network.imShape.get(1)};
 		double[][] bboxTmpSc = new double[nKeep][4];
@@ -292,7 +280,7 @@ public class Pred2BoxDJL3  {
 		YoloPostProcessorResult result = new YoloPostProcessorResult();
 		result.bboxes = bboxTmpSc;
 		result.scores =  Arrays.copyOf(scorePred, nKeep);
-		result.classes = classPredAll; 
+		result.classProbs = classProbsArr;
 		return result;
 	}
 

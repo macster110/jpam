@@ -46,7 +46,7 @@ public class DeepAcousticsResult {
 	 * Constructor for the DeepAcousticsResult. 
 	 * @param boundingBox - the bounding box in the format [x, y width, height] in pixels of input image. 
 	 * @param confidence - the confidence score from 0 to 1. 
-	 * @param classes - the predictions for different species in the bounding box. 
+	 * @param classes - the class predictions for the bounding box - these are integer numbers not probabilities
 	 */
 	public DeepAcousticsResult(double[] boundingBox, float confidence, float[] classes) {
 		
@@ -58,7 +58,6 @@ public class DeepAcousticsResult {
 		this.predicitions = classes;
 		
 	}
-
 
 	/**
 	 * Get the confidence the bounding box contains a call. 

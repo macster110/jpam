@@ -39,7 +39,7 @@ import us.hebi.matlab.mat.types.Struct;
  */
 public class DeepAcousticsDLTest {
 	
-	public static float thresh = 0.5f;  //default threshold for bounding boxes.
+	public static float THRESH = 0.5f;  //default threshold for bounding boxes.
 	
 	
 	/**
@@ -72,7 +72,7 @@ public class DeepAcousticsDLTest {
 
 
 			DeepAcousticsTranslator translator = new DeepAcousticsTranslator(network);
-			translator.setThresh(thresh);
+			translator.setThresh(THRESH);
 
 			//predictor for the model
 			Predictor<float[][][][], List<DeepAcousticResultArray>> predictor = model.newPredictor(translator);
@@ -238,7 +238,7 @@ public class DeepAcousticsDLTest {
 
 		//transforms
 		//the clip length is three seconds
-		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.TRIM, chunkStart, ((int) modelInfo.chunkSizeSec*sR) + chunkStart));
+		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.TRIM, chunkStart, ((int) (modelInfo.chunkSizeSec)*sR) + chunkStart));
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAMKETOS, modelInfo.fftLen, modelInfo.fftHop, modelInfo.chunkSizeSec)); 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECFREQTRIM, modelInfo.minFreq, modelInfo.maxFreq)); 
 		dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPEC2DB, null));
@@ -272,7 +272,7 @@ public class DeepAcousticsDLTest {
 			if (transform instanceof FreqTransform) {
 				dataD = ((FreqTransform) transform).getSpecTransfrom().getTransformedData();
 				Matrix matrixSpec=  DLMatFile.array2Matrix(dataD);
-				System.out.print(" size " + dataD.length + " x " + dataD[0].length);
+				System.out.print(transforms.get(i).getDLTransformType() + "  size " + dataD.length + " x " + dataD[0].length);
 
 				if (matFile!=null) {
 					matFile.addArray(transform.getDLTransformType().getJSONString(), matrixSpec);
@@ -350,7 +350,9 @@ public class DeepAcousticsDLTest {
 			Model model = Model.newInstance(modelPath, "TensorFlow"); 
 
 			model.load(modelDir, "saved_model.pb");
-
+			
+//			System.out.println(model.describeOutput().get(0).getValue());
+//
 			///load the wave data. 
 			//Open wav files. 
 			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
@@ -530,10 +532,10 @@ public class DeepAcousticsDLTest {
 //		
 //		SpecInfo info = new SpecInfo();
 //		info.dolphinDefaults(); //defaults for the dolphin whistle model.
-		
+//		
 		
 		/******Run the TestTFTinyMCwFix multi species whistle model on a wav file. *****/
-		
+
 		//String modelPath = "/home/jamiemac/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/ModelExports/Test_TFSavedModel_DarkNet_250307/saved_model.pb";
 		String modelPath = "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/TinyT_Multi_Species/ModelExports/Test_TFSavedModel_MCTinywFix_250912/saved_model.pb";
 		//imageDLTest( modelPath,  matFilePath, matOut);
@@ -547,8 +549,8 @@ public class DeepAcousticsDLTest {
 		
 		SpecInfo info = new SpecInfo();
 		info.multiSpeciesDefaults();
-		
-		
+		info.startChunkSec = 35.0; //start at 60 seconds into the file.
+	
 
 
 		try {
@@ -556,9 +558,27 @@ public class DeepAcousticsDLTest {
 
 			AudioData soundData = DLUtils.loadWavFile(wavFilePath);
 
-			//float[][] image = transformsTest(soundData,  info, outMatPath);
+			float[][] image = transformsTest(soundData,  info, outMatPath);
 			
 			List<DeepAcousticResultArray> results = runDolphinDL( modelPath, wavFilePath, info) ; 
+			
+			for (int i=0; i<results.size(); i++) {
+				
+				System.out.println();
+
+				for (int j=0; j<results.get(i).size(); j++) {
+
+					System.out.print(String.format("Result %d Confidence %.2f ", 
+							j,results.get(i).get(j).getConfidence()));
+
+
+					System.out.print("Predictions:  ");
+
+					JamArr.printArray(results.get(i).get(j).getPredicitions());
+
+				}
+
+			}
 			
 //			System.out.println("Hello Deep Acoustics DL Test results: " + results.size() + " " + results.get(0).getBoundingBox().length);
 		

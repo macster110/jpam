@@ -1072,6 +1072,17 @@ public class JamArr {
 			System.out.println(i + ": " + array[i]);
 		}
 	}
+	
+	/**
+	 * Print a long array to the console. 
+	 * @param array to print
+	 */
+	public static void printArray(long[] array) {
+		for (int i=0; i<array.length; i++) {
+			System.out.println(i + ": " + array[i]);
+		}
+	}
+
 
 	/**
 	 * Print an int array to the console. 
@@ -1342,6 +1353,7 @@ public class JamArr {
 		}
 		return output;
 	}
+	
 
 	/**
 	 * Subtract a number from an array. 
@@ -1351,6 +1363,36 @@ public class JamArr {
 	 */
 	public static double[] subtract(double[] a, double b) {
 		double[] output = new double[a.length]; 
+		for (int i=0; i<a.length; i++) {
+			output[i] = a[i] - b; 
+		}
+		return output;
+	}
+	
+	/**
+	 * Subtract a number from a float array. 
+	 * @param a - the first array. 
+	 * @param b - the number to subtract from all elements in a.
+	 * @return elements in a minus b. 
+	 */
+	public static float[] subtract(float[] a, float b) {
+		float[] output = new float[a.length]; 
+		for (int i=0; i<a.length; i++) {
+			output[i] = a[i] - b; 
+		}
+		return output;
+	}
+	
+	
+	
+	/**
+	 * Subtract a number from a long array. 
+	 * @param a - the first array. 
+	 * @param b - the number to subtract from all elements in a.
+	 * @return elements in a minus b. 
+	 */
+	public static long[] subtract(long[] a, long b) {
+		long[] output = new long[a.length]; 
 		for (int i=0; i<a.length; i++) {
 			output[i] = a[i] - b; 
 		}
@@ -1769,6 +1811,8 @@ public class JamArr {
 		}
 		return arr;
 	}
+
+
 	
 
 
