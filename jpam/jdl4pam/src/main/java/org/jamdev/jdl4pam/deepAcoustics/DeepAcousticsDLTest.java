@@ -517,39 +517,39 @@ public class DeepAcousticsDLTest {
 //		//Test an image so that we are sure we get the same ouput from Pythoing and Java
 //		String matFilePath= "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/DarkNet_11_Whsitles/testResizeImIn.mat";
 		
-//		/******Run the DarkNet dolphin whistle model on a wav file. *****/
-//		
-//		//String modelPath = "/home/jamiemac/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/ModelExports/Test_TFSavedModel_DarkNet_250307/saved_model.pb";
-//		String modelPath = "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/DarkNet_Whistles/ModelExports/Test_TFSavedModel_DarkNet_250404/saved_model.pb";
-//		//imageDLTest( modelPath,  matFilePath, matOut);
-//
-//		/** Run a transforms test to check that the transforms work. ***/
-//		//Dolphin wav file
-//		String wavFilePath = "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/DarkNet_Whistles/DarkNet_11_Whsitles/IMMS_Combined_Test.wav";
-//		//
-//		//output MATLAB path
-//		String outMatPath = "/Users/jdjm/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/deepAcoustics/deepAcoustic_whistle_spec_test.mat";
-//		
-//		SpecInfo info = new SpecInfo();
-//		info.dolphinDefaults(); //defaults for the dolphin whistle model.
-//		
+		/******Run the DarkNet dolphin whistle model on a wav file. *****/
 		
-		/******Run the TestTFTinyMCwFix multi species whistle model on a wav file. *****/
-
 		//String modelPath = "/home/jamiemac/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/ModelExports/Test_TFSavedModel_DarkNet_250307/saved_model.pb";
-		String modelPath = "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/TinyT_Multi_Species/ModelExports/Test_TFSavedModel_MCTinywFix_250912/saved_model.pb";
+		String modelPath = "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/DarkNet_Whistles/ModelExports/Test_TFSavedModel_DarkNet_250404/saved_model.pb";
 		//imageDLTest( modelPath,  matFilePath, matOut);
 
 		/** Run a transforms test to check that the transforms work. ***/
 		//Dolphin wav file
-		String wavFilePath = "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/TinyT_Multi_Species/Multi_class_test_files/HYDBBA106_20170106_1150_1215.wav";
+		String wavFilePath = "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/DarkNet_Whistles/DarkNet_11_Whsitles/IMMS_Combined_Test.wav";
 		//
 		//output MATLAB path
-		String outMatPath = "/Users/jdjm/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/deepAcoustics/deepAcoustic_multispecies_spec_test.mat";
+		String outMatPath = "/Users/jdjm/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/deepAcoustics/deepAcoustic_whistle_spec_test.mat";
 		
 		SpecInfo info = new SpecInfo();
-		info.multiSpeciesDefaults();
-		info.startChunkSec = 35.0; //start at 60 seconds into the file.
+		info.dolphinDefaults(); //defaults for the dolphin whistle model.
+//		
+		
+		/******Run the TestTFTinyMCwFix multi species whistle model on a wav file. *****/
+
+//		//String modelPath = "/home/jamiemac/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/ModelExports/Test_TFSavedModel_DarkNet_250307/saved_model.pb";
+//		String modelPath = "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/TinyT_Multi_Species/ModelExports/Test_TFSavedModel_MCTinywFix_250912/saved_model.pb";
+//		//imageDLTest( modelPath,  matFilePath, matOut);
+//
+//		/** Run a transforms test to check that the transforms work. ***/
+//		//Dolphin wav file
+//		String wavFilePath = "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/deepAcoustics/TinyT_Multi_Species/Multi_class_test_files/HYDBBA106_20170106_1150_1215.wav";
+//		//
+//		//output MATLAB path
+//		String outMatPath = "/Users/jdjm/MATLAB-Drive/MATLAB/PAMGUARD/deep_learning/deepAcoustics/deepAcoustic_multispecies_spec_test.mat";
+//		
+//		SpecInfo info = new SpecInfo();
+//		info.multiSpeciesDefaults();
+//		info.startChunkSec =0.0; //start at 60 seconds into the file.
 	
 
 
@@ -572,7 +572,7 @@ public class DeepAcousticsDLTest {
 							j,results.get(i).get(j).getConfidence()));
 
 
-					System.out.print("Predictions:  ");
+					System.out.println("Predictions:  ");
 
 					JamArr.printArray(results.get(i).get(j).getPredicitions());
 

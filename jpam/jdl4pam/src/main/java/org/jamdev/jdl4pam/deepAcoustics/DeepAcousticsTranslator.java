@@ -110,7 +110,7 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], List<D
 			DeepAcousticsResult dAResult;
 			for (int j=0; j<result.bboxes.length; j++) {
 				//System.out.println("Result: " + result.bboxes[i].getShape()); 
-				dAResult = new DeepAcousticsResult(result.bboxes[j], result.scores[j], result.classes[j]);
+				dAResult = new DeepAcousticsResult(result.bboxes[j], result.scores[j], result.classProbs[j]);
 				boundingBoxes.add(dAResult);
 			}
 			
