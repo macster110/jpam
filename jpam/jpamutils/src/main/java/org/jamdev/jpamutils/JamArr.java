@@ -1798,6 +1798,62 @@ public class JamArr {
 		return arr;
 	}
 	
+	/**
+	 * Convert a 1D double array to a 2D double array.
+	 * @param input - the flattened 1D array
+	 * @param rowSize - the row size
+	 * @return the new array
+	 */
+	public static int[][] to2D(int[] input, int rowSize) { 
+		if (rowSize <= 0) { 
+			throw new IllegalArgumentException("rowSize must be > 0");
+		} 
+		int cols = rowSize; int rows = (input.length + cols - 1) / cols; 
+		// ceil division 
+		int[][] out = new int[rows][cols]; 
+		for (int i = 0; i < input.length; i++) {
+			out[i / cols][i % cols] = input[i]; 
+			}
+		return out; 
+	}
+	
+	/**
+	 * Convert a 1D double array to a 2D double array.
+	 * @param input - the flattened 1D array
+	 * @param rowSize - the row size
+	 * @return the new array
+	 */
+	public static float[][] to2D(float[] input, int rowSize) { 
+		if (rowSize <= 0) { 
+			throw new IllegalArgumentException("rowSize must be > 0");
+		} 
+		int cols = rowSize; int rows = (input.length + cols - 1) / cols; 
+		// ceil division 
+		float[][] out = new float[rows][cols]; 
+		for (int i = 0; i < input.length; i++) {
+			out[i / cols][i % cols] = input[i]; 
+			}
+		return out; 
+	}
+	
+	/**
+	 * Convert a 1D double array to a 2D double array.
+	 * @param input - the flattened 1D array
+	 * @param rowSize - the row size
+	 * @return the new array
+	 */
+	public static double[][] to2D(double[] input, int rowSize) { 
+		if (rowSize <= 0) { 
+			throw new IllegalArgumentException("rowSize must be > 0");
+		} 
+		int cols = rowSize; int rows = (input.length + cols - 1) / cols; 
+		// ceil division 
+		double[][] out = new double[rows][cols]; 
+		for (int i = 0; i < input.length; i++) {
+			out[i / cols][i % cols] = input[i]; 
+			}
+		return out; 
+	}
 	
 	/**
 	 * Convert a long array to a float array. 
