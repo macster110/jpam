@@ -571,7 +571,6 @@ public class DeepAcousticsDLTest {
 					System.out.print(String.format("Result %d Confidence %.2f ", 
 							j,results.get(i).get(j).getConfidence()));
 
-
 					System.out.println("Predictions:  ");
 
 					JamArr.printArray(results.get(i).get(j).getPredicitions());
