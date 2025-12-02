@@ -4,10 +4,17 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.jamdev.jdl4pam.deepAcoustics.DeepAcousticsDLTest.SpecInfo;
+import org.jamdev.jdl4pam.transforms.DLTransfromParams;
+import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
+import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 import org.jamdev.jdl4pam.utils.DLMatFile;
 import org.jamdev.jpamutils.JamArr;
+import org.jamdev.jpamutils.spectrogram.SpecTransform;
+import org.jamdev.jpamutils.wavFiles.AudioData;
 
 import ai.djl.MalformedModelException;
 import ai.djl.Model;
@@ -51,7 +58,7 @@ public class DeepWhistleTest {
 		//predictor for the model if using images as input
 		Predictor<float[][], float[]> specPredictor = loadPyTorchdeepWhistleModel(modelPath, modelInput[0].length, modelInput.length);
 
-
+		System.out.println("");	
 		System.out.println("----Running deepWhistle model on large image----");
 
 		//run the example data
@@ -65,6 +72,7 @@ public class DeepWhistleTest {
 
 		System.out.println("The ouput data is " + modelResults[0].length + " freq bins x " + modelResults.length + " time bins");
 
+		System.out.println("");	
 		System.out.println("----Running deepWhistle model on segmented image----");
 
 		int fftN2 = (int) (modelInput.length/nSegments);
@@ -77,6 +85,7 @@ public class DeepWhistleTest {
 		float[][] segment = new float[fftN2][]; 
 		float[][] modelResults2 = new float[modelInput.length][modelInput[0].length];
 		
+		long startTime = System.currentTimeMillis();
 		for (int i=0; i<nSegments; i++){
 			//extract the segment
 			for (int j=0; j<fftN2; j++) {
@@ -91,6 +100,17 @@ public class DeepWhistleTest {
 				modelResults2[i*fftN2 + k] = segmentResults[k];
 			}
 		}
+		
+		System.out.println("Time to run segmented model: " + (System.currentTimeMillis()-startTime) + " ms");
+		
+		
+		System.out.println("");	
+		System.out.println("----Running deepWhistle model with transforms from JPAM----");
+
+		//so that transforms are
+		// spectrogram
+		//specPredictor.close();
+		//
 
 
 
@@ -106,7 +126,10 @@ public class DeepWhistleTest {
 
 			// Add the new variable to the MatFile object
 			matFile.addArray("predicted_blk_java", outputResult);
+			//add the segmented data
 			matFile.addArray("predicted_blk_java_seg", outputResult2);
+			
+			//add the normalized_blk
 
 			// Write the modified MatFile object back to the file.
 			// This will overwrite the file but include the new variable and retain old ones.
@@ -119,6 +142,22 @@ public class DeepWhistleTest {
 
 		System.out.println("Finished writing output to MAT file.");
 
+	}
+	
+	public static float[][] transformWav(AudioData soundData, ModelInfo modelInfo){
+
+			//create the transforms. 
+			float sR = soundData.getSampleRate();
+
+			ArrayList<DLTransfromParams> dlTransformParamsArr = new ArrayList<DLTransfromParams>();
+
+			//transforms
+			//the clip length is three seconds
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAMKETOS, modelInfo.fftLen, modelInfo.fftHop, modelInfo.chunkSizeSec)); 
+			
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECFREQTRIM, modelInfo.minFreq, modelInfo.maxFreq)); 
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPEC2DB, null));
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECNORMALISE_MINIMAX)); 
 	}
 
 
