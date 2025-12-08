@@ -98,6 +98,10 @@ public class FreqTransform extends SimpleTransform {
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().dBSpec(params == null || params.length == 0 ? null : params[0].doubleValue());
 			freqlims = ((FreqTransform) transform).freqlims; 
 			break; 
+		case SPEC_LOG10:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().log10();
+			freqlims = ((FreqTransform) transform).freqlims; 
+			break; 
 		case SPECNORMALISE:
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().normalise(params[0].doubleValue(),  params[1].doubleValue()); 
 			freqlims = ((FreqTransform) transform).freqlims; 
@@ -107,7 +111,12 @@ public class FreqTransform extends SimpleTransform {
 			freqlims = ((FreqTransform) transform).freqlims; 
 			break;
 		case SPECNORMALISE_MINIMAX:
-			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().normaliseMinMax();
+			if (params!=null && params.length==2) {
+				specTransfrom = ((FreqTransform) transform).getSpecTransfrom().normaliseMinMax(params[0].doubleValue(),  params[1].doubleValue());
+			}
+			else {
+				specTransfrom = ((FreqTransform) transform).getSpecTransfrom().normaliseMinMax();
+			}
 			freqlims = ((FreqTransform) transform).freqlims; 
 			break;
 		case SPECNORMALISESTD:
@@ -182,6 +191,10 @@ public class FreqTransform extends SimpleTransform {
 			break;
 		case SPECFREQTRIM:
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().freqtrim(params[0].doubleValue(), params[1].doubleValue());
+			freqlims = ((FreqTransform) transform).freqlims; 
+			break;
+		case SPEC_ADD:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().add(params[0].doubleValue());
 			freqlims = ((FreqTransform) transform).freqlims; 
 			break;
 		default:

@@ -3,7 +3,7 @@ package org.jamdev.jpamutils.wavFiles;
 
 
 /* WAVReader.java -- Read WAV files.
-Copyright (C) 2006 Free Software Foundation, Inc.
+Copyright (C) 2006 Free Software Foundation, Inc
 
 This file is part of GNU Classpath.
 
@@ -304,22 +304,37 @@ public class WavFile extends AudioFileReader
 	
 	/**
 	 * Get the amplitudes of the wave samples (depends on the header)
-	 * 
-	 * @return amplitudes array (signed 16-bit)
+	 *
+	 * @return amplitudes array (signed 32-bit container values)
 	 */
 	public static int[] getSampleAmplitudes(AudioFormat wavHeader, byte[] data) {
-		int bytePerSample =  wavHeader.getSampleSizeInBits() / 8;
-		int numSamples = data.length / bytePerSample;
+		int sampleSizeInBits = wavHeader.getSampleSizeInBits();
+		int bytesPerSample = sampleSizeInBits / 8;
+		if (bytesPerSample <= 0) return new int[0];
+		int numSamples = data.length / bytesPerSample;
 		int[] amplitudes = new int[numSamples];
 
 		int pointer = 0;
+		AudioFormat.Encoding encoding = wavHeader.getEncoding();
+
 		for (int i = 0; i < numSamples; i++) {
-			short amplitude = 0;
-			for (int byteNumber = 0; byteNumber < bytePerSample; byteNumber++) {
-				// little endian
-				amplitude |= (short) ((data[pointer++] & 0xFF) << (byteNumber * 8));
+			int sample = 0;
+			// assemble little-endian bytes into a 32-bit int
+			for (int byteNumber = 0; byteNumber < bytesPerSample; byteNumber++) {
+				sample |= (data[pointer++] & 0xFF) << (byteNumber * 8);
 			}
-			amplitudes[i] = (int) amplitude;
+
+			// If PCM signed, sign-extend the assembled sample to 32 bits
+			if (AudioFormat.Encoding.PCM_SIGNED.equals(encoding)) {
+				int shift = 32 - sampleSizeInBits;
+				// arithmetic shift to sign extend
+				sample = (sample << shift) >> shift;
+			} else if (AudioFormat.Encoding.PCM_UNSIGNED.equals(encoding) && sampleSizeInBits == 8) {
+				// 8-bit PCM unsigned is typically 0..255 with 128 as zero; convert to signed centered value
+				sample = sample - 128;
+			}
+
+			amplitudes[i] = sample;
 		}
 
 		return amplitudes;
@@ -374,33 +389,27 @@ public class WavFile extends AudioFileReader
 	 */
 	public static byte[] getSingleChannelByte(AudioFormat wavHeader, byte[] bytes, int channel) {
 
-		int bytePerSample = wavHeader.getChannels()*wavHeader.getSampleSizeInBits() / 8;
-		int bytesPerSampleChannel = wavHeader.getSampleSizeInBits() / 8;
-		int numSamples = bytes.length / bytePerSample; 
-
-		byte[] singleByteChan = new byte[numSamples*bytesPerSampleChannel];
-
-		//channel=1; 
-
-		int pointer = 0;
-		int n = 0; 
-		for (int i = 0; i < numSamples; i++) {
-			//short amplitude = 0;
-			for (int j=0; j<wavHeader.getChannels(); j++) {
-				for (int byteNumber = 0; byteNumber < bytesPerSampleChannel; byteNumber++) {
-					// little endian
-					//amplitude |= (short) ((bytes[pointer++] & 0xFF) << (byteNumber * 8));
-					if (j==channel) {
-						singleByteChan[n]=(byte) (bytes[pointer] & 0xFF);
-						n++;
-					}
-					pointer++;
-				}
-			}
+		int channels = wavHeader.getChannels();
+		if (channel < 0 || channel >= channels) {
+			throw new IllegalArgumentException("Channel index out of range: " + channel);
 		}
 
+		int bytesPerSampleChannel = wavHeader.getSampleSizeInBits() / 8;
+		// bytes per frame (all channels)
+		int bytesPerFrame = bytesPerSampleChannel * channels;
 
-		return singleByteChan;		
+		if (bytesPerSampleChannel <= 0 || bytesPerFrame <= 0) return new byte[0];
+
+		int numFrames = bytes.length / bytesPerFrame; // only whole frames
+		byte[] singleByteChan = new byte[numFrames * bytesPerSampleChannel];
+
+		for (int frame = 0; frame < numFrames; frame++) {
+			int srcPos = frame * bytesPerFrame + channel * bytesPerSampleChannel;
+			int dstPos = frame * bytesPerSampleChannel;
+			System.arraycopy(bytes, srcPos, singleByteChan, dstPos, bytesPerSampleChannel);
+		}
+
+		return singleByteChan;
 	}
 
 	/**

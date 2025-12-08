@@ -213,7 +213,14 @@ public class DLTransformsParser {
 			//otherwise nothing to add here - no params. 
 			break;
 		case SPECCLAMP:
-			//nothing to add here - params are assumed to be 0 and 1 
+			if (((SimpleTransformParams) dlTransfromParams).params==null) {
+				//nothing to add here - params are assumed to be 0 and 1 
+
+			}
+			else {
+				paramsObject.put("min", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue()); 
+				paramsObject.put("max", ((SimpleTransformParams) dlTransfromParams).params[1].doubleValue()); 
+			}
 			break;
 		case SPECNORMALISEROWSUM:
 			//nothing to add here - no params. 
@@ -357,7 +364,7 @@ public class DLTransformsParser {
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
 			break;
 		case NORMALISE_WAV:
-			
+
 			Number[] normNumber = null;
 			if (jsonObjectParams.has("type")) {
 				normNumber = new Number[3]; 
@@ -371,7 +378,7 @@ public class DLTransformsParser {
 				if (normNumber==null) normNumber=new Number[2]; 
 				normNumber[1] = jsonObjectParams.getDouble("std"); 
 			}
-			
+
 			dlTransformParams = new SimpleTransformParams(dlTransformType, normNumber); 
 			break;
 		case FILTER:
@@ -721,7 +728,7 @@ public class DLTransformsParser {
 	public static DLTransformType getTransformType(String string) {
 		DLTransformType[] dlTransformTypes = DLTransformType.values();
 
-//		System.out.println(" DLTransformType: " + string + "|"); 
+		//		System.out.println(" DLTransformType: " + string + "|"); 
 		for (DLTransformType dlTransformType: dlTransformTypes) {
 			if (dlTransformType.getJSONString().equals(string)) {
 				return dlTransformType; 				

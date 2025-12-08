@@ -1,5 +1,7 @@
 package org.jamdev.jdl4pam.transforms;
 
+import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
+
 /**
  * Any transform of data.
  * 
@@ -89,6 +91,14 @@ public interface DLTransform {
 		 */
 		NORMALISE_WAV("Normalise Waveform", "normalize_wav"), 
 		
+//		/**
+//		 * Multiplies waveform by a constant factor.
+//		 * 
+//		 * <p>
+//		 *The multiplier to use. 
+//		 */
+//		MULTIPLY_WAV("Multiply waveform", "multiply_wav"),
+		
 		/**
 		 * Filter a waveform. 
 		 * 
@@ -171,8 +181,25 @@ public interface DLTransform {
 
 		/**
 		 * Converts a spectrogram from linear to log10 units. No associated parameters.
+		 * Two associated parameters - the minimum dB value and whether to convert to
+		 * units of pressure or power i.e. whether to use a coefficient of 20 or 10
+		 * respectively.
+		 * 
+		 * @param minimum_db - the minimum dB value to allow. Values below this are set
+		 *                   to this minimum
+		 * @param power      - boolean - if true then use power conversion (10*log10),
+		 *                   if false use pressure conversion (20*log10). Note this is
+		 *                   input as a 1 for true and 0 for false.
 		 */
 		SPEC2DB("Spectrogram to dB", "amplitude_to_decibel"),
+		
+		/**
+		 * Converts a spectrogram to log10 units. No associated parameters. Note this is
+		 * different from SPEC2DB as it does not scale the values to dB
+		 * using a coefficient of 10 or 20.
+		 */
+		SPEC_LOG10("Spectrogram log10", "spec_log10"),
+
 
 		/**
 		 * Clamps the spectrogram between two values. Only values between the clamp
@@ -342,6 +369,15 @@ public interface DLTransform {
                   when 'Dist' is set to either 'rayleigh' or 'exponential'.</li>
 		 */
 		CLAHE2("CLAHE2 Spectrogram", "clahe2"),
+		
+		/**
+		 * Adds a single number to the real part of each pixel in the spectrogram.
+		 * 
+		 * One assocatied parameter.
+		 * <li>The number to add to add to the real part of each pixel</li>
+		 */
+		SPEC_ADD("Add to Spectrogram", "spec_add"),
+
 		
 		
 		/****Spectrum Transforms****/

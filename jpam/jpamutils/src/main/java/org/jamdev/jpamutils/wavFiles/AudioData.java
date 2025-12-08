@@ -312,6 +312,17 @@ public class AudioData {
 
 	}
 
+	/**
+	 * Multiply the audio data by a certain factor
+	 * @param factor - the factor to multiply by
+	 * @return the multipled audio data
+	 */
+	public AudioData multiply(double factor) {
+		for (int i=0; i<samples.length; i++) {
+			samples[i] = (int) (samples[i]*factor);
+		}
+		return new AudioData(samples, sampleRate);
+	}
 
 	/**
 	 * Trim the audio data between two sample indexes.

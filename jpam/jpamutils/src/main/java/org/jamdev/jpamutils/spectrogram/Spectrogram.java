@@ -146,7 +146,7 @@ public class Spectrogram {
 	 */
 	private void buildSpectrogram(AudioData wave) {
 
-		double[] amplitudes = wave.getScaledSampleAmplitudes();
+		double[] amplitudes = wave.getScaledSampleAmplitudes();	
 		int pointer = 0;
 
 		// System.out.println("Build spectrogram: sR: " + wave.sampleRate + " FFTHop: "

@@ -7,14 +7,22 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 import org.jamdev.jdl4pam.deepAcoustics.DeepAcousticsDLTest.SpecInfo;
+import org.jamdev.jdl4pam.transforms.DLTransform;
+import org.jamdev.jdl4pam.transforms.DLTransformsFactory;
 import org.jamdev.jdl4pam.transforms.DLTransfromParams;
+import org.jamdev.jdl4pam.transforms.FreqTransform;
 import org.jamdev.jdl4pam.transforms.SimpleTransformParams;
+import org.jamdev.jdl4pam.transforms.WaveTransform;
 import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
+import org.jamdev.jdl4pam.transforms.jsonfile.DLTransformParser2;
 import org.jamdev.jdl4pam.utils.DLMatFile;
+import org.jamdev.jdl4pam.utils.DLUtils;
 import org.jamdev.jpamutils.JamArr;
-import org.jamdev.jpamutils.spectrogram.SpecTransform;
 import org.jamdev.jpamutils.wavFiles.AudioData;
+import org.json.JSONObject;
 
 import ai.djl.MalformedModelException;
 import ai.djl.Model;
@@ -81,6 +89,7 @@ public class DeepWhistleTest {
 
 
 		specPredictor = loadPyTorchdeepWhistleModel(modelPath, modelInput[0].length, fftN2);
+		
 
 		float[][] segment = new float[fftN2][]; 
 		float[][] modelResults2 = new float[modelInput.length][modelInput[0].length];
@@ -107,12 +116,37 @@ public class DeepWhistleTest {
 		System.out.println("");	
 		System.out.println("----Running deepWhistle model with transforms from JPAM----");
 
-		//so that transforms are
-		// spectrogram
+		String wavFilePath = "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/delphinID/delphinIDmodels/Ggr242/PAM_20200918_123600_032.wav";
+		
+		//the default settings are 
+		//Frequency range 5000 - 50000 Hz
+		// Framing 361 FFT length, 21 Hz hop (i.e. 1500 FFT per 31.25 sec)
+		DeepWhistleInfo modelInfo = new DeepWhistleInfo(193, 768, 5000.0f, 50000.0f, 20.f);
+		///load the wave data. 
+		//Open wav files. 
+		AudioData soundData = null;
+		float[][] modelInputJava = null;
+		float[][] modelResultsJava2 = null;
+		try {
+			
+			
+			soundData = DLUtils.loadWavFile(wavFilePath);
+			
+			modelInputJava = transformWav( soundData,  modelInfo);
+			
+			//predictor for the model if using images as input
+			specPredictor = loadPyTorchdeepWhistleModel(modelPath, modelInputJava[0].length, modelInputJava.length);
+			modelResultsJava2 = runPyTorchDeepWhislte(specPredictor, modelInputJava); 
+
+
+		} catch (IOException | UnsupportedAudioFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+
 		//specPredictor.close();
-		//
-
-
+		
 
 		// Read the existing MAT file and write the new variable to that file. 
 		MatFile matFile;
@@ -123,14 +157,26 @@ public class DeepWhistleTest {
 			// Create a new scalar variable
 			Matrix outputResult =  DLMatFile.array2Matrix(modelResults);
 			Matrix outputResult2 =  DLMatFile.array2Matrix(modelResults2);
+			Matrix inputResult =  DLMatFile.array2Matrix(modelInputJava);
+			Matrix inputResult2 =  DLMatFile.array2Matrix(modelResultsJava2);
+
+			Matrix soundDataM =  DLMatFile.array2Matrix(soundData.getScaledSampleAmplitudes());
+
 
 			// Add the new variable to the MatFile object
 			matFile.addArray("predicted_blk_java", outputResult);
+			
 			//add the segmented data
 			matFile.addArray("predicted_blk_java_seg", outputResult2);
 			
+			// Add the new variable to the MatFile object
+			matFile.addArray("predicted_blk_java_input", inputResult2);
+			
 			//add the normalized_blk
+			matFile.addArray("normalized_blk_java", inputResult);
 
+			//add the normalized_blk
+//			matFile.addArray("sound_data", soundDataM);
 			// Write the modified MatFile object back to the file.
 			// This will overwrite the file but include the new variable and retain old ones.
 			Mat5.writeToFile(matFile, testSpecPath);
@@ -144,20 +190,80 @@ public class DeepWhistleTest {
 
 	}
 	
-	public static float[][] transformWav(AudioData soundData, ModelInfo modelInfo){
+	public static float[][] transformWav(AudioData soundData, DeepWhistleInfo modelInfo){
+		
+			int chunkStart = 0;
 
 			//create the transforms. 
 			float sR = soundData.getSampleRate();
 
 			ArrayList<DLTransfromParams> dlTransformParamsArr = new ArrayList<DLTransfromParams>();
-
-			//transforms
-			//the clip length is three seconds
-			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAMKETOS, modelInfo.fftLen, modelInfo.fftHop, modelInfo.chunkSizeSec)); 
 			
+			//so that transforms are
+			// spectrogram - create a spectrogram - note silbido does not use a window function weirdly...
+			//then trim the frequency
+			//multiply by log10. 
+			///clamp the values between mac_clip and min_clip - this is between 0 and 6 in Silbido
+			//transforms
+			//Then do a min mac normalisation
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.TRIM, chunkStart, ((int) (modelInfo.chunkSizeSec)*sR) + chunkStart));
+//			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAM, 1024,512)); 
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECTROGRAMKETOS, modelInfo.fftLen, modelInfo.fftHop, 20.0)); 
 			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECFREQTRIM, modelInfo.minFreq, modelInfo.maxFreq)); 
-			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPEC2DB, null));
-			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECNORMALISE_MINIMAX)); 
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPEC_LOG10));
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPEC_ADD, 2.1));
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECCLAMP, 0, 6.));
+			dlTransformParamsArr.add(new SimpleTransformParams(DLTransformType.SPECNORMALISE_MINIMAX, 0, 6)); 
+			
+			//generate the transforms. 
+			ArrayList<DLTransform> transforms =	DLTransformsFactory.makeDLTransforms(dlTransformParamsArr); 
+			
+			JSONObject jsonObject = new JSONObject();
+			jsonObject = DLTransformParser2.writeJSONTransforms(dlTransformParamsArr, jsonObject);
+			System.out.println(jsonObject.toString(1));
+
+			
+//			soundData = soundData.multiply((2^16)/2);
+			
+			((WaveTransform) transforms.get(0)).setWaveData(soundData); 
+
+			DLTransform transform = transforms.get(0); 
+			double[][] dataD;
+			for (int i=0; i<transforms.size(); i++) {
+						
+				System.out.println("Transform " + i + ": " + transforms.get(i).getDLTransformType().getJSONString());
+	
+				transform = transforms.get(i).transformData(transform); 
+				
+				if (transform instanceof FreqTransform && i>=1) {
+					System.out.println(transform.getDLTransformType().getJSONString());
+					double max  =  JamArr.max( ((FreqTransform) transform).getSpecTransfrom().getTransformedData());
+					double min  =  JamArr.min( ((FreqTransform) transform).getSpecTransfrom().getTransformedData());
+					
+					System.out.println("min max: " + i + ": " +min +  "  " + max);
+				}
+
+			}
+			
+			float[][] dataF =  DLUtils.toFloatArray(((FreqTransform) transform).getSpecTransfrom().getTransformedData());
+
+			return dataF; 
+	}
+	
+	public static class DeepWhistleInfo {
+		public int fftLen;
+		public int fftHop;
+		public float chunkSizeSec;
+		public float minFreq;
+		public float maxFreq;
+		
+		public DeepWhistleInfo(int fftLen, int fftHop, float minFreq, float maxFreq, float chunkSizeSec) {
+			this.fftLen=fftLen;
+			this.fftHop=fftHop;
+			this.minFreq=minFreq;
+			this.maxFreq=maxFreq;
+			this.chunkSizeSec=chunkSizeSec;
+		}
 	}
 
 

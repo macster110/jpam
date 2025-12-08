@@ -415,6 +415,9 @@ public class DLUtils {
 		AudioFormat format = wavFile.getAudioFileFormat().getFormat(); 
 
 		int channels = format.getChannels(); 
+		
+		System.out.println("CHANNELS: " + channels);
+		System.out.println("FORMAT BYTES IN BITS: " + format.getSampleSizeInBits());
 
 		// load data
 		AudioInputStream inputStream  = wavFile.getAudioInputStream(); 
@@ -432,6 +435,7 @@ public class DLUtils {
 
 		}
 		else {
+			System.out.println("PARSE_TWO_CHANNELS");
 			//extract single channel data 
 			data = WavFile.getSingleChannelByte(format, data,  0); 
 		}
