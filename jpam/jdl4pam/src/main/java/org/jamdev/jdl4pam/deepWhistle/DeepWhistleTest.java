@@ -9,7 +9,6 @@ import java.util.Arrays;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import org.jamdev.jdl4pam.deepAcoustics.DeepAcousticsDLTest.SpecInfo;
 import org.jamdev.jdl4pam.transforms.DLTransform;
 import org.jamdev.jdl4pam.transforms.DLTransformsFactory;
 import org.jamdev.jdl4pam.transforms.DLTransfromParams;

@@ -89,6 +89,23 @@ public class Spectrogram {
 		this.window_duration = window_duration;
 		this.buildSpectrogramKetos(wave);
 	}
+	
+
+	/**
+	 * Create a new spectrogram with existing complex spectrogram data.
+	 * 
+	 * @param complexSpectrogram - the complex spectrogram data
+	 * @param fftLength         - the FFT length in samples
+	 * @param fftHop            - the spectrogram hop size to use in samples.
+	 * @param sR                - the sample rate in samples per second.
+	 */
+	public Spectrogram(ComplexArray[] complexSpectrogram, int fftLength, int fftHop, float sR) {
+		//System.out.println("FFTLength: " + fftLength + " FFTHop: " + fftHop + "  windowDuration " + window_duration); 
+		this.sR = sR;
+		this.fftLength = fftLength;
+		this.fftHop = fftHop;
+		this.complexSpectrogram = complexSpectrogram;
+	}
 
 	// /**
 	// * Create a new spectrgram with new raw data.
