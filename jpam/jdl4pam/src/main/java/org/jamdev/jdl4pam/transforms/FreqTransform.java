@@ -191,7 +191,7 @@ public class FreqTransform extends SimpleTransform {
 			break;
 		case SPECFREQTRIM:
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().freqtrim(params[0].doubleValue(), params[1].doubleValue());
-			freqlims = ((FreqTransform) transform).freqlims; 
+			freqlims = new double[] {params[0].doubleValue(), params[1].doubleValue()};
 			break;
 		case SPEC_ADD:
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().add(params[0].doubleValue());

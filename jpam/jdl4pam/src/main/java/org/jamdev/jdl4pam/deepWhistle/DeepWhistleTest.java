@@ -117,7 +117,7 @@ public class DeepWhistleTest {
 
 		String wavFilePath = "/Users/jdjm/Dropbox/PAMGuard_dev/Deep_Learning/delphinID/delphinIDmodels/Ggr242/PAM_20200918_123600_032.wav";
 		
-		//the default settings are 
+		//the default settings are r
 		//Frequency range 5000 - 50000 Hz
 		// Framing 361 FFT length, 21 Hz hop (i.e. 1500 FFT per 31.25 sec)
 		DeepWhistleInfo modelInfo = new DeepWhistleInfo(193, 768, 5000.0f, 50000.0f, 20.f);
