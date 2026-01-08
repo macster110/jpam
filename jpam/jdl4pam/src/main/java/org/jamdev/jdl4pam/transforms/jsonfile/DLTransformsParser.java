@@ -17,8 +17,6 @@ import org.jamdev.jdl4pam.transforms.WaveTransform;
 import org.jamdev.jpamutils.wavFiles.FilterParams;
 import org.json.JSONObject;
 
-import ai.djl.MalformedModelException;
-
 import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
 
 /**
@@ -28,8 +26,6 @@ import org.jamdev.jdl4pam.transforms.DLTransform.DLTransformType;
  *
  */
 public class DLTransformsParser {
-
-
 
 	/**
 	 * Create a JSON object from a a list of transforms
@@ -321,6 +317,12 @@ public class DLTransformsParser {
 		case SPECFLIP:
 			//no params to add here - no params.
 			break;
+		case SPEC_ADD:
+			paramsObject.put("add", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue());
+			break;
+		case SPEC_PRODUCT:
+			paramsObject.put("multiply", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue());
+			break;
 		default:
 			break;
 
@@ -577,11 +579,20 @@ public class DLTransformsParser {
 			number[0] = jsonObjectParams.getInt("window"); 
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
 			break;
+		case SPEC_ADD:
+			number = new Number[1]; 
+			number[0] = jsonObjectParams.getInt("add"); 
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
+			break;
+		case SPEC_PRODUCT:
+			number = new Number[1]; 
+			number[0] = jsonObjectParams.getInt("multiply"); 
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
+			break;
 		default:
 			dlTransformParams = new SimpleTransformParams(dlTransformType); 
 			break;
-		case CLAHE:
-			break;
+	
 		}
 
 		return dlTransformParams; 
@@ -790,8 +801,6 @@ public class DLTransformsParser {
 
 		return sortedList.toArray(jsonStrings); 
 	}
-
-
 
 	/**
 	 * Test the file writer. 

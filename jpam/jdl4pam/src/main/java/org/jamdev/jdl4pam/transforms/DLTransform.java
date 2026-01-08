@@ -377,8 +377,15 @@ public interface DLTransform {
 		 * <li>The number to add to add to the real part of each pixel</li>
 		 */
 		SPEC_ADD("Add to Spectrogram", "spec_add"),
-
 		
+		/**
+		 * Multiplies a single number to the real part of each pixel in the spectrogram.
+		 * 
+		 * One assocatied parameter.
+		 * <li>The multiplier for the real part of each pixel</li
+		 * 
+		 */
+		SPEC_PRODUCT("Multiply Spectrogram", "spec_product"),
 		
 		/****Spectrum Transforms****/
 		

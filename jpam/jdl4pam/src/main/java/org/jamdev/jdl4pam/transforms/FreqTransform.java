@@ -197,6 +197,10 @@ public class FreqTransform extends SimpleTransform {
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().add(params[0].doubleValue());
 			freqlims = ((FreqTransform) transform).freqlims; 
 			break;
+		case SPEC_PRODUCT:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().multiply(params[0].doubleValue());
+			freqlims = ((FreqTransform) transform).freqlims; 
+			break;
 		default:
 			break;
 		}

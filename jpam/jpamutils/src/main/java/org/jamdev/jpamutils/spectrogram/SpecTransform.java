@@ -527,6 +527,21 @@
 			return this;
 	
 		}
+		
+		/**
+		 * Multiply all elements of an array by a value.
+		 * @param multiplier - the value to multiply by
+		 * @return the spectrogram with all elements multiplied by the value.
+		 */
+		public SpecTransform multiply(double multiplier) {
+			if (specData == null)
+				initialiseSpecData();
+	
+			this.specData = multiply(this.specData, multiplier);
+	
+			return this;
+	
+		}
 	
 		/**
 		 * Add a value to all elements of an array.
@@ -536,15 +551,29 @@
 		 * @return the spectrogram with the value added to all elements.
 		 */
 		public static double[][] add(double[][] array, double addVal) {
-			double[][] addedSpec = new double[array.length][array[0].length];
+//			double[][] addedSpec = new double[array.length][array[0].length];
+//	
+//			for (int i = 0; i < array.length; i++) {
+//				for (int j = 0; j < array[i].length; j++) {
+//					addedSpec[i][j] = array[i][j] + addVal;
+//				}
+//			}
 	
-			for (int i = 0; i < array.length; i++) {
-				for (int j = 0; j < array[i].length; j++) {
-					addedSpec[i][j] = array[i][j] + addVal;
-				}
-			}
-	
-			return addedSpec;
+			return 	JamArr.add(array, addVal)
+;
+		}
+		
+
+		/**
+		 * Multiply all elements of an array by a value.
+		 * 
+		 * @param array - the spectrogram real pixels
+		 * @param multiplier - the value to multiply by
+		 * @return the spectrogram with all elements multiplied by the value.
+		 */
+		public static double[][] multiply(double[][] array, double multiplier) {
+				
+			return JamArr.product(array, multiplier);
 		}
 	
 	
