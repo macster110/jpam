@@ -1,4 +1,4 @@
-package org.jamdev.pambinaries.audiomoth;
+package org.jamdev.jpambinaries.audiomoth;
 
 /**
  * A single trigger chunk from an AudioMoth trigger. 

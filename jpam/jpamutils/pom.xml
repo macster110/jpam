@@ -6,16 +6,17 @@
 	<parent>
 		<artifactId>jpam</artifactId>
 		<groupId>io.github.macster110</groupId>
-		<version>0.0.88</version>
+		<version>1.0.0</version>
 	</parent>
 
 	<artifactId>jpamutils</artifactId>
-	<version>0.0.59f</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>jpamutils</name>
 	<!-- FIXME change it to the project's website -->
 	<url>https://github.com/macster110/jpam</url>
+	<description>Useful utility classes and signal processing tools for acoustic data analysis</description>
 
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
@@ -68,7 +69,10 @@
 		</license>
 	</licenses>
 	<scm>
-		<url>https://github.com/macster110/jpam.git</url>
+		<connection>scm:git:https://github.com/macster110/jpam.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/macster110/jpam.git</developerConnection>
+		<url>https://github.com/macster110/jpam</url>
+		<tag>HEAD</tag>
 	</scm>
 	<developers>
 		<developer>
@@ -79,7 +83,6 @@
 			</roles>
 		</developer>
 	</developers>
-	<description>Signal processing tools for passive acoustic monitoring</description>
 
 	<!--<distributionManagement>
 		<repository>

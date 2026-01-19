@@ -6,16 +6,16 @@
 	<parent>
 		<artifactId>jpam</artifactId>
 		<groupId>io.github.macster110</groupId>
-		<version>0.0.88</version>
+		<version>1.0.0</version>
 	</parent>
 
 	<groupId>io.github.macster110</groupId>
 	<artifactId>jpamutilsfx</artifactId>
-	<version>0.0.28</version>
+	<version>0.0.31</version>
 
 	<name>jpamutilsfx</name>
-	<!-- FIXME change it to the project's website -->
-	<url>http://www.example.com</url>
+	<url>https://github.com/macster110/jpam</url>
+	<description>JavaFX controls and utilities for acoustic software</description>
 
 
 	<dependencies>
@@ -75,7 +75,10 @@
 		</license>
 	</licenses>
 	<scm>
-		<url>https://github.com/macster110/jpam.git</url>
+		<connection>scm:git:https://github.com/macster110/jpam.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/macster110/jpam.git</developerConnection>
+		<url>https://github.com/macster110/jpam</url>
+		<tag>HEAD</tag>
 	</scm>
 	<developers>
 		<developer>
@@ -86,7 +89,6 @@
 			</roles>
 		</developer>
 	</developers>
-	<description>JavaFX controls and utilities for acoustic software</description>
 
 
 	<!--<distributionManagement>

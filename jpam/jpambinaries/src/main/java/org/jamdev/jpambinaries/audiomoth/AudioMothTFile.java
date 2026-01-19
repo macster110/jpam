@@ -1,4 +1,4 @@
-package org.jamdev.pambinaries.audiomoth;
+package org.jamdev.jpambinaries.audiomoth;
 
 import java.io.File;
 import java.io.IOException;

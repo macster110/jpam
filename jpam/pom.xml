@@ -6,11 +6,12 @@
 
 	<groupId>io.github.macster110</groupId>
 	<artifactId>jpam</artifactId>
-	<version>0.0.88f</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
-
 	<name>org.jamdev</name>
 	<url>https://github.com/macster110/jpam</url>
+	<description>Deep learning, data parsing and UI tools for passive acoustic monitoring and data processing.</description>
+
 
 	<properties>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	   
@@ -154,13 +155,25 @@
 							<goal>sign</goal>
 						</goals>
 						<configuration>
-							<skip>true</skip>
+							<skip>false</skip>
 							<keyname>${gpg.keyname}</keyname>
 							<passphraseServerId>${gpg.keyname}</passphraseServerId>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin> 
+			
+			<plugin>
+			    <groupId>org.sonatype.central</groupId>
+			    <artifactId>central-publishing-maven-plugin</artifactId>
+			    <version>0.7.0</version>
+			    <extensions>true</extensions>
+			    <configuration>
+			        <publishingServerId>central</publishingServerId>
+			        <autoPublish>true</autoPublish>
+			        <waitUntil>published</waitUntil>
+			    </configuration>
+			</plugin>
 
 <!--  			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
@@ -176,29 +189,39 @@
 			
 		</plugins>
 	</build>
+	
+	
+	
+	
 	<licenses>
-		<license>
-			<name>Apache-2.0</name>
-			<url>https://opensource.org/licenses/apache-2.0</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-	<scm>
-		<url>https://github.com/macster110/jpam.git</url>
-	</scm>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://opensource.org/licenses/apache-2.0</url>
+        </license>
+    </licenses>
+	
+	
 	<developers>
-		<developer>
-			<id>macster110</id>
-			<name>Jamie Macaulay</name>
-			<roles>
+        <developer>
+            <id>macster110</id>
+            <name>Jamie Macaulay</name>
+            <email>macster110@gmail.com</email> 
+            <organization>Jamie Macaulay</organization>
+            <organizationUrl>https://github.com/macster110</organizationUrl>
+            <roles>
 				<role>Developer</role>
 			</roles>
-		</developer>
-	</developers>
-	<description>Deep learning tools for passive acoustic monitoring</description>
+        </developer>
+    </developers>
+    
+    <scm>
+        <connection>scm:git:https://github.com/macster110/jpam.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/macster110/jpam.git</developerConnection>
+        <url>https://github.com/macster110/jpam/tree/main</url>
+    </scm>
+	
 
-
-	<distributionManagement>
+	<!--<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
 			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
@@ -207,7 +230,7 @@
 			<id>ossrh</id>
 			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository> 
-	</distributionManagement>
+	</distributionManagement>-->
 
 
 	<modules>
@@ -215,7 +238,6 @@
 		<module>jdl4pam</module>
 		<module>jpamutilsfx</module>
 		<module>jpambinaries</module>
-		<module>jpamtest</module>
 	</modules>
 
 </project>

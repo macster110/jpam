@@ -6,11 +6,11 @@
 	<parent>
 		<artifactId>jpam</artifactId>
 		<groupId>io.github.macster110</groupId>
-		<version>0.0.88</version>
+		<version>1.0.0</version>
 	</parent>
 
 	<artifactId>jdl4pam</artifactId>
-	<version>0.0.99f</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>jdl4pam</name>
@@ -29,13 +29,13 @@
 		<dependency>
 			<groupId>io.github.macster110</groupId>
 			<artifactId>jpamutils</artifactId>
-			<version>0.0.59f</version>
+			<version>1.0.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>ai.djl</groupId>
 			<artifactId>api</artifactId>
-			<version>0.35.0</version>
+			<version>0.36.0</version>
 		</dependency>
 
 		<!-- Java FFT library -->
@@ -59,7 +59,7 @@
 		<dependency>
 			<groupId>ai.djl.pytorch</groupId>
 			<artifactId>pytorch-engine</artifactId>
-			<version>0.35.0</version>
+			<version>0.36.0</version>
 <!-- 			<scope>runtime</scope> -->
 		</dependency>
 		
@@ -81,7 +81,7 @@
 		<dependency>
 			<groupId>ai.djl.tensorflow</groupId>
 			<artifactId>tensorflow-engine</artifactId>
-			<version>0.35.0</version>
+			<version>0.36.0</version>
 <!-- 			<scope>runtime</scope> -->
 		</dependency>
 		
@@ -97,8 +97,8 @@
 		<dependency>
 		    <groupId>ai.djl.onnxruntime</groupId>
 		    <artifactId>onnxruntime-engine</artifactId>
-		    <version>0.35.0</version>
-		    <scope>runtime</scope>
+		    <version>0.36.0</version>
+<!--	    <scope>runtime</scope>-->
 		</dependency>
 
 		

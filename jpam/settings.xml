@@ -17,14 +17,15 @@
       </properties>
     </profile>
   </profiles>
+  
 
 	<servers>
 <!--		<server>-->
 <!--			<id>ossrh</id>-->
 <!--			<username>macster110</username>-->
 <!--			<password>@64Tahariveila</password>-->
-<!--		</server>-->
-		<server>
+<!--		</server>
+	<server>
 			<id>github</id>
 			<username>macster110</username>
 			<password>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</password>
@@ -33,7 +34,15 @@
 			<id>ossrh</id>
 			<username>2WT+dijB</username>
 			<password>YHo116t92jDAtO9B4RukvYMDcobbRt5YAkco+TqD/tx9</password>
+		</server>-->
+		
+		
+		<server>
+			<id>central</id>
+			<username>xkc5H7</username>
+			<password>koh1kE7SzQXlp9ajwG5jwrI9HYlVGn6tM</password>
 		</server>
+
 	</servers>
 
   

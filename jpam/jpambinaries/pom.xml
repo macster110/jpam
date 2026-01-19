@@ -6,18 +6,20 @@
 	<parent>
 		<artifactId>jpam</artifactId>
 		<groupId>io.github.macster110</groupId>
-		<version>0.0.88</version>
+		<version>1.0.0</version>
 	</parent>
 
 	<artifactId>jpambinaries</artifactId>
-	<version>0.0.48</version>
+	<version>0.0.31</version>
+	
+	<description>Data parsing tools for passive acoustic monitoring and data processing.</description>
 
 	<name>jpambinaries</name>
-	<!-- FIXME change it to the project's website -->
-	<url>http://www.example.com</url>
+	<!-- Replace placeholder URL with project website/repo URL -->
+	<url>https://github.com/macster110/jpam</url>
 
 	<dependencies>
-	
+		
 		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
 		<dependency>
 		    <groupId>org.junit.jupiter</groupId>
@@ -31,7 +33,7 @@
 		<dependency>
 			<groupId>io.github.macster110</groupId>
 			<artifactId>jpamutils</artifactId>
-			<version>0.0.55</version>
+			<version>1.0.0</version>
 		</dependency>
 
 	</dependencies>
@@ -43,19 +45,24 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+	<!-- Provide full SCM connections as required by Central Publishing -->
 	<scm>
-		<url>https://github.com/macster110/jpam.git</url>
+		<connection>scm:git:https://github.com/macster110/jpam.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/macster110/jpam.git</developerConnection>
+		<url>https://github.com/macster110/jpam</url>
+		<tag>HEAD</tag>
 	</scm>
 	<developers>
 		<developer>
 			<id>macster110</id>
 			<name>Jamie Macaulay</name>
+			<email>macster110@gmail.com</email>
 			<roles>
 				<role>Developer</role>
 			</roles>
 		</developer>
 	</developers>
-	<description>Tools for importing acoustic data files</description>
+
 
 	<!--<distributionManagement>
 		<repository>
