@@ -242,8 +242,7 @@ public class FreqTransform extends SimpleTransform {
 	public void setSpecTransfrom(SpecTransform specTransfrom) {
 		this. specTransfrom = specTransfrom;
 	}
-
-
+	
 
 	@Override
 	public DLTransformType getDLTransformType() {

@@ -7,8 +7,10 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 
 import org.jamdev.jdl4pam.genericmodel.SpectrogramTranslator;
+import org.jamdev.jdl4pam.utils.DLDeviceUtils;
 import org.jamdev.jdl4pam.utils.DLUtils;
 
+import ai.djl.Device;
 import ai.djl.MalformedModelException;
 import ai.djl.Model;
 import ai.djl.inference.Predictor;
@@ -17,7 +19,6 @@ import ai.djl.ndarray.NDList;
 import ai.djl.ndarray.NDManager;
 import ai.djl.ndarray.types.Shape;
 import ai.djl.translate.Batchifier;
-import ai.djl.translate.TranslateException;
 import ai.djl.translate.Translator;
 import ai.djl.translate.TranslatorContext;
 
@@ -46,32 +47,50 @@ public class AnimalSpotModel {
 	public String params;
 
 	/**
-	 * A hash map for extra files options. 
+	 * A hash map for extra files options.
 	 */
-	private HashMap<String, String> hashMap; 
+	private HashMap<String, String> hashMap;
+
+	/**
+	 * The device the model is currently loaded on (e.g. mps or cpu).
+	 */
+	private Device device;
+
+	/**
+	 * Set once the model has fallen back from the GPU to the CPU.
+	 */
+	private boolean cpuFallbackDone = false;
+
+	/** Retained so the model can be reloaded on the CPU if it fails on the GPU. */
+	private Path modelDir;
+	private String modelName;
+	private ai.djl.translate.Translator<float[][][], float[]> translator;
 
 
 	public AnimalSpotModel(String modelPath) throws Exception {
-		
+
 		try {
-		File file = new File(modelPath); 
-		
-		//String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JAMIE.pk"; 
-	
-		Path modelDir = Paths.get(file.getAbsoluteFile().getParent()); //the directory of the file (in case the file is local this should also return absolute directory)
-		String modelName = file.getName(); 
-				
-		SpectrogramTranslator translator = new SpectrogramTranslator(); 
-		
-		model = Model.newInstance(modelName);
-		
-		// create map to extract metadata from sound spot model. 
+		File file = new File(modelPath);
+
+		//String modelPath = "/Users/au671271/Google Drive/Aarhus_research/PAMGuard_bats_2020/deep_learning/BAT/models/bats_denmark/BAT_4ms_256ft_8hop_128_NOISEAUG_40000_100000_-100_0_256000_JAMIE.pk";
+
+		this.modelDir = Paths.get(file.getAbsoluteFile().getParent()); //the directory of the file (in case the file is local this should also return absolute directory)
+		this.modelName = file.getName();
+
+		this.translator = new SpectrogramTranslator();
+
+		// create map to extract metadata from sound spot model.
 		hashMap = new HashMap<String, String>();
-		hashMap.put("extraFiles" , "dataOpts,transforms"); //add other bits and pieces as a list of strings. 
-		
-				
+		hashMap.put("extraFiles" , "dataOpts,transforms"); //add other bits and pieces as a list of strings.
+
+		//prefer the Apple GPU (MPS) where available; falls back to the CPU on failure
+		//(see runModel). On other platforms this uses the DJL default device.
+		this.device = DLDeviceUtils.getPreferredPyTorchDevice();
+
+		model = DLDeviceUtils.newPyTorchModel(modelName, device);
+
 		model.load(modelDir, modelName, hashMap);
-						
+
 		//predictor for the model
 		predictor = model.newPredictor(translator);
 		}
@@ -82,7 +101,7 @@ public class AnimalSpotModel {
 		catch (IOException ioe) {
 			  throw new Exception(ioe.getMessage());
 		}
-				
+
 	}
 	
 	
@@ -126,14 +145,52 @@ public class AnimalSpotModel {
 	 */
 	public float[] runModel(float[][][] specImage) {
 		try {
-			float[] results  = predictor.predict(specImage);
-			//DLUtils.printArray(results);
-			return results; 
-		} catch (TranslateException e) {
-			System.out.println("Error on model: "); 
-			e.printStackTrace();
+			return predictor.predict(specImage);
+		} catch (Throwable e) {
+			//the model failed - if it was running on the GPU (Apple MPS) try once more on
+			//the CPU (e.g. the model uses an op the GPU does not support, or was exported in
+			//a way whose constants cannot move to the GPU).
+			if (fallbackToCpu()) {
+				try {
+					return predictor.predict(specImage);
+				} catch (Throwable e2) {
+					e2.printStackTrace();
+				}
+			} else {
+				System.out.println("Error on model: ");
+				e.printStackTrace();
+			}
 		}
 		return null;
+	}
+
+	/**
+	 * Reload the model on the CPU after a failure on the GPU. Only happens once.
+	 *
+	 * @return true if the model was successfully reloaded on the CPU.
+	 */
+	private synchronized boolean fallbackToCpu() {
+		if (cpuFallbackDone || !DLDeviceUtils.isMps(device)) {
+			return false;
+		}
+		cpuFallbackDone = true;
+		try {
+			System.err.println("AnimalSpotModel: model failed on the Apple GPU (MPS) - reloading on the CPU.");
+			if (predictor != null) {
+				predictor.close();
+			}
+			if (model != null) {
+				model.close();
+			}
+			device = Device.cpu();
+			model = Model.newInstance(modelName, device);
+			model.load(modelDir, modelName, hashMap);
+			predictor = model.newPredictor(translator);
+			return true;
+		} catch (Throwable e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	/**
