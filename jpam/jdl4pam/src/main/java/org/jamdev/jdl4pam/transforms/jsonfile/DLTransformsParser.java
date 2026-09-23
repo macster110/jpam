@@ -254,8 +254,11 @@ public class DLTransformsParser {
 			paramsObject.put("time_const_len", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
 			break;
 		case REDUCETONALNOISE_MEDIAN:
-			//nothing to add here - no params. 
+			//nothing to add here - no params.
 
+			break;
+		case MEDIAN_EQUALIZER:
+			paramsObject.put("window_duration", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue());
 			break;
 		case SPECNORMALISESTD:
 			paramsObject.put("mean", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
@@ -284,6 +287,9 @@ public class DLTransformsParser {
 			paramsObject.put("fft", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
 			paramsObject.put("hop", ((SimpleTransformParams) dlTransfromParams).params[1].intValue());
 			paramsObject.put("window_size", ((SimpleTransformParams) dlTransfromParams).params[2].doubleValue());
+			if (((SimpleTransformParams) dlTransfromParams).params.length > 3) {
+				paramsObject.put("window_type", ((SimpleTransformParams) dlTransfromParams).params[3].intValue());
+			}
 			break;
 		case SPECRESIZE:
 			paramsObject.put("time_bins", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
@@ -488,7 +494,17 @@ public class DLTransformsParser {
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
 			break;
 		case REDUCETONALNOISE_MEDIAN:
-			dlTransformParams = new SimpleTransformParams(dlTransformType); 
+			dlTransformParams = new SimpleTransformParams(dlTransformType);
+			break;
+		case MEDIAN_EQUALIZER:
+			number = new Number[1];
+			if (jsonObjectParams.has("window_duration")) {
+				number[0] = jsonObjectParams.getDouble("window_duration");
+			}
+			else {
+				number[0] = Double.valueOf(60.0);
+			}
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number);
 			break;
 		case MEDIANFILTER:
 			dlTransformParams = new SimpleTransformParams(dlTransformType); 
@@ -518,10 +534,14 @@ public class DLTransformsParser {
 			//TODO
 			break;
 		case SPECTROGRAMKETOS:
-			number = new Number[3]; 
-			number[0] = jsonObjectParams.getInt("fft"); 
-			number[1] = jsonObjectParams.getInt("hop"); 
-			number[2] = jsonObjectParams.getDouble("window_size"); 
+			//optional fourth parameter is the window type
+			number = new Number[jsonObjectParams.has("window_type") ? 4 : 3];
+			number[0] = jsonObjectParams.getInt("fft");
+			number[1] = jsonObjectParams.getInt("hop");
+			number[2] = jsonObjectParams.getDouble("window_size");
+			if (number.length > 3) {
+				number[3] = jsonObjectParams.getInt("window_type");
+			}
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
 			break;
 		case SPECRESIZE:		

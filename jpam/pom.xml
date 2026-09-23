@@ -6,7 +6,7 @@
 
 	<groupId>io.github.macster110</groupId>
 	<artifactId>jpam</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<packaging>pom</packaging>
 	<name>org.jamdev</name>
 	<url>https://github.com/macster110/jpam</url>
@@ -155,7 +155,7 @@
 							<goal>sign</goal>
 						</goals>
 						<configuration>
-							<skip>false</skip>
+							<skip>true</skip>
 							<keyname>${gpg.keyname}</keyname>
 							<passphraseServerId>${gpg.keyname}</passphraseServerId>
 						</configuration>

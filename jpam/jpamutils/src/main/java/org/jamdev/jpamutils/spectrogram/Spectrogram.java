@@ -1,6 +1,7 @@
 package org.jamdev.jpamutils.spectrogram;
 
 import com.github.psambit9791.jdsp.windows.Hamming;
+import com.github.psambit9791.jdsp.windows.Hanning;
 import com.github.psambit9791.jdsp.windows._Window;
 import org.jamdev.jpamutils.wavFiles.AudioData;
 
@@ -27,7 +28,12 @@ public class Spectrogram {
 	 * The winow duration in seconds. 
 	 */
 	private double window_duration;
-	
+
+	/**
+	 * The window function used by the Ketos spectrogram. Either WindowFunction.HAMMING or WindowFunction.HANNING.
+	 */
+	private int windowType = WindowFunction.HAMMING;
+
 	/**
 	 * The total number of fft windows.
 	 */
@@ -89,7 +95,25 @@ public class Spectrogram {
 		this.window_duration = window_duration;
 		this.buildSpectrogramKetos(wave);
 	}
-	
+
+	/**
+	 * Create a spectrogram which is compatible with Ketos models using a specified window function.
+	 * @param wave      - the clip of sound data
+	 * @param fftLength - the FFT length in samples
+	 * @param fftHop    - the spectrogram hop size to use in samples.
+	 * @param window_duration - the duration of the sound window to use in seconds.
+	 * @param windowType - the window function, WindowFunction.HAMMING or WindowFunction.HANNING. Both are symmetric
+	 * i.e. the same as numpy.hamming and numpy.hanning.
+	 */
+	public Spectrogram(AudioData wave, int fftLength, int fftHop, double window_duration, int windowType) {
+		this.sR = wave.getSampleRate();
+		this.fftLength = fftLength;
+		this.fftHop = fftHop;
+		this.window_duration = window_duration;
+		this.windowType = windowType;
+		this.buildSpectrogramKetos(wave);
+	}
+
 
 	/**
 	 * Create a new spectrogram with existing complex spectrogram data.
@@ -274,7 +298,7 @@ public class Spectrogram {
 		numFrames = numSamplesKetos(window_duration - ((double) fftLength)/sR, (double) sR/fftHop, Boolean.FALSE);
 		framesPerSecond = (int) (numFrames / wave.getLengthInSeconds());
 
-		_Window w1 = new Hamming(fftLength);
+		_Window w1 = windowType == WindowFunction.HANNING ? new Hanning(fftLength) : new Hamming(fftLength);
 		double[] win = w1.getWindow();
 
 		double[][] signals = new double[numFrames][];

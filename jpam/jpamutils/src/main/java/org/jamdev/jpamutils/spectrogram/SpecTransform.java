@@ -261,7 +261,28 @@
 				absSpec2Complex(); // set the new data in the complex spectrogram
 			return this;
 		}
-	
+
+		/**
+		 * Median equalizer. Subtracts a running median, computed along the time axis
+		 * of each frequency bin, from the spectrogram and sets negative values to zero.
+		 * <p>
+		 * This is the "median_equalizer" denoiser in the ecosound library. Note that if
+		 * the window is longer than the spectrogram then the spectrogram is mirrored to
+		 * fill the window.
+		 *
+		 * @param windowDuration - the duration of the running median window in seconds.
+		 * @return the transformed spectrogram.
+		 */
+		public SpecTransform medianEqualizer(double windowDuration) {
+			if (this.specData == null)
+				initialiseSpecData();
+			double timeRes = spectrgram.getFFTHop() / (double) spectrgram.getSampleRate();
+			this.specData = medianEqualizer(this.specData, (int) Math.round(windowDuration / timeRes));
+			if (maintainPhase)
+				absSpec2Complex(); // set the new data in the complex spectrogram
+			return this;
+		}
+
 		/**
 		 * Discard pixels that are lower than the median threshold.
 		 * 
@@ -966,10 +987,129 @@
 					imgNew[j][i] = img[j][i] - median[i];
 				}
 			}
-	
+
 			return imgNew;
 		}
-	
+
+		/**
+		 * Median equalizer. Subtracts a running median, computed along the time axis
+		 * of each frequency bin, from the spectrogram and sets negative values to zero.
+		 * <p>
+		 * The same as the "median_equalizer" denoiser in the ecosound library i.e.
+		 * spec - scipy.ndimage.median_filter(spec, size=(1, windowBins), mode="mirror")
+		 * with negative values set to zero.
+		 *
+		 * @param img        - the spectrogram image. The first index is time and the
+		 *                   second is frequency.
+		 * @param windowBins - the length of the running median window in time bins.
+		 * @return the equalized spectrogram.
+		 */
+		public static double[][] medianEqualizer(double[][] img, int windowBins) {
+
+			double[][] median = medianFilterTime(img, windowBins);
+
+			double[][] imgNew = new double[img.length][img[0].length];
+			for (int i = 0; i < img.length; i++) {
+				for (int j = 0; j < img[i].length; j++) {
+					imgNew[i][j] = Math.max(img[i][j] - median[i][j], 0);
+				}
+			}
+
+			return imgNew;
+		}
+
+		/**
+		 * Running median along the time axis of each frequency bin. The output is the
+		 * same as scipy.ndimage.median_filter(spec, size=(1, windowBins), mode="mirror")
+		 * where spec has frequency as the first axis.
+		 *
+		 * @param img        - the spectrogram image. The first index is time and the
+		 *                   second is frequency.
+		 * @param windowBins - the length of the running median window in time bins.
+		 * @return the running median of the spectrogram.
+		 */
+		public static double[][] medianFilterTime(double[][] img, int windowBins) {
+
+			int nTime = img.length;
+			int nFreq = img[0].length;
+			int window = Math.max(1, windowBins);
+
+			// scipy centres the window at window/2 and, for even windows, takes the upper median.
+			int offset = window / 2;
+			int rank = window / 2;
+
+			double[][] median = new double[nTime][nFreq];
+			final double[] row = new double[nTime];
+
+			for (int j = 0; j < nFreq; j++) {
+				for (int i = 0; i < nTime; i++) {
+					row[i] = img[i][j];
+				}
+
+				if (window <= nTime) {
+					double[] windowVals = new double[window];
+					for (int i = 0; i < nTime; i++) {
+						for (int k = 0; k < window; k++) {
+							windowVals[k] = row[mirrorIndex(i - offset + k, nTime)];
+						}
+						Arrays.sort(windowVals);
+						median[i][j] = windowVals[rank];
+					}
+				} else {
+					// The window is longer than the spectrogram so contains repeats of the mirrored
+					// data. Count how many times each time bin is in the window and then walk
+					// through the sorted bins to find the median.
+					Integer[] order = new Integer[nTime];
+					for (int i = 0; i < nTime; i++) {
+						order[i] = i;
+					}
+					Arrays.sort(order, (a, b) -> Double.compare(row[a], row[b]));
+
+					int[] counts = new int[nTime];
+					for (int k = 0; k < window; k++) {
+						counts[mirrorIndex(k - offset, nTime)]++;
+					}
+
+					for (int i = 0; i < nTime; i++) {
+						if (i > 0) {
+							// slide the window one bin
+							counts[mirrorIndex(i - 1 - offset, nTime)]--;
+							counts[mirrorIndex(i - 1 - offset + window, nTime)]++;
+						}
+						int cumulative = 0;
+						for (int k = 0; k < nTime; k++) {
+							cumulative += counts[order[k]];
+							if (cumulative > rank) {
+								median[i][j] = row[order[k]];
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			return median;
+		}
+
+		/**
+		 * Map an index outside an array to an index inside the array by mirroring
+		 * about the edges without repeating the edge value (d c b | a b c d | c b a).
+		 * This is the "mirror" mode in scipy.ndimage.
+		 *
+		 * @param index - the index.
+		 * @param n     - the length of the array.
+		 * @return the index within the array.
+		 */
+		private static int mirrorIndex(int index, int n) {
+			if (n == 1)
+				return 0;
+			int period = 2 * (n - 1);
+			int k = index % period;
+			if (k < 0)
+				k += period;
+			return k < n ? k : period - k;
+		}
+
 		/**
 		 * Normalize the data array to specified mean and standard deviation.
 		 * 

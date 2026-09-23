@@ -134,7 +134,14 @@ public class FreqTransform extends SimpleTransform {
 			break;
 		case SPECTROGRAMKETOS:
 			//make a spectrogram
-			Spectrogram spectrogramKetos = new Spectrogram(((WaveTransform) transform).getWaveData(), (int) params[0], (int) params[1], (double) params[2]);
+			Spectrogram spectrogramKetos;
+			if (params.length > 3) {
+				//the fourth parameter is the window type
+				spectrogramKetos = new Spectrogram(((WaveTransform) transform).getWaveData(), params[0].intValue(), params[1].intValue(), params[2].doubleValue(), params[3].intValue());
+			}
+			else {
+				spectrogramKetos = new Spectrogram(((WaveTransform) transform).getWaveData(), (int) params[0], (int) params[1], (double) params[2]);
+			}
 			specTransfrom = new SpecTransform(spectrogramKetos);
 			specTransfrom.setTransformedData(this.specTransfrom.getSpectrgram().getAbsoluteSpectrogram());
 
@@ -167,7 +174,11 @@ public class FreqTransform extends SimpleTransform {
 			break;
 		case REDUCETONALNOISE_MEAN:
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().reduceTonalNoiseMean(params[0].intValue());
-			freqlims = ((FreqTransform) transform).freqlims; 
+			freqlims = ((FreqTransform) transform).freqlims;
+			break;
+		case MEDIAN_EQUALIZER:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().medianEqualizer(params[0].doubleValue());
+			freqlims = ((FreqTransform) transform).freqlims;
 			break;
 		case SPECRESIZE:
 			int resizeType=SpecTransform.RESIZE_BILINEAR; //default is bilinear

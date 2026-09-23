@@ -246,6 +246,17 @@ public interface DLTransform {
 		REDUCETONALNOISE_MEAN("Reduce Tonal Noise (Mean)", "reduce_tonal_noise_mean"),
 
 		/**
+		 * Median equalizer. Subtracts a running median, computed along the time axis of
+		 * each frequency bin, from the spectrogram and sets negative values to zero.
+		 * This is the "median_equalizer" denoiser in the ecosound library.
+		 * <p>
+		 * One associated parameter - the duration of the running median window in
+		 * seconds. If the window is longer than the spectrogram then the spectrogram is
+		 * mirrored to fill the window.
+		 */
+		MEDIAN_EQUALIZER("Median Equalizer", "median_equalizer"),
+
+		/**
 		 * Discard pixels that are lower than the median threshold.
 		 * 
 		 * The resulting image will have 0s for pixels below the threshold and 1s for

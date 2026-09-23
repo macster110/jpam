@@ -93,6 +93,9 @@ public class DLTransformsFactory {
 		case REDUCETONALNOISE_MEDIAN:
 			dlTransform = new FreqTransform(dlTransformType, null);
 			break;
+		case MEDIAN_EQUALIZER:
+			dlTransform = new FreqTransform(dlTransformType, new Number[] {60.0});
+			break;
 		case SPECNORMALISESTD:
 			dlTransform = new FreqTransform(dlTransformType,  new Number[] {0.0, 1.0}); 
 			break;
