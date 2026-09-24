@@ -85,6 +85,13 @@ public abstract class ArchiveModel extends GenericModel {
 		// the model path.
 		modelPath = zipFolder +  File.separator + getModelRelPath(zipFolder);
 		
+		
+//		try {
+//			Thread.sleep(500); // wait a bit for file system to catch up.
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		
 		//make sure you reference super here or things get weird...
 		Model model = super.loadModel(modelPath);
 		

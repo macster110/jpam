@@ -279,12 +279,23 @@ public class DLTransformsParser {
 				}
 			}
 			break;
-		case SPECFREQTRIM:		
-			paramsObject.put("fmin", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue()); 
+		case SPECFREQTRIM:
+			paramsObject.put("fmin", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue());
+			paramsObject.put("fmax", ((SimpleTransformParams) dlTransfromParams).params[1].doubleValue());
+			if (((SimpleTransformParams) dlTransfromParams).params.length > 2) {
+				paramsObject.put("bin_mode", ((SimpleTransformParams) dlTransfromParams).params[2].intValue());
+			}
+			break;
+		case SPECFREQZERO:
+			paramsObject.put("fmin", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue());
 			paramsObject.put("fmax", ((SimpleTransformParams) dlTransfromParams).params[1].doubleValue());
 			break;
+		case SPEC_IMADJUST:
+			paramsObject.put("low_tol", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue());
+			paramsObject.put("high_tol", ((SimpleTransformParams) dlTransfromParams).params[1].doubleValue());
+			break;
 		case SPECTROGRAMKETOS:
-			paramsObject.put("fft", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
+			paramsObject.put("fft", ((SimpleTransformParams) dlTransfromParams).params[0].intValue());
 			paramsObject.put("hop", ((SimpleTransformParams) dlTransfromParams).params[1].intValue());
 			paramsObject.put("window_size", ((SimpleTransformParams) dlTransfromParams).params[2].doubleValue());
 			if (((SimpleTransformParams) dlTransfromParams).params.length > 3) {
@@ -292,8 +303,11 @@ public class DLTransformsParser {
 			}
 			break;
 		case SPECRESIZE:
-			paramsObject.put("time_bins", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
+			paramsObject.put("time_bins", ((SimpleTransformParams) dlTransfromParams).params[0].intValue());
 			paramsObject.put("freq_bins", ((SimpleTransformParams) dlTransfromParams).params[1].intValue());
+			if (((SimpleTransformParams) dlTransfromParams).params.length > 2) {
+				paramsObject.put("method", ((SimpleTransformParams) dlTransfromParams).params[2].intValue());
+			}
 			break;
 		case FFT:
 			paramsObject.put("fftlength", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
@@ -544,17 +558,37 @@ public class DLTransformsParser {
 			}
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
 			break;
-		case SPECRESIZE:		
-			number = new Number[2]; 
-			number[0] = jsonObjectParams.getInt("time_bins"); 
-			number[1] = jsonObjectParams.getInt("freq_bins"); 
-			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
+		case SPECRESIZE:
+			//optional third parameter is the resize method
+			number = new Number[jsonObjectParams.has("method") ? 3 : 2];
+			number[0] = jsonObjectParams.getInt("time_bins");
+			number[1] = jsonObjectParams.getInt("freq_bins");
+			if (number.length > 2) {
+				number[2] = jsonObjectParams.getInt("method");
+			}
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number);
 			break;
-		case SPECFREQTRIM:		
-			number = new Number[2]; 
-			number[0] = jsonObjectParams.getDouble("fmin"); 
-			number[1] = jsonObjectParams.getDouble("fmax"); 
-			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
+		case SPECFREQTRIM:
+			//optional third parameter is the bin mode
+			number = new Number[jsonObjectParams.has("bin_mode") ? 3 : 2];
+			number[0] = jsonObjectParams.getDouble("fmin");
+			number[1] = jsonObjectParams.getDouble("fmax");
+			if (number.length > 2) {
+				number[2] = jsonObjectParams.getInt("bin_mode");
+			}
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number);
+			break;
+		case SPECFREQZERO:
+			number = new Number[2];
+			number[0] = jsonObjectParams.getDouble("fmin");
+			number[1] = jsonObjectParams.getDouble("fmax");
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number);
+			break;
+		case SPEC_IMADJUST:
+			number = new Number[2];
+			number[0] = jsonObjectParams.has("low_tol") ? jsonObjectParams.getDouble("low_tol") : 0.01;
+			number[1] = jsonObjectParams.has("high_tol") ? jsonObjectParams.getDouble("high_tol") : 0.99;
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number);
 			break;
 		case SPECFLIP:
 			dlTransformParams = new SimpleTransformParams(dlTransformType); 

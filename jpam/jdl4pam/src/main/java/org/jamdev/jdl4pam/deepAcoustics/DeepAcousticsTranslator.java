@@ -90,22 +90,26 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], List<D
 		YoloPostProcessorResult result; 
 		
 		long nResults = list.get(0).getShape().get(0);
-		
-		for (int i=0; i<nResults; i++) {			
-			result = Pred2BoxDJL3.yoloPostProcess(
-					 ctx.getNDManager(), // Parent manager
-					 list,    // Input as NDList
-			         network, thresh, i);
-			
+
+		//convert the detection heads to Java arrays once for all images in the batch.
+		float[][] headData = new float[list.size()][];
+		long[][] headShapes = new long[list.size()][];
+		for (int i=0; i<list.size(); i++) {
+			headData[i] = list.get(i).toFloatArray();
+			headShapes[i] = list.get(i).getShape().getShape();
+		}
+
+		for (int i=0; i<nResults; i++) {
+			result = YoloV4Decoder.decode(headData, headShapes, network, thresh, i);
+
 			if (result==null || result.bboxes == null || result.bboxes.length == 0) {
-				System.out.println("No bounding boxes found");
 				results.add(new DeepAcousticResultArray());
 				continue;
 			}
-			
-			boundingBoxes = new DeepAcousticResultArray(); 
-			boundingBoxes.setImageHeight((int) this.network.imShape.get(1));
-			boundingBoxes.setImageWidth((int) this.network.imShape.get(2));
+
+			boundingBoxes = new DeepAcousticResultArray();
+			boundingBoxes.setImageHeight(this.network.getImageHeight());
+			boundingBoxes.setImageWidth(this.network.getImageWidth());
 
 			DeepAcousticsResult dAResult;
 			for (int j=0; j<result.bboxes.length; j++) {

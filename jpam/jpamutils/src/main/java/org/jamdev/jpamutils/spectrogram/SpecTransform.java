@@ -8,6 +8,7 @@
 	import org.jamdev.jpamutils.clahe.FastBitmap;
 	import org.jamdev.jpamutils.interpolation.Bicubic;
 	import org.jamdev.jpamutils.interpolation.Bilinear;
+	import org.jamdev.jpamutils.interpolation.ImResize;
 	import org.jamdev.jpamutils.interpolation.Interpolation;
 	import org.jamdev.jpamutils.interpolation.NearestNeighbor;
 	
@@ -417,7 +418,14 @@
 		/**
 		 * Use a bicubic interpolation.
 		 */
-		public final static int RESIZE_BICUBIC = 2; 
+		public final static int RESIZE_BICUBIC = 2;
+
+		/**
+		 * Use a bicubic interpolation which is identical to MATLAB's imresize
+		 * function (including antialiasing when shrinking the image).
+		 */
+		public final static int RESIZE_BICUBIC_MATLAB = 3;
+
 		/**
 		 * Resize the spectrogram using bilinear interpolation.
 		 * 
@@ -529,11 +537,211 @@
 				initialiseSpecData();
 	
 			this.specData = freqtrim(this.specData, minFreq,  maxFreq, this.spectrgram.getSampleRate());
-	
+
 			return this;
-	
+
 		}
-	
+
+		/**
+		 * Trim the spectrogram so that it only contains the FFT bins whose frequency
+		 * (k*sampleRate/fftLength) is greater than or equal to minFreq and less than
+		 * maxFreq. This is the same as selecting bins using <code>f&gt;=minFreq &amp; f&lt;maxFreq</code>
+		 * with the frequency vector returned by MATLAB's spectrogram function. Unlike
+		 * {@link #freqtrim(double, double)} a bin is never dropped when its frequency is
+		 * within the limits.
+		 * <p>
+		 * This must be called on an untrimmed spectrogram.
+		 *
+		 * @param minFreq - the minimum frequency in Hz (inclusive).
+		 * @param maxFreq - the maximum frequency in Hz (exclusive).
+		 * @return reference to the trimmed spectrogram.
+		 */
+		public SpecTransform freqtrimBins(double minFreq, double maxFreq) {
+			if (specData == null)
+				initialiseSpecData();
+
+			int[] binRange = freqTrimBinRange(this.specData[0].length, getFreqBinSize(), minFreq, maxFreq);
+			this.specData = trimBins(this.specData, binRange[0], binRange[1]);
+
+			return this;
+		}
+
+		/**
+		 * Set all frequency bins between two frequencies to zero.
+		 *
+		 * @param minFreq   - the minimum frequency in Hz (inclusive).
+		 * @param maxFreq   - the maximum frequency in Hz (exclusive).
+		 * @param startFreq - the frequency of the first bin in the spectrogram data in
+		 *                  Hz. This is zero unless the spectrogram has been trimmed.
+		 * @return reference to the spectrogram.
+		 */
+		public SpecTransform freqZero(double minFreq, double maxFreq, double startFreq) {
+			if (specData == null)
+				initialiseSpecData();
+
+			this.specData = freqZero(this.specData, minFreq, maxFreq, startFreq, getFreqBinSize());
+
+			return this;
+		}
+
+		/**
+		 * Adjust the image intensity values in the same way as MATLAB's
+		 * <code>imadjust(I)</code> function. The lower and upper limits are
+		 * calculated from the distribution of pixel values (see
+		 * {@link #stretchlim(double[][], double, double)}) and then the image is
+		 * clipped to these limits and scaled between 0 and 1.
+		 *
+		 * @param lowTol  - the fraction of pixels to saturate at low intensities
+		 *                (MATLAB default is 0.01).
+		 * @param highTol - the fraction of pixels (from the bottom) at which to
+		 *                saturate high intensities (MATLAB default is 0.99).
+		 * @return reference to the adjusted spectrogram.
+		 */
+		public SpecTransform imadjust(double lowTol, double highTol) {
+			if (specData == null)
+				initialiseSpecData();
+
+			double[] lims = stretchlim(this.specData, lowTol, highTol);
+			this.specData = imadjust(this.specData, lims[0], lims[1]);
+
+			return this;
+		}
+
+		/**
+		 * Get the frequency resolution of the spectrogram bins.
+		 *
+		 * @return the width of each FFT bin in Hz.
+		 */
+		public double getFreqBinSize() {
+			return this.spectrgram.getSampleRate() / (double) this.spectrgram.getFFTLength();
+		}
+
+		/**
+		 * Get the range of FFT bins with frequencies between two values.
+		 *
+		 * @param nBins   - the number of frequency bins.
+		 * @param binSize - the width of each frequency bin in Hz.
+		 * @param minFreq - the minimum frequency in Hz (inclusive).
+		 * @param maxFreq - the maximum frequency in Hz (exclusive).
+		 * @return the first bin (inclusive) and last bin (exclusive).
+		 */
+		public static int[] freqTrimBinRange(int nBins, double binSize, double minFreq, double maxFreq) {
+			int minIndex = (int) Math.max(0, Math.ceil(minFreq / binSize));
+			int maxIndex = (int) Math.min(nBins, Math.ceil(maxFreq / binSize));
+			return new int[] { minIndex, Math.max(minIndex, maxIndex) };
+		}
+
+		/**
+		 * Keep a range of frequency bins.
+		 *
+		 * @param array    - the spectrogram [time][frequency].
+		 * @param minIndex - the first bin to keep (inclusive).
+		 * @param maxIndex - the last bin to keep (exclusive).
+		 * @return the trimmed spectrogram.
+		 */
+		private static double[][] trimBins(double[][] array, int minIndex, int maxIndex) {
+			double[][] trimmed = new double[array.length][];
+			for (int i = 0; i < array.length; i++) {
+				trimmed[i] = Arrays.copyOfRange(array[i], minIndex, maxIndex);
+			}
+			return trimmed;
+		}
+
+		/**
+		 * Set all frequency bins between two frequencies to zero.
+		 *
+		 * @param array     - the spectrogram [time][frequency].
+		 * @param minFreq   - the minimum frequency in Hz (inclusive).
+		 * @param maxFreq   - the maximum frequency in Hz (exclusive).
+		 * @param startFreq - the frequency of the first bin in Hz.
+		 * @param binSize   - the width of each frequency bin in Hz.
+		 * @return a copy of the spectrogram with the frequency band set to zero.
+		 */
+		public static double[][] freqZero(double[][] array, double minFreq, double maxFreq, double startFreq, double binSize) {
+			double[][] out = copyArr(array);
+			for (int j = 0; j < array[0].length; j++) {
+				double f = startFreq + j * binSize;
+				if (f >= minFreq && f < maxFreq) {
+					for (int i = 0; i < out.length; i++) {
+						out[i][j] = 0;
+					}
+				}
+			}
+			return out;
+		}
+
+		/**
+		 * Calculate the intensity limits for contrast stretching in the same way as
+		 * MATLAB's <code>stretchlim</code> function for a double image. A 65536 bin
+		 * histogram of the image between 0 and 1 is calculated (values outside this
+		 * range fall in the first or last bin) and the limits are the bins at which
+		 * the cumulative distribution exceeds lowTol and reaches highTol.
+		 *
+		 * @param img     - the image.
+		 * @param lowTol  - the fraction of pixels to saturate at low intensities.
+		 * @param highTol - the fraction of pixels at which to saturate high
+		 *                intensities.
+		 * @return the lower and upper limits between 0 and 1.
+		 */
+		public static double[] stretchlim(double[][] img, double lowTol, double highTol) {
+			if (lowTol >= highTol) {
+				return new double[] { 0, 1 };
+			}
+
+			int nbins = 65536;
+			long[] hist = new long[nbins];
+			long n = 0;
+			for (int i = 0; i < img.length; i++) {
+				for (int j = 0; j < img[i].length; j++) {
+					double val = img[i][j];
+					if (Double.isNaN(val)) continue;
+					//MATLAB imhist rounds to the nearest bin centre.
+					double bin = Math.floor(val * (nbins - 1) + 0.5);
+					int index = (int) Math.max(0, Math.min(nbins - 1, bin));
+					hist[index]++;
+					n++;
+				}
+			}
+
+			int ilow = -1;
+			int ihigh = -1;
+			long cumsum = 0;
+			for (int i = 0; i < nbins; i++) {
+				cumsum += hist[i];
+				double cdf = cumsum / (double) n;
+				if (ilow < 0 && cdf > lowTol) ilow = i;
+				if (ihigh < 0 && cdf >= highTol) ihigh = i;
+			}
+
+			if (ilow == ihigh || ilow < 0 || ihigh < 0) {
+				//the image is flat
+				return new double[] { 0, 1 };
+			}
+
+			return new double[] { ilow / (double) (nbins - 1), ihigh / (double) (nbins - 1) };
+		}
+
+		/**
+		 * Clip an image between two intensity limits and scale it between 0 and 1.
+		 * This is the same as MATLAB's <code>imadjust(I, [low high])</code>.
+		 *
+		 * @param img  - the image.
+		 * @param low  - the lower intensity limit.
+		 * @param high - the upper intensity limit.
+		 * @return the adjusted image.
+		 */
+		public static double[][] imadjust(double[][] img, double low, double high) {
+			double[][] out = new double[img.length][];
+			for (int i = 0; i < img.length; i++) {
+				out[i] = new double[img[i].length];
+				for (int j = 0; j < img[i].length; j++) {
+					double val = Math.max(low, Math.min(high, img[i][j]));
+					out[i][j] = (val - low) / (high - low);
+				}
+			}
+			return out;
+		}
+
 		/**
 		 * Add a value to all elements of the spectrogram.
 		 * @param addVal - the value to add
@@ -884,7 +1092,11 @@
 		 * @return interpolated spectrogram
 		 */
 		public double[][] resize(double[][] array, int timeBins, int freqbins, int resizeType) {
-	
+
+			if (resizeType == RESIZE_BICUBIC_MATLAB) {
+				return ImResize.imresizeBicubic(array, timeBins, freqbins);
+			}
+
 			switch (resizeType) {
 			case RESIZE_BILINEAR:
 				interpolation = new Bilinear(JamArr.doubleToFloat(array));

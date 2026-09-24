@@ -28,9 +28,26 @@ public class AudioData {
 	public PreEmphasisFilter preEmphasisFilter;
 
 	/**
-	 * Samples in amplitude units u.
+	 * Samples in amplitude units u e.g. +/- 2^16 /2 for 16 bit files. This is an
+	 * integer view of the data which is kept for backwards compatibility - all
+	 * processing uses the double precision samples. If this array is replaced, the
+	 * double precision samples are recalculated from it; changing values in place
+	 * is not detected, use {@link #setSampleAmplitudes(int[])} instead.
 	 */
 	public int[] samples;
+
+	/**
+	 * The samples at double precision, scaled so that full scale is +/-1. These are
+	 * not quantised so low amplitude signals (e.g. clicks from a binary file) keep
+	 * their full resolution through transforms. Values may exceed +/-1, e.g. after
+	 * normalisation.
+	 */
+	private double[] scaledSamples;
+
+	/**
+	 * The integer array that scaledSamples was last synchronised with.
+	 */
+	private int[] syncedSamples;
 
 	/**
 	 * The sample rate in samples per second
@@ -48,8 +65,8 @@ public class AudioData {
 	 * @param sampleRate - the sample rate in samples per second.
 	 */
 	public AudioData(int[] samples, float sampleRate){
-		this.samples=samples;
 		this.sampleRate = sampleRate;
+		setSampleAmplitudes(samples);
 		preEmphasisFilter = new PreEmphasisFilter();
 		wavInterpolator= new WavInterpolator();
 	}
@@ -69,26 +86,8 @@ public class AudioData {
 	 * @param sampleRate - the sample rate in samples per second.
 	 */
 	public AudioData(double[] wavArray, float sampleRate){
-		double bitSize = Math.pow(2, bitRate)/2;
-		int[] samples = new int[wavArray.length];
-		//		for (int i=0; i<wavArray.length; i++) {
-		//			samples[i] = (int) (wavArray[i]*Math.pow(2, bitRate)/2);
-		//		}
-
-		for (int i=0; i<wavArray.length; i++) {
-			double valInd = wavArray[i];
-			if (valInd >= 1.0) {
-				samples[i] = (int) bitSize - 1;
-			}
-			else if (valInd <= -1.0) {
-				samples[i] = (int) -bitSize;
-			}
-			else {
-				samples[i] = (int) Math.floor(valInd * bitSize);
-			}
-		}
-		this.samples = samples;
 		this.sampleRate = sampleRate;
+		setScaledSamples(wavArray.clone());
 		preEmphasisFilter = new PreEmphasisFilter();
 		wavInterpolator= new WavInterpolator();
 	}
@@ -115,6 +114,64 @@ public class AudioData {
 	 */
 	public void setSampleAmplitudes(int[] newValues) {
 		this.samples = newValues;
+		double bitSize = getBitSize();
+		double[] scaled = new double[newValues.length];
+		for (int i=0; i<scaled.length; i++) {
+			scaled[i] = ((double) newValues[i])/bitSize;
+		}
+		this.scaledSamples = scaled;
+		this.syncedSamples = newValues;
+	}
+
+	/**
+	 * Set the double precision samples and update the integer view.
+	 * @param scaled - samples scaled so that full scale is +/-1. The array is used directly, not copied.
+	 */
+	private void setScaledSamples(double[] scaled) {
+		this.scaledSamples = scaled;
+		this.samples = toIntSamples(scaled);
+		this.syncedSamples = this.samples;
+	}
+
+	/**
+	 * Get the double precision samples without copying, recalculating them if the
+	 * public integer samples array has been replaced.
+	 * @return samples scaled so that full scale is +/-1.
+	 */
+	private double[] scaled() {
+		if (samples!=syncedSamples) {
+			setSampleAmplitudes(samples);
+		}
+		return scaledSamples;
+	}
+
+	/**
+	 * Convert scaled samples to integer amplitude units.
+	 * @param scaled - samples scaled so that full scale is +/-1.
+	 * @return the samples in amplitude units u.
+	 */
+	private int[] toIntSamples(double[] scaled) {
+		double bitSize = getBitSize();
+		int[] ints = new int[scaled.length];
+		for (int i=0; i<scaled.length; i++) {
+			if (scaled[i]==1.0) {
+				//positive full scale is one bit less than negative full scale.
+				ints[i] = (int) bitSize - 1;
+			}
+			else {
+				ints[i] = (int) Math.floor(scaled[i] * bitSize);
+			}
+		}
+		return ints;
+	}
+
+	/**
+	 * The value of full scale in amplitude units u, i.e. 2^bitRate/2.
+	 * @return full scale in amplitude units.
+	 */
+	private double getBitSize() {
+		//must divide the bitsize by 2 because we are scaling between -1 and 1 i.e a range of 2.
+		return Math.pow(2, bitRate)/2;
 	}
 
 	/**
@@ -122,7 +179,7 @@ public class AudioData {
 	 * @return the length of the file in seconds
 	 */
 	public double getLengthInSeconds() {
-		return samples.length / (double) sampleRate;
+		return scaled().length / (double) sampleRate;
 	}
 
 	/**
@@ -130,14 +187,7 @@ public class AudioData {
 	 * @return the scaled amplitude samples.
 	 */
 	public double[] getScaledSampleAmplitudes() {
-		//must divide the bitsize by because we are scaling between -1 and 1 i.e a range of 2.
-		double bitSize = Math.pow(2, bitRate)/2;
-
-		double[] wavArray = new double[samples.length];
-		for (int i=0; i<wavArray.length; i++) {
-			wavArray[i] = ((double) samples[i])/bitSize;
-		}
-		return wavArray;
+		return scaled().clone();
 	}
 
 	/**
@@ -302,13 +352,9 @@ public class AudioData {
 
 
 	public void appendLeftRight(int num_pad_left, int num_pad_right) {
-		double[] wavArray = getScaledSampleAmplitudes();
+		double[] wavArrayPadded = pad_reflect(scaled(), num_pad_left, num_pad_right, Boolean.FALSE);
 
-		double[] wavArrayPadded = pad_reflect(wavArray, num_pad_left, num_pad_right, Boolean.FALSE);
-
-		AudioData soundTmp = new AudioData(wavArrayPadded, sampleRate);
-
-		this.setSampleAmplitudes(soundTmp.getSampleAmplitudes());
+		setScaledSamples(wavArrayPadded == scaledSamples ? wavArrayPadded.clone() : wavArrayPadded);
 
 	}
 
@@ -318,10 +364,9 @@ public class AudioData {
 	 * @return the multipled audio data
 	 */
 	public AudioData multiply(double factor) {
-		for (int i=0; i<samples.length; i++) {
-			samples[i] = (int) (samples[i]*factor);
-		}
-		return new AudioData(samples, sampleRate);
+		//note this also changes this object's data
+		setScaledSamples(JamArr.product(scaled(), factor));
+		return new AudioData(scaledSamples, sampleRate);
 	}
 
 	/**
@@ -331,11 +376,12 @@ public class AudioData {
 	 * @return AudioData object with trimmed data.
 	 */
 	public AudioData trim(int sampleStart, int samplEnd) {
-		if (samples.length <= samplEnd){
-			return new AudioData(Arrays.copyOfRange(samples, sampleStart, samples.length), sampleRate);
+		double[] data = scaled();
+		if (data.length <= samplEnd){
+			return new AudioData(Arrays.copyOfRange(data, sampleStart, data.length), sampleRate);
 		}
 		else {
-			return new AudioData(Arrays.copyOfRange(samples, sampleStart, samplEnd), sampleRate);
+			return new AudioData(Arrays.copyOfRange(data, sampleStart, samplEnd), sampleRate);
 		}
 	}
 
@@ -349,9 +395,7 @@ public class AudioData {
 
 		if (interpSr==this.sampleRate) return this;
 
-		double[] wavArray = getScaledSampleAmplitudes();
-
-		double[] intperarr = wavInterpolator.interpolate(wavArray, this.sampleRate, interpSr);
+		double[] intperarr = wavInterpolator.interpolate(scaled(), this.sampleRate, interpSr);
 		
 //		if (interpSr>this.sampleRate) {
 //			//low pass filter at previous samplerate
@@ -363,14 +407,9 @@ public class AudioData {
 //			intperarr = ampsFilt;
 //		}
 
-		int[] samplesDecimated = new int[intperarr.length];
-
-		double bitSize = Math.pow(2, bitRate);
-		for (int i=0; i<intperarr.length; i++) {
-			samplesDecimated[i]=(int) (bitSize*intperarr[i]);
-		}
-		
-		AudioData soundTmp =  new AudioData(samplesDecimated, interpSr);
+		//the interpolated data have always been doubled in amplitude (they were scaled by 2^bitRate
+		//rather than 2^bitRate/2). Keep this so existing models see the same input. 
+		AudioData soundTmp =  new AudioData(JamArr.product(intperarr, 2.0), interpSr);
 
 		if (interpSr>this.sampleRate) {
 			soundTmp = soundTmp.filter(BUTTERWORTH, LOWPASS, 4, 0, this.sampleRate/2); 
@@ -388,7 +427,7 @@ public class AudioData {
 
 		if (target_sr==this.sampleRate) return this;
 
-		double[] wavArray = getScaledSampleAmplitudes();
+		double[] wavArray = scaled();
 		double ratio = target_sr / this.sampleRate;
 		
 		int n_samples = (int) Math.ceil(wavArray.length * ratio);
@@ -428,7 +467,7 @@ public class AudioData {
 	 * @param targetLength The desired length of the output waveform.
 	 * @return The cut or padded waveform as a double array.
 	 */
-	private static int[] cutOrPadWaveform(int[] waveform, int targetLength) {
+	private static double[] cutOrPadWaveform(double[] waveform, int targetLength) {
 		int currentLength = waveform.length;
 
 		if (currentLength > targetLength) {
@@ -436,7 +475,7 @@ public class AudioData {
 			int start = Math.max(0, maxIndex - targetLength / 2);
 			int end = Math.min(currentLength, start + targetLength);
 			
-			int[] trimmedArr =Arrays.copyOfRange(waveform, start, end);
+			double[] trimmedArr =Arrays.copyOfRange(waveform, start, end);
 			if ((end-start)>targetLength) {
 				return trimmedArr;
 			}
@@ -464,8 +503,8 @@ public class AudioData {
 	 * @param array The input array.
 	 * @return The index of the maximum value.
 	 */
-	private static int[] padArray(int[] array, int padBefore, int padAfter) {
-		int[] paddedArray = new int[array.length + padBefore + padAfter];
+	private static double[] padArray(double[] array, int padBefore, int padAfter) {
+		double[] paddedArray = new double[array.length + padBefore + padAfter];
 		System.arraycopy(array, 0, paddedArray, padBefore, array.length);
 		return paddedArray;
 	}
@@ -478,12 +517,10 @@ public class AudioData {
 	 */
 	public AudioData selectPeak(int targetLen, int type) {
 
-		int[] samples = this.getSampleAmplitudes();
-
 		switch (type) {
 		case (PEAK_MAX): default:
 
-			int[] trimSamples = cutOrPadWaveform(samples,  targetLen);
+			double[] trimSamples = cutOrPadWaveform(scaled(),  targetLen);
 
 			AudioData soundTmp = new AudioData(trimSamples, this.getSampleRate());
 
@@ -502,7 +539,7 @@ public class AudioData {
 	 * @return AudioData object with pre emphasised data.
 	 */
 	public AudioData preEmphasis(double factor) {
-		return new AudioData(preEmphasisFilter.preEmphasis(this.samples, factor) , sampleRate);
+		return new AudioData(preEmphasisFilter.preEmphasis(scaled(), factor) , sampleRate);
 	}
 
 
@@ -578,8 +615,35 @@ public class AudioData {
 
 		// self.data = std * (self.data - np.mean(self.data)) / std_orig + mean
 
-		double meanSamples = JamArr.mean(this.samples);
-		double stdSamples = JamArr.std(this.samples);
+		if (type==ZSCORE) {
+			// standardisation or Z-score normalisation. Uses the double precision samples
+			// and the population standard deviation (the same as numpy's default).
+			double[] data = scaled(); 
+			double meanSamples = JamArr.mean(data);
+			double stdSamples = JamArr.std(data);
+			double[] samplesNormD = new double[data.length];
+			for (int i = 0; i < data.length; i++) {
+				samplesNormD[i] = (data[i] - meanSamples)/stdSamples;
+			}
+			return new AudioData(samplesNormD, this.sampleRate);
+		}
+		else if (type!=KETOSNORM && type!=PGNORM) {
+			// subtract the mean and divide by the maximum value.
+			double[] data = scaled(); 
+			double meanSamples = JamArr.mean(data);
+			double[] samplesNormD = new double[data.length];
+			for (int i = 0; i < data.length; i++) {
+				samplesNormD[i] =  data[i] - meanSamples;
+			}
+			samplesNormD =  JamArr.divide(samplesNormD, JamArr.max(samplesNormD)); 
+			return new AudioData(samplesNormD, this.sampleRate);
+		}
+
+		// KETOSNORM and PGNORM work on the integer samples and are left exactly as they
+		// were so that existing models get identical inputs.
+		int[] samples = getSampleAmplitudes(); 
+		double meanSamples = JamArr.mean(samples);
+		double stdSamples = JamArr.std(samples);
 
 		int[] samplesNorm = new int[samples.length];
 		if (type == KETOSNORM){
@@ -588,34 +652,11 @@ public class AudioData {
 				samplesNorm[i] = (int) (std * (this.samples[i] - meanSamples) / stdSamples + mean);
 			}
 		}
-		else if (type==PGNORM) {
+		else {
 			for (int i = 0; i < samples.length; i++) {
 				// PAMGuard version
 				samplesNorm[i] = (int) (stdSamples*(samples[i] - meanSamples) / (std+mean));
 			}
-		}
-		else if (type==ZSCORE) {
-			//			System.out.println("ZSCORE:!!" + meanSamples + " " + stdSamples + "  " +samples[3]);
-			double[] samplesNormD = new double[ samples.length];
-			for (int i = 0; i < samples.length; i++) {
-				// standardisation or Z-score normalisation
-				samplesNormD[i] = (double) (samples[i]) - meanSamples;
-			}
-			samplesNormD =  JamArr.divide(samplesNormD, stdSamples); 
-
-			//			System.out.println("Max: " + JamArr.max(samplesNormD));
-			return new AudioData(JamArr.double2Int(JamArr.product(samplesNormD, Math.pow(2, bitRate)/2)), this.sampleRate);
-		}
-		else {
-			double[] samplesNormD = new double[ samples.length];
-			for (int i = 0; i < samples.length; i++) {
-				// PAMGuard version
-				samplesNormD[i] =  ((double) samples[i]) - meanSamples;
-
-			}
-			samplesNormD =  JamArr.divide(samplesNormD, JamArr.max(samplesNormD)); 
-			//System.out.println("Max: " + JamArr.max(samplesNormD) + " " + JamArr.max(samples) + " " + samples.length + "  " + meanSamples);
-			return new AudioData(samplesNormD, this.sampleRate);
 		}
 
 		return new AudioData(samplesNorm, this.sampleRate);
@@ -670,7 +711,7 @@ public class AudioData {
 			break;
 		}
 
-		double[] amps = this.getScaledSampleAmplitudes();
+		double[] amps = scaled();
 		double[] ampsFilt = new double[amps.length];
 		for (int i=0; i<amps.length; i++) {
 			ampsFilt[i]=filter.filter(amps[i]);
@@ -795,10 +836,10 @@ public class AudioData {
 	}
 
 	public static void main(String[] args) {
-		int[] waveform = new int[50]; 
+		double[] waveform = new double[50]; 
 		waveform[3] = 3;
 		
-		int[] results  = AudioData.cutOrPadWaveform(waveform, 64) ;
+		double[] results  = AudioData.cutOrPadWaveform(waveform, 64) ;
 			
 		System.out.println("Reesulting len: " + results.length);
 	}

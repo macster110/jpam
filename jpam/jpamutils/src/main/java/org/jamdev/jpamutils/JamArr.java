@@ -797,7 +797,7 @@ public class JamArr {
 	 * @return the position of the maximum value in the array. 
 	 */
 	public static int maxIndex(double[] arr) {
-		double max = Double.POSITIVE_INFINITY;
+		double max = Double.NEGATIVE_INFINITY;
 		int index =-1;
 		for (int i=0; i<arr.length; i++) {
 			if (max<arr[i]) {

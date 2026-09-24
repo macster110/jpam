@@ -131,7 +131,13 @@ public class DLTransformsFactory {
 			dlTransform = new SpectrumTransform(dlTransformType, new Number[] {0.005, 0.4}); 
 			break;
 		case SPECFREQTRIM:
-			dlTransform = new SpectrumTransform(dlTransformType, new Number[] {0, (double) sR/2}); 
+			dlTransform = new SpectrumTransform(dlTransformType, new Number[] {0, (double) sR/2});
+			break;
+		case SPECFREQZERO:
+			dlTransform = new FreqTransform(dlTransformType, new Number[] {0.0, 10.0});
+			break;
+		case SPEC_IMADJUST:
+			dlTransform = new FreqTransform(dlTransformType, new Number[] {0.01, 0.99});
 			break;
 		default:
 			break;

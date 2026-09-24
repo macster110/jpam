@@ -196,12 +196,12 @@ public class GenericModel {
 		switch  (extension) {
 		case "pb":
 			model = Model.newInstance(modelPath, "TensorFlow");
-			model.load(modelDir, modelName);
+			model.load(modelDir, modelName, getLoadOptions());
 			this.device = Device.cpu(); //TensorFlow is CPU-only on this platform.
 			break;
 		case "h5":
 			model = Model.newInstance(modelPath, "TensorFlow");
-			model.load(modelDir, modelName);
+			model.load(modelDir, modelName, getLoadOptions());
 			this.device = Device.cpu();
 			break;
 		case "py":
@@ -216,6 +216,18 @@ public class GenericModel {
 		}
 
 		return model;
+	}
+
+	/**
+	 * Options passed to DJL when loading a TensorFlow model, for example
+	 * "SignatureDefKey" to select which signature of a SavedModel is used. If the
+	 * SavedModel has no "serving_default" signature and none is specified, DJL uses
+	 * whichever signature it finds first.
+	 * 
+	 * @return the load options, or null to use the DJL defaults.
+	 */
+	protected Map<String, ?> getLoadOptions() {
+		return null;
 	}
 
 	/**

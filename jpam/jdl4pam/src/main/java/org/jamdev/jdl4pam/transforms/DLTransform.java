@@ -154,12 +154,38 @@ public interface DLTransform {
 		/**
 		 * Crops a spectrogram image between two frequency values.
 		 * <p>
-		 * Two associated parameters;
+		 * Two associated parameters and one optional parameter;
 		 * <li>Minimum frequency in Hz
 		 * <li>Maximum frequency in Hz
-		 * number
+		 * <li>Optional bin mode (int). 0 (default) is the original method. 1 keeps every FFT bin
+		 * whose frequency is &gt;= the minimum frequency and &lt; the maximum frequency, i.e. the
+		 * same bins as selecting <code>f&gt;=fmin &amp; f&lt;fmax</code> from MATLAB's spectrogram
+		 * frequency vector.
 		 */
 		SPECFREQTRIM("Interp. Spectrogram", "freq_trim"),
+
+		/**
+		 * Sets all the frequency bins between two frequencies to zero.
+		 * <p>
+		 * Two associated parameters;
+		 * <li>Minimum frequency in Hz (inclusive)
+		 * <li>Maximum frequency in Hz (exclusive)
+		 */
+		SPECFREQZERO("Zero Frequency Band", "freq_zero"),
+
+		/**
+		 * Adjusts the image intensity in the same way as MATLAB's
+		 * <code>imadjust(I)</code> function. The intensity limits are the values at
+		 * which a fraction of the pixels are saturated (see MATLAB's stretchlim
+		 * function). The image is clipped to these limits and scaled between 0 and 1.
+		 * <p>
+		 * Two associated parameters;
+		 * <li>Low tolerance - the fraction of pixels which are saturated at low
+		 * intensities (default 0.01)
+		 * <li>High tolerance - the fraction of pixels below which high intensities are
+		 * saturated (default 0.99)
+		 */
+		SPEC_IMADJUST("Image Adjust", "imadjust"),
 
 		/**
 		 * Normalises the spectrogram
@@ -327,10 +353,12 @@ public interface DLTransform {
 		 * <ul>
 		 * <li>time bins - the number of bins to resize the time axis to</li>
 		 * <li>frequency bins - the number of bins to resize the frequency axis to</li>
+		 * <li>Optional - the resize method (int). 0 bilinear (default), 1 nearest neighbour, 2 bicubic
+		 * and 3 bicubic which is identical to MATLAB's imresize function.</li>
 		 * </ul>
-		 * 
+		 *
 		 */
-		SPECRESIZE("Resize Spectrogram", "spec_resize"), 
+		SPECRESIZE("Resize Spectrogram", "spec_resize"),
 		
 		/**
 		 * Flip the spectrogram on the frequency axis. 

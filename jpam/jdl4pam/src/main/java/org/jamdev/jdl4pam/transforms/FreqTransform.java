@@ -201,8 +201,26 @@ public class FreqTransform extends SimpleTransform {
 			freqlims = ((FreqTransform) transform).freqlims; 
 			break;
 		case SPECFREQTRIM:
-			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().freqtrim(params[0].doubleValue(), params[1].doubleValue());
-			freqlims = new double[] {params[0].doubleValue(), params[1].doubleValue()};
+			if (params.length > 2 && params[2].intValue() == 1) {
+				//keep every bin with a frequency inside the limits.
+				SpecTransform specIn = ((FreqTransform) transform).getSpecTransfrom();
+				double binSize = specIn.getFreqBinSize();
+				int[] bins = SpecTransform.freqTrimBinRange(specIn.getTransformedData()[0].length, binSize, params[0].doubleValue(), params[1].doubleValue());
+				specTransfrom = specIn.freqtrimBins(params[0].doubleValue(), params[1].doubleValue());
+				freqlims = new double[] {bins[0]*binSize, bins[1]*binSize};
+			}
+			else {
+				specTransfrom = ((FreqTransform) transform).getSpecTransfrom().freqtrim(params[0].doubleValue(), params[1].doubleValue());
+				freqlims = new double[] {params[0].doubleValue(), params[1].doubleValue()};
+			}
+			break;
+		case SPECFREQZERO:
+			freqlims = ((FreqTransform) transform).freqlims;
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().freqZero(params[0].doubleValue(), params[1].doubleValue(), freqlims[0]);
+			break;
+		case SPEC_IMADJUST:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().imadjust(params[0].doubleValue(), params[1].doubleValue());
+			freqlims = ((FreqTransform) transform).freqlims;
 			break;
 		case SPEC_ADD:
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().add(params[0].doubleValue());

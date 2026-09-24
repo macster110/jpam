@@ -364,9 +364,137 @@ public class Pred2BoxDJL3  {
 //	        this.anchorBoxes = anchorBoxes;
 //	    }
 
+	    /**
+	     * True if the network input and outputs are channels first e.g. [batch, channels, height, width]
+	     * (PyTorch). False for channels last e.g. [batch, height, width, channels] (TensorFlow).
+	     */
+	    boolean channelsFirst = false;
+
+	    /**
+	     * The overlap threshold for non maximum suppression. If zero or less, non maximum suppression is not used.
+	     */
+	    double nmsOverlap = -1;
+
+	    /**
+	     * True to clip bounding boxes so that they lie within the image.
+	     */
+	    boolean clipBoxes = false;
+
+	    /**
+	     * True to remove boxes which are wider or taller than the image.
+	     */
+	    boolean filterLargeBoxes = false;
+
 		public DeepAcousticsNetwork(Shape imShape, List<double[][]> anchorBoxes) {
 			this.anchorBoxes = anchorBoxes;
 			this.imShape = imShape;
+		}
+
+		/**
+		 * Get the anchor boxes for each detection head. Each anchor box is [height, width] in pixels.
+		 * @return the anchor boxes for each detection head.
+		 */
+		public List<double[][]> getAnchorBoxes() {
+			return anchorBoxes;
+		}
+
+		/**
+		 * Get the input shape of the network including the batch dimension.
+		 * @return the input shape.
+		 */
+		public Shape getImShape() {
+			return imShape;
+		}
+
+		/**
+		 * Get the height of the input image in pixels.
+		 * @return the image height.
+		 */
+		public int getImageHeight() {
+			return (int) (channelsFirst ? imShape.get(2) : imShape.get(1));
+		}
+
+		/**
+		 * Get the width of the input image in pixels.
+		 * @return the image width.
+		 */
+		public int getImageWidth() {
+			return (int) (channelsFirst ? imShape.get(3) : imShape.get(2));
+		}
+
+		/**
+		 * Get the number of channels of the input image.
+		 * @return the number of channels.
+		 */
+		public int getImageChannels() {
+			return (int) (channelsFirst ? imShape.get(1) : imShape.get(3));
+		}
+
+		/**
+		 * Check whether the network is channels first i.e. input [batch, channels, height, width] (PyTorch)
+		 * or channels last i.e. [batch, height, width, channels] (TensorFlow).
+		 * @return true if the network is channels first.
+		 */
+		public boolean isChannelsFirst() {
+			return channelsFirst;
+		}
+
+		/**
+		 * Set whether the network is channels first i.e. input [batch, channels, height, width] (PyTorch)
+		 * or channels last i.e. [batch, height, width, channels] (TensorFlow).
+		 * @param channelsFirst - true if the network is channels first.
+		 */
+		public void setChannelsFirst(boolean channelsFirst) {
+			this.channelsFirst = channelsFirst;
+		}
+
+		/**
+		 * Get the overlap threshold for non maximum suppression.
+		 * @return the overlap threshold. Zero or less means no non maximum suppression.
+		 */
+		public double getNmsOverlap() {
+			return nmsOverlap;
+		}
+
+		/**
+		 * Set the overlap threshold for non maximum suppression (MATLAB uses 0.5).
+		 * @param nmsOverlap - the overlap threshold. Zero or less for no non maximum suppression.
+		 */
+		public void setNmsOverlap(double nmsOverlap) {
+			this.nmsOverlap = nmsOverlap;
+		}
+
+		/**
+		 * Check whether bounding boxes are clipped to the image.
+		 * @return true if bounding boxes are clipped to the image.
+		 */
+		public boolean isClipBoxes() {
+			return clipBoxes;
+		}
+
+		/**
+		 * Set whether bounding boxes are clipped to the image.
+		 * @param clipBoxes - true to clip bounding boxes to the image.
+		 */
+		public void setClipBoxes(boolean clipBoxes) {
+			this.clipBoxes = clipBoxes;
+		}
+
+		/**
+		 * Check whether boxes which are wider or taller than the image are removed.
+		 * @return true if boxes larger than the image are removed.
+		 */
+		public boolean isFilterLargeBoxes() {
+			return filterLargeBoxes;
+		}
+
+		/**
+		 * Set whether boxes which are wider or taller than the image are removed. MATLAB's
+		 * yolov4ObjectDetector does this by default (the MaxSize of the detect function is the image size).
+		 * @param filterLargeBoxes - true to remove boxes larger than the image.
+		 */
+		public void setFilterLargeBoxes(boolean filterLargeBoxes) {
+			this.filterLargeBoxes = filterLargeBoxes;
 		}
 	}
 

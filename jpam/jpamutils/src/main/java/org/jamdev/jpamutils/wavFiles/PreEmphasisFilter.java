@@ -23,7 +23,7 @@ public class PreEmphasisFilter {
 			newData[i]=data[i] -factor*data[i-1]; 
 		}
 		
-		return data;
+		return newData;
 	}; 
 	
 	

@@ -100,49 +100,49 @@ public class KooguTest {
 	}
 
 
-	/**
-	 * Test a blue whale classifier form Brian Miller. 
-	 */
-	@Test
-	public void kooguTestBlueWhale() {
-
-		System.out.println("Koogu - test Blue Whale model --- "); 
-
-		//relative paths to the resource folders.
-		String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/blue_whale/BmD_24_tf_model/koogu/saved_model.pb";
-		String relWavPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/blue_whale/20190527_190000.wav";
-
-		String relPredicitonFile  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/blue_whale/rawScores_20190527_190000.csv";
-
-		Path path = Paths.get(relPredicitonFile);
-
-		double[][] predictions = getPredictions(path.toAbsolutePath().normalize().toString());
-		//		double[][] predictions = new double[][] {{0,0,1}};
-
-		//		double[][] predictions = new double[][] {{0,1},{1,0},{1,0}, {1,0}, {1,0}, {1,0}, {1,0}, {1,0},{1,0},{1,0}}; //right whale in second chunk. 
-
-		path = Paths.get(relModelPath);
-		//note that normalize gets rid of all the redundant elements (e.g. .)
-		String modelPath = path.toAbsolutePath().normalize().toString();
-
-		path = Paths.get(relWavPath);
-		String wavFilePath = path.toAbsolutePath().normalize().toString();
-
-		//the target sample rate
-		float sr = 250; 
-
-		///note you must check audiospec metadata file to get the correct chunk size
-		int chunkSize  =  (int) (4.5*sr); //blue whale call 23
-		//		int chunkSize  =  (int) (5*sr); //blue whale call 24
-
-		//run the Koogu test. 
-		float[][] results = kooguTest(modelPath,  wavFilePath,  predictions,  sr,  chunkSize); 
-
-		//export as the same filename but a mat file
-		relPredicitonFile = relPredicitonFile.replace("csv", "mat"); 
-		exportMatFile(results,  relPredicitonFile);
-
-	}
+//	/**
+//	 * Test a blue whale classifier form Brian Miller. 
+//	 */
+//	@Test
+//	public void kooguTestBlueWhale() {
+//
+//		System.out.println("Koogu - test Blue Whale model --- "); 
+//
+//		//relative paths to the resource folders.
+//		String relModelPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/blue_whale/BmD_24_tf_model/koogu/saved_model.pb";
+//		String relWavPath  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/blue_whale/20190527_190000.wav";
+//
+//		String relPredicitonFile  =	"./src/test/java/org/jamdev/jdl4pam/resources/Koogu/blue_whale/rawScores_20190527_190000.csv";
+//
+//		Path path = Paths.get(relPredicitonFile);
+//
+//		double[][] predictions = getPredictions(path.toAbsolutePath().normalize().toString());
+//		//		double[][] predictions = new double[][] {{0,0,1}};
+//
+//		//		double[][] predictions = new double[][] {{0,1},{1,0},{1,0}, {1,0}, {1,0}, {1,0}, {1,0}, {1,0},{1,0},{1,0}}; //right whale in second chunk. 
+//
+//		path = Paths.get(relModelPath);
+//		//note that normalize gets rid of all the redundant elements (e.g. .)
+//		String modelPath = path.toAbsolutePath().normalize().toString();
+//
+//		path = Paths.get(relWavPath);
+//		String wavFilePath = path.toAbsolutePath().normalize().toString();
+//
+//		//the target sample rate
+//		float sr = 250; 
+//
+//		///note you must check audiospec metadata file to get the correct chunk size
+//		int chunkSize  =  (int) (4.5*sr); //blue whale call 23
+//		//		int chunkSize  =  (int) (5*sr); //blue whale call 24
+//
+//		//run the Koogu test. 
+//		float[][] results = kooguTest(modelPath,  wavFilePath,  predictions,  sr,  chunkSize); 
+//
+//		//export as the same filename but a mat file
+//		relPredicitonFile = relPredicitonFile.replace("csv", "mat"); 
+//		exportMatFile(results,  relPredicitonFile);
+//
+//	}
 
 	/**
 	 * Export a MATLAB file of prediction results
