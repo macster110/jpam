@@ -1,6 +1,10 @@
 package org.jamdev.jpamutils;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Arrays;
+import java.util.Random;
 
 import org.jamdev.jpamutils.spectrogram.SpecTransform;
 import org.junit.jupiter.api.Test;
@@ -48,6 +52,75 @@ public class MedianEqualizerTest {
 		for (int i = 0; i < exp.length; i++) {
 			assertArrayEquals(exp[i], out[i], 1e-12);
 		}
+	}
+
+	/**
+	 * Check the running median against a brute force implementation for random data
+	 * and a range of window sizes. The brute force version sorts the whole window for
+	 * every bin whereas SpecTransform uses a sliding Fenwick tree.
+	 */
+	@Test
+	public void medianFilterRandomTest() {
+		Random random = new Random(42);
+		for (int nTime : new int[] { 1, 2, 7, 33, 128 }) {
+			double[][] img = new double[nTime][3];
+			for (int i = 0; i < nTime; i++) {
+				for (int j = 0; j < 3; j++) {
+					img[i][j] = Math.round(random.nextGaussian() * 100) / 10.;
+				}
+			}
+			for (int window : new int[] { 1, 2, 3, 8, 15, 64, nTime, 2 * nTime + 1 }) {
+				double[][] out = SpecTransform.medianFilterTime(img, window);
+				double[][] expected = bruteForceMedian(img, window);
+				for (int i = 0; i < nTime; i++) {
+					assertArrayEquals(expected[i], out[i], 1e-12, "nTime " + nTime + " window " + window + " bin " + i);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Brute force running median - sorts the window for every time bin.
+	 */
+	private static double[][] bruteForceMedian(double[][] img, int window) {
+		int nTime = img.length;
+		int nFreq = img[0].length;
+		int offset = window / 2;
+		double[][] median = new double[nTime][nFreq];
+		for (int j = 0; j < nFreq; j++) {
+			for (int i = 0; i < nTime; i++) {
+				double[] vals = new double[window];
+				for (int k = 0; k < window; k++) {
+					int index = i - offset + k;
+					// mirror the index into the array (d c b | a b c d | c b a)
+					if (nTime == 1) {
+						index = 0;
+					}
+					else {
+						int period = 2 * (nTime - 1);
+						index = index % period;
+						if (index < 0) index += period;
+						if (index >= nTime) index = period - index;
+					}
+					vals[k] = img[index][j];
+				}
+				Arrays.sort(vals);
+				median[i][j] = vals[window / 2];
+			}
+		}
+		return median;
+	}
+
+	@Test
+	public void timeTrimTest() {
+		double[][] img = transpose(X); // 7 time bins, 3 frequency bins
+		double[][] out = SpecTransform.timeTrim(img, 2, 3);
+		assertEquals(3, out.length);
+		assertArrayEquals(new double[] { 5, 1, 9 }, out[0], 1e-12);
+		assertArrayEquals(new double[] { 2, 9, 4 }, out[1], 1e-12);
+		assertArrayEquals(new double[] { 8, 0, 4 }, out[2], 1e-12);
+		// a trim which runs off the end of the spectrogram is clamped
+		assertEquals(2, SpecTransform.timeTrim(img, 5, 10).length);
 	}
 
 	private static void checkMedian(double[][] x, int window, double[][] expected) {

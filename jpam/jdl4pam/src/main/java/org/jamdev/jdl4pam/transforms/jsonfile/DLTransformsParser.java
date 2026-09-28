@@ -260,6 +260,10 @@ public class DLTransformsParser {
 		case MEDIAN_EQUALIZER:
 			paramsObject.put("window_duration", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue());
 			break;
+		case SPEC_TIME_TRIM:
+			paramsObject.put("start_bin", ((SimpleTransformParams) dlTransfromParams).params[0].intValue());
+			paramsObject.put("time_bins", ((SimpleTransformParams) dlTransfromParams).params[1].intValue());
+			break;
 		case SPECNORMALISESTD:
 			paramsObject.put("mean", ((SimpleTransformParams) dlTransfromParams).params[0].intValue()); 
 			paramsObject.put("std", ((SimpleTransformParams) dlTransfromParams).params[1].intValue()); 
@@ -518,6 +522,12 @@ public class DLTransformsParser {
 			else {
 				number[0] = Double.valueOf(60.0);
 			}
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number);
+			break;
+		case SPEC_TIME_TRIM:
+			number = new Number[2];
+			number[0] = jsonObjectParams.getInt("start_bin");
+			number[1] = jsonObjectParams.getInt("time_bins");
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number);
 			break;
 		case MEDIANFILTER:

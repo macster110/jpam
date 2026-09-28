@@ -281,6 +281,17 @@ public interface DLTransform {
 		 * mirrored to fill the window.
 		 */
 		MEDIAN_EQUALIZER("Median Equalizer", "median_equalizer"),
+		
+		/**
+		 * Trims a spectrogram in time, keeping a number of time bins starting at a
+		 * specified time bin. This is used by models which need a longer segment of data
+		 * to compute a transform (e.g. a median equalizer) than the model input requires.
+		 * <p>
+		 * Two associated parameters;
+		 * <li>The first time bin to keep
+		 * <li>The number of time bins to keep
+		 */
+		SPEC_TIME_TRIM("Trim Spectrogram (time)", "spec_time_trim"),
 
 		/**
 		 * Discard pixels that are lower than the median threshold.

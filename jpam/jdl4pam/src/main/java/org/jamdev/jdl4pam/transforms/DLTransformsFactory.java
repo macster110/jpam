@@ -96,6 +96,9 @@ public class DLTransformsFactory {
 		case MEDIAN_EQUALIZER:
 			dlTransform = new FreqTransform(dlTransformType, new Number[] {60.0});
 			break;
+		case SPEC_TIME_TRIM:
+			dlTransform = new FreqTransform(dlTransformType, new Number[] {0, 100});
+			break;
 		case SPECNORMALISESTD:
 			dlTransform = new FreqTransform(dlTransformType,  new Number[] {0.0, 1.0}); 
 			break;

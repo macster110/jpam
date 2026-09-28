@@ -180,6 +180,10 @@ public class FreqTransform extends SimpleTransform {
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().medianEqualizer(params[0].doubleValue());
 			freqlims = ((FreqTransform) transform).freqlims;
 			break;
+		case SPEC_TIME_TRIM:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().timeTrim(params[0].intValue(), params[1].intValue());
+			freqlims = ((FreqTransform) transform).freqlims;
+			break;
 		case SPECRESIZE:
 			int resizeType=SpecTransform.RESIZE_BILINEAR; //default is bilinear
 			if (params.length>=3) {

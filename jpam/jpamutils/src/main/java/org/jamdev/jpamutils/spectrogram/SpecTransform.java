@@ -283,6 +283,22 @@
 				absSpec2Complex(); // set the new data in the complex spectrogram
 			return this;
 		}
+	
+		/**
+		 * Trim the spectrogram in time, keeping timeBins time bins starting at startBin.
+		 * 
+		 * @param startBin - the first time bin to keep.
+		 * @param timeBins - the number of time bins to keep.
+		 * @return the transformed spectrogram.
+		 */
+		public SpecTransform timeTrim(int startBin, int timeBins) {
+			if (this.specData == null)
+				initialiseSpecData();
+			this.specData = timeTrim(this.specData, startBin, timeBins);
+			if (maintainPhase)
+				absSpec2Complex(); // set the new data in the complex spectrogram
+			return this;
+		}
 
 		/**
 		 * Discard pixels that are lower than the median threshold.
@@ -1231,6 +1247,30 @@
 		}
 
 		/**
+		 * Trim a spectrogram in time, keeping timeBins time bins starting at startBin.
+		 * <p>
+		 * This is used by models which need a longer segment of data to compute a transform
+		 * (e.g. a median equalizer) than the model input requires.
+		 * 
+		 * @param img      - the spectrogram image. The first index is time and the second is frequency.
+		 * @param startBin - the first time bin to keep.
+		 * @param timeBins - the number of time bins to keep.
+		 * @return the trimmed spectrogram.
+		 */
+		public static double[][] timeTrim(double[][] img, int startBin, int timeBins) {
+	
+			int start = Math.max(0, Math.min(startBin, img.length - 1));
+			int end = Math.min(img.length, start + timeBins);
+	
+			double[][] imgNew = new double[end - start][];
+			for (int i = start; i < end; i++) {
+				imgNew[i - start] = Arrays.copyOf(img[i], img[i].length);
+			}
+	
+			return imgNew;
+		}
+	
+		/**
 		 * Running median along the time axis of each frequency bin. The output is the
 		 * same as scipy.ndimage.median_filter(spec, size=(1, windowBins), mode="mirror")
 		 * where spec has frequency as the first axis.
@@ -1241,68 +1281,84 @@
 		 * @return the running median of the spectrogram.
 		 */
 		public static double[][] medianFilterTime(double[][] img, int windowBins) {
-
+	
 			int nTime = img.length;
 			int nFreq = img[0].length;
 			int window = Math.max(1, windowBins);
-
+	
 			// scipy centres the window at window/2 and, for even windows, takes the upper median.
 			int offset = window / 2;
 			int rank = window / 2;
-
+	
 			double[][] median = new double[nTime][nFreq];
 			final double[] row = new double[nTime];
-
+			Integer[] order = new Integer[nTime];
+			int[] rankOf = new int[nTime];
+			// Fenwick tree of the number of time bins in the window at each rank. This allows the
+			// window to slide, and the median to be found, in log(nTime) time.
+			int[] tree = new int[nTime + 1];
+	
 			for (int j = 0; j < nFreq; j++) {
 				for (int i = 0; i < nTime; i++) {
 					row[i] = img[i][j];
+					order[i] = i;
 				}
-
-				if (window <= nTime) {
-					double[] windowVals = new double[window];
-					for (int i = 0; i < nTime; i++) {
-						for (int k = 0; k < window; k++) {
-							windowVals[k] = row[mirrorIndex(i - offset + k, nTime)];
-						}
-						Arrays.sort(windowVals);
-						median[i][j] = windowVals[rank];
+				Arrays.sort(order, (a, b) -> Double.compare(row[a], row[b]));
+				for (int r = 0; r < nTime; r++) {
+					rankOf[order[r]] = r;
+				}
+	
+				Arrays.fill(tree, 0);
+				for (int k = 0; k < window; k++) {
+					fenwickAdd(tree, rankOf[mirrorIndex(k - offset, nTime)], 1);
+				}
+	
+				for (int i = 0; i < nTime; i++) {
+					if (i > 0) {
+						// slide the window one bin
+						fenwickAdd(tree, rankOf[mirrorIndex(i - 1 - offset, nTime)], -1);
+						fenwickAdd(tree, rankOf[mirrorIndex(i - 1 - offset + window, nTime)], 1);
 					}
-				} else {
-					// The window is longer than the spectrogram so contains repeats of the mirrored
-					// data. Count how many times each time bin is in the window and then walk
-					// through the sorted bins to find the median.
-					Integer[] order = new Integer[nTime];
-					for (int i = 0; i < nTime; i++) {
-						order[i] = i;
-					}
-					Arrays.sort(order, (a, b) -> Double.compare(row[a], row[b]));
-
-					int[] counts = new int[nTime];
-					for (int k = 0; k < window; k++) {
-						counts[mirrorIndex(k - offset, nTime)]++;
-					}
-
-					for (int i = 0; i < nTime; i++) {
-						if (i > 0) {
-							// slide the window one bin
-							counts[mirrorIndex(i - 1 - offset, nTime)]--;
-							counts[mirrorIndex(i - 1 - offset + window, nTime)]++;
-						}
-						int cumulative = 0;
-						for (int k = 0; k < nTime; k++) {
-							cumulative += counts[order[k]];
-							if (cumulative > rank) {
-								median[i][j] = row[order[k]];
-								break;
-							}
-						}
-					}
+					median[i][j] = row[order[fenwickSelect(tree, rank + 1)]];
 				}
 			}
-
+	
 			return median;
 		}
-
+	
+		/**
+		 * Add to the count for a rank in a Fenwick tree.
+		 * 
+		 * @param tree  - the Fenwick tree.
+		 * @param rank  - the rank to change (zero indexed).
+		 * @param delta - the amount to add.
+		 */
+		private static void fenwickAdd(int[] tree, int rank, int delta) {
+			for (int i = rank + 1; i < tree.length; i += i & (-i)) {
+				tree[i] += delta;
+			}
+		}
+	
+		/**
+		 * Find the rank of the kth smallest value in a Fenwick tree of counts.
+		 * 
+		 * @param tree - the Fenwick tree.
+		 * @param k    - the count to find (one indexed i.e. k=1 is the smallest value).
+		 * @return the rank (zero indexed) which holds the kth smallest value.
+		 */
+		private static int fenwickSelect(int[] tree, int k) {
+			int n = tree.length - 1;
+			int pos = 0;
+			int step = Integer.highestOneBit(n);
+			for (; step > 0; step >>= 1) {
+				if (pos + step <= n && tree[pos + step] < k) {
+					pos += step;
+					k -= tree[pos];
+				}
+			}
+			return pos;
+		}
+	
 		/**
 		 * Map an index outside an array to an index inside the array by mirroring
 		 * about the edges without repeating the edge value (d c b | a b c d | c b a).
