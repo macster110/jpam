@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>jpambinaries</artifactId>
-	<version>0.0.31</version>
+	<version>1.0.1</version>
 	
 	<description>Data parsing tools for passive acoustic monitoring and data processing.</description>
 
