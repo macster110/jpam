@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.jamdev.jdl4pam.utils.DLUtils;
+import org.jamdev.jdl4pam.utils.InputShapeException;
 
 import ai.djl.ndarray.NDArray;
 import ai.djl.ndarray.NDList;
@@ -41,6 +42,12 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 
 	private Integer shapeIndex = null; 
 
+	/**
+	 * The input shape for the waveform from the model metadata. This is used for
+	 * models which do not describe their inputs e.g. TorchScript models.
+	 */
+	private Shape inputShape = null;
+
 
 	/**
 	 * Constructor for the waveform translator. The translator gets the data
@@ -52,80 +59,93 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 	}
 
 
+	/**
+	 * Constructor for the waveform translator for a model which does not describe
+	 * its inputs, e.g. a TorchScript model, where the input shape is known from
+	 * the model metadata.
+	 * @param inputShape - the input shape e.g. [-1, 7500] for a batch of waveforms
+	 *                   or [7500] for a single waveform.
+	 */
+	public WaveformTranslator(Shape inputShape) {
+		this.inputShape = inputShape;
+	}
+
+
 	@Override
 	public NDList processInput(TranslatorContext ctx, float[][] data) {
-		//System.out.println("Hello: 1 " ); 
 		NDManager manager = ctx.getNDManager();
+
+		//TorchScript models do not describe their inputs so the shapes can be null.
+		boolean hasShapes = shapes != null && shapes.size() > 0;
 
 		//We need to find the index of the shape that is for audio. If there is more than one shape pick the 
 		//one the largest number of dimensions unless explicitly set. 
 		int shapeAudioIndex = 0; 
-		if (this.shapeIndex==null) {
-			if (shapes.size()>1){
-				int shapeDim = 0; 
-				for (int i =0; i<shapes.size(); i++) {
-					if (shapes.get(i).getValue().dimension()>shapeDim) {
-						shapeDim = shapes.get(i).getValue().dimension();
-						shapeAudioIndex = i; 
+		if (hasShapes) {
+			if (this.shapeIndex==null) {
+				if (shapes.size()>1){
+					int shapeDim = 0; 
+					for (int i =0; i<shapes.size(); i++) {
+						if (shapes.get(i).getValue().dimension()>shapeDim) {
+							shapeDim = shapes.get(i).getValue().dimension();
+							shapeAudioIndex = i; 
+						}
 					}
 				}
 			}
-		}
-		else {
-			shapeAudioIndex = this.shapeIndex;
-		}
-
-
-		long[] shapeL = new long[shapes.get(shapeAudioIndex).getValue().dimension()]; 
-
-		for (int i=0; i<shapeL.length; i++) {
-			shapeL[i] =1L;
+			else {
+				shapeAudioIndex = this.shapeIndex;
+			}
 		}
 
-		//System.out.println("Shape: " + shapes.get(shapeAudioIndex).getValue() + " " + shapeL.length);
+		//the shape described by the model is used if there is one. Otherwise (e.g. TorchScript models) use
+		//the input shape from the metadata. Some metadata shapes have extra dimensions which the model does not
+		//accept e.g. [-1, 1125, 1, 1] for a model input of [-1, 1125].
+		Shape declaredShape = hasShapes ? shapes.get(shapeAudioIndex).getValue() : inputShape;
+
+		float[] specgramFlat = DLUtils.flattenDoubleArrayF(data); 
+		long[] dataShape = new long[] {data[0].length};
 
 		//two scenarios here with shape - either a model has some shape like (-1, 512) which specifies
 		//a stack of waves or a model has a shape of (-1) or say (512) specifying the input is a 1D array. 
-		if (shapeL.length>=2) {
-			shapeL[0] = data.length;
-			shapeL[1] = data[0].length; 
+		if (declaredShape == null) {
+			//no shape information - assume a batch of waveforms. 
+			shape = new Shape(data.length, data[0].length);
+		}
+		else if (declaredShape.dimension() == 1) {
+			//a single waveform
+			if (data.length != 1 || (declaredShape.get(0) > 0 && declaredShape.get(0) != data[0].length)) {
+				throw new InputShapeException(String.format("The input data do not match the model input shape. "
+						+ "The model expects a single waveform of shape %s but there are %d waveform(s) of %d samples.",
+						declaredShape, data.length, data[0].length));
+			}
+			shape = new Shape(data[0].length);
 		}
 		else {
-			//set the input shape as the first waveform. 
-			shapeL[0] = data[0].length;
+			//a batch of waveforms - throws an exception if the data do not fit the model input shape
+			shape = DLUtils.batchShape(declaredShape, data.length, dataShape, specgramFlat.length);
 		}
-
-		shape = new Shape(shapeL); 
-
-		float[] specgramFlat = DLUtils.flattenDoubleArrayF(data); 
 
 		NDArray array = manager.create(specgramFlat, shape); 
 
-
-		//		NDArray array = manager.create(data); 
-		//System.out.println("NDArray size: " + array.size() + " " + data[0][0]); 
-
 		ArrayList<NDArray> arrays = new ArrayList<NDArray>();
 
-		//System.out.println("Shape size: " + shapes.size());
-
-		//		//this is a little bit of a weird one 
-		//		if (shapes.size()>1) {
-		//			NDArray hoparray = manager.create(-1);
-		//			arrays.add(hoparray); //add the hop
-		//		}
-
-		int n=0; 
-		while  (n<shapes.size()) {
-			//we cross our fingers here and hope that the extra data are not needed. Otherwise
-			//this will have be subclassed. 
-			if (n!=shapeAudioIndex) {
-				arrays.add(generateExtraData(manager, shapes.get(n).getValue(), n)); //add the hop
+		if (hasShapes) {
+			int n=0; 
+			while  (n<shapes.size()) {
+				//we cross our fingers here and hope that the extra data are not needed. Otherwise
+				//this will have be subclassed. 
+				if (n!=shapeAudioIndex) {
+					arrays.add(generateExtraData(manager, shapes.get(n).getValue(), n)); //add the hop
+				}
+				n++; 
 			}
-			n++; 
+			arrays.add(shapeAudioIndex, array); //add the waveform information. 
 		}
-		arrays.add(shapeAudioIndex, array); //add the waveform information. 
-				
+		else {
+			arrays.add(array);
+		}
+
 		NDList output = new NDList(arrays); 
 
 		return output;
@@ -189,6 +209,24 @@ public class WaveformTranslator implements Translator<float[][], float[]> {
 		this.shape = shape;
 	}
 
+
+	/**
+	 * Get the input shape for the waveform from the model metadata.
+	 * @return the input shape or null.
+	 */
+	public Shape getInputShape() {
+		return inputShape;
+	}
+
+	/**
+	 * Set the input shape for the waveform e.g. from the model metadata. This is
+	 * used if the model does not describe its inputs e.g. TorchScript models.
+	 * Otherwise the shape described by the model is used.
+	 * @param inputShape - the input shape e.g. [-1, 7500].
+	 */
+	public void setInputShape(Shape inputShape) {
+		this.inputShape = inputShape;
+	}
 
 	/**
 	 * Get the audio shape index. This can be null in which case the shape with the largest

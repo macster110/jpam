@@ -38,6 +38,7 @@ public class SimpleTransformParams extends DLTransfromParams {
 		switch (dltransfromType) {
 		case DECIMATE:
 		case DECIMATE_SCIPY:
+		case DECIMATE_POLY:
 			string = dltransfromType.toString() + " sR: " + params[0];
 			break;
 		case PEAK_TRIM:

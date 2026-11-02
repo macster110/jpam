@@ -156,6 +156,58 @@
 		}
 	
 		/**
+		 * Normalise the current spectrogram between the minimum value and a
+		 * percentile. Values above the percentile are set to 1.
+		 * 
+		 * @param percentile - the percentile between 0 and 100.
+		 * @return reference to the normalised spectrogram
+		 */
+		public SpecTransform normalisePercentile(double percentile) {
+			if (this.specData == null)
+				initialiseSpecData();
+			this.specData = normalisePercentile(this.specData, percentile);
+			return this;
+		}
+
+		/**
+		 * Normalise an array between the minimum value and a percentile i.e. (x -
+		 * min)/(percentile - min). Values above the percentile are set to 1. The
+		 * percentile is the same as numpy.percentile with linear interpolation.
+		 *
+		 * @param array      - the array to normalise.
+		 * @param percentile - the percentile between 0 and 100.
+		 * @return the normalised array.
+		 */
+		public static double[][] normalisePercentile(double[][] array, double percentile) {
+			int n = 0;
+			for (double[] row : array) n += row.length;
+			double[] sorted = new double[n];
+			int k = 0;
+			for (double[] row : array) {
+				System.arraycopy(row, 0, sorted, k, row.length);
+				k += row.length;
+			}
+			Arrays.sort(sorted);
+
+			double min = sorted[0];
+			double pos = percentile / 100.0 * (n - 1);
+			int lo = (int) Math.floor(pos);
+			int hi = Math.min(lo + 1, n - 1);
+			double perc = sorted[lo] + (pos - lo) * (sorted[hi] - sorted[lo]);
+			double range = perc - min;
+
+			double[][] normalised = new double[array.length][];
+			for (int i = 0; i < array.length; i++) {
+				normalised[i] = new double[array[i].length];
+				for (int j = 0; j < array[i].length; j++) {
+					double val = range > 0 ? (array[i][j] - min) / range : 0;
+					normalised[i][j] = Math.min(val, 1);
+				}
+			}
+			return normalised;
+		}
+
+		/**
 		 * Normalise the current spectrogram between the minimum and maximum of the
 		 * array
 		 * 

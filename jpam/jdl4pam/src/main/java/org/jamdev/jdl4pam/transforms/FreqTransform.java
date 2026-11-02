@@ -2,6 +2,8 @@ package org.jamdev.jdl4pam.transforms;
 
 import org.jamdev.jpamutils.spectrogram.SpecTransform;
 import org.jamdev.jpamutils.spectrogram.Spectrogram;
+import org.jamdev.jpamutils.spectrogram.WindowFunction;
+import org.jamdev.jpamutils.wavFiles.AudioData;
 
 /**
  * Creates a spectrogram transform which can be used to 
@@ -151,6 +153,19 @@ public class FreqTransform extends SimpleTransform {
 			//initialise freq
 			freqlims[0] = 0.0; 
 			freqlims[1] = ((WaveTransform) transform).getWaveData().getSampleRate()/2.0; 
+			break;
+		case SPECTROGRAM_SCIPY:
+			AudioData waveData = ((WaveTransform) transform).getWaveData();
+			int windowType = params.length > 3 ? params[3].intValue() : WindowFunction.HANNING;
+			Spectrogram spectrogramScipy = Spectrogram.scipySpectrogram(waveData, params[0].intValue(), params[1].intValue(), params[2].intValue(), windowType);
+			specTransfrom = new SpecTransform(spectrogramScipy);
+			specTransfrom.setTransformedData(Spectrogram.scipyMagnitude(spectrogramScipy, params[0].intValue(), windowType));
+			freqlims[0] = 0.0;
+			freqlims[1] = waveData.getSampleRate()/2.0;
+			break;
+		case SPECNORMALISE_PERCENTILE:
+			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().normalisePercentile(params[0].doubleValue());
+			freqlims = ((FreqTransform) transform).freqlims;
 			break;
 		case SPECCLAMP:
 			specTransfrom = ((FreqTransform) transform).getSpecTransfrom().clamp(params[0].doubleValue(),  params[1].doubleValue()); 

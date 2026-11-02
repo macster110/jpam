@@ -456,7 +456,136 @@ public class AudioData {
 	}
 
 	/**
-	 * Selects the largest value in the waveform and use that to hunt for the peak. 
+	 * Resample the audio data using a polyphase filter in exactly the same way as
+	 * scipy.signal.resample_poly with the default Kaiser window (beta = 5). The
+	 * ratio of the sample rates is rounded to a ratio of integers.
+	 *
+	 * @param targetSr - the new sample rate.
+	 * @return AudioData object containing the resampled data and sample rate.
+	 */
+	public AudioData resamplePoly(float targetSr) {
+
+		if (targetSr==this.sampleRate) return this;
+
+		long up = Math.round(targetSr);
+		long down = Math.round(this.sampleRate);
+		long gcd = gcd(up, down);
+
+		double[] resampled = resamplePoly(scaled(), (int) (up/gcd), (int) (down/gcd));
+
+		return new AudioData(resampled, targetSr);
+	}
+
+	/**
+	 * Resample a signal using a polyphase filter in exactly the same way as
+	 * scipy.signal.resample_poly(x, up, down) with the default Kaiser window (beta = 5) and zero padding.
+	 *
+	 * @param x    - the signal.
+	 * @param up   - the upsampling factor.
+	 * @param down - the downsampling factor.
+	 * @return the resampled signal with ceil(x.length*up/down) samples.
+	 */
+	public static double[] resamplePoly(double[] x, int up, int down) {
+		long g = gcd(up, down);
+		up /= g;
+		down /= g;
+		if (up == 1 && down == 1) return x.clone();
+
+		int nIn = x.length;
+		int nOut = (int) (((long) nIn * up) / down + (((long) nIn * up) % down == 0 ? 0 : 1));
+
+		//the anti-aliasing filter - scipy firwin(2*half_len+1, 1/max_rate, window=('kaiser', 5.0)) * up
+		int maxRate = Math.max(up, down);
+		int halfLen = 10 * maxRate;
+		double[] h = firwinKaiser(2 * halfLen + 1, 1.0 / maxRate, 5.0);
+		for (int i = 0; i < h.length; i++) {
+			h[i] *= up;
+		}
+
+		//pad the filter so that the output is aligned with the input
+		int nPrePad = down - halfLen % down;
+		int nPostPad = 0;
+		int nPreRemove = (halfLen + nPrePad) / down;
+		while (upfirdnLength(h.length + nPrePad + nPostPad, nIn, up, down) < nOut + nPreRemove) {
+			nPostPad++;
+		}
+		double[] hPad = new double[nPrePad + h.length + nPostPad];
+		System.arraycopy(h, 0, hPad, nPrePad, h.length);
+
+		//upfirdn - the output sample k is sample k*down of the upsampled signal convolved with the filter.
+		double[] y = new double[nOut];
+		for (int k = 0; k < nOut; k++) {
+			long n = (long) (k + nPreRemove) * down;
+			//the input samples i which contribute are those with 0 <= n - i*up < hPad.length
+			long iMax = Math.min(nIn - 1, n / up);
+			long iMin = Math.max(0, (n - hPad.length + up) / up);
+			double sum = 0;
+			for (long i = iMin; i <= iMax; i++) {
+				long j = n - i * up;
+				if (j >= 0 && j < hPad.length) sum += hPad[(int) j] * x[(int) i];
+			}
+			y[k] = sum;
+		}
+		return y;
+	}
+
+	/**
+	 * The output length of scipy.signal.upfirdn.
+	 */
+	private static long upfirdnLength(int lenH, int lenIn, int up, int down) {
+		return (((long) (lenIn - 1) * up + lenH) - 1) / down + 1;
+	}
+
+	/**
+	 * A low pass FIR filter with a Kaiser window, the same as
+	 * scipy.signal.firwin(numtaps, cutoff, window=('kaiser', beta)).
+	 *
+	 * @param numtaps - the number of filter coefficients.
+	 * @param cutoff  - the cutoff frequency relative to the Nyquist frequency.
+	 * @param beta    - the Kaiser window shape parameter.
+	 * @return the filter coefficients, scaled to have unity gain at zero frequency.
+	 */
+	public static double[] firwinKaiser(int numtaps, double cutoff, double beta) {
+		double alpha = 0.5 * (numtaps - 1);
+		double i0Beta = besselI0(beta);
+		double[] h = new double[numtaps];
+		double sum = 0;
+		for (int i = 0; i < numtaps; i++) {
+			double m = i - alpha;
+			double arg = cutoff * m;
+			double sinc = arg == 0 ? 1 : Math.sin(Math.PI * arg) / (Math.PI * arg);
+			double r = numtaps > 1 ? 2.0 * i / (numtaps - 1) - 1 : 0;
+			double win = besselI0(beta * Math.sqrt(Math.max(0, 1 - r * r))) / i0Beta;
+			h[i] = cutoff * sinc * win;
+			sum += h[i];
+		}
+		for (int i = 0; i < numtaps; i++) {
+			h[i] /= sum;
+		}
+		return h;
+	}
+
+	/**
+	 * The modified Bessel function of the first kind of order zero.
+	 */
+	private static double besselI0(double x) {
+		double sum = 1;
+		double term = 1;
+		double halfX = x / 2;
+		for (int k = 1; k < 500; k++) {
+			term *= (halfX / k) * (halfX / k);
+			sum += term;
+			if (term < 1e-17 * sum) break;
+		}
+		return sum;
+	}
+
+	private static long gcd(long a, long b) {
+		return b == 0 ? a : gcd(b, a % b);
+	}
+
+	/**
+	 * Selects the largest value in the waveform and use that to hunt for the peak.
 	 */
 	public final static int PEAK_MAX = 0; 
 

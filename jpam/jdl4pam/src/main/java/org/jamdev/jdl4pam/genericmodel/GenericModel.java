@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.jamdev.jdl4pam.utils.InputShapeException;
 import org.jamdev.jdl4pam.utils.DLDeviceUtils;
 
 import ai.djl.Device;
@@ -53,6 +54,12 @@ public class GenericModel {
 	 * The output shape from the model. 
 	 */
 	private Shape outShape = null; 
+
+	/**
+	 * The input shape set from the model metadata (see {@link #setInputShape(Shape)}).
+	 * This is kept so that it is used again if the model is reloaded.
+	 */
+	private Shape metadataInputShape = null;
 
 
 	private SpectrogramTranslator specTranslator;
@@ -149,6 +156,13 @@ public class GenericModel {
 
 		waveTranslator = new WaveformTranslator(model.describeInput());
 		waveTranslator.setAudioShapeIndex(inputShapeIndex); //usually null or zero.
+
+		//the shape from the metadata is not lost if the model is reloaded e.g. on the CPU after a GPU failure.
+		if (metadataInputShape != null) {
+			inputShape = metadataInputShape;
+			specTranslator.setShape(metadataInputShape);
+			waveTranslator.setInputShape(metadataInputShape);
+		}
 
 		//predictor for the model if using images as input
 		specPredictor = model.newPredictor(specTranslator);
@@ -255,12 +269,16 @@ public class GenericModel {
 	}
 
 	/**
-	 * Set the input shape. 
+	 * Set the input shape e.g. from the model metadata. The spectrogram translator
+	 * uses this shape. The waveform translator uses it if the model does not
+	 * describe its inputs (e.g. TorchScript models).
 	 * @param inputShape - the input shape. 
 	 */
 	public void setInputShape(Shape inputShape) {
 		this.inputShape = inputShape;
+		this.metadataInputShape = inputShape;
 		specTranslator.setShape(inputShape);
+		waveTranslator.setInputShape(inputShape);
 	}
 
 	/**
@@ -282,6 +300,12 @@ public class GenericModel {
 		try {
 			return specPredictor.predict(specImage);
 		} catch (Throwable e) {
+			//the input data do not fit the model - reloading the model will not help.
+			InputShapeException shapeException = InputShapeException.find(e);
+			if (shapeException != null) {
+				System.err.println("Error on model: " + shapeException.getMessage());
+				return null;
+			}
 			//if the model failed on the GPU (Apple MPS), reload on the CPU and retry once.
 			if (fallbackToCpu()) {
 				try {
@@ -307,6 +331,12 @@ public class GenericModel {
 		try {
 			return wavePredictor.predict(waveform);
 		} catch (Throwable e) {
+			//the input data do not fit the model - reloading the model will not help.
+			InputShapeException shapeException = InputShapeException.find(e);
+			if (shapeException != null) {
+				System.err.println("Error on model: " + shapeException.getMessage());
+				return null;
+			}
 			//if the model failed on the GPU (Apple MPS), reload on the CPU and retry once.
 			if (fallbackToCpu()) {
 				try {

@@ -342,6 +342,102 @@ public class Spectrogram {
 
 
 	/**
+	 * Create a spectrogram in the same way as scipy.signal.spectrogram with
+	 * detrend=False. Frames are not padded so the number of frames is (nSamples -
+	 * winLen) / hop + 1. Each frame is windowed and zero padded to the FFT length.
+	 * Use {@link #scipyMagnitude(Spectrogram, int, int)} to get the magnitude
+	 * spectrogram.
+	 *
+	 * @param wave       - the clip of sound data.
+	 * @param winLen     - the window length in samples (scipy nperseg).
+	 * @param hop        - the hop size in samples (scipy nperseg - noverlap).
+	 * @param nfft       - the FFT length in samples (scipy nfft).
+	 * @param windowType - the window, WindowFunction.HANNING or
+	 *                   WindowFunction.HAMMING. The window is periodic, the same
+	 *                   as scipy.signal.get_window.
+	 * @return the spectrogram. The FFT length of the spectrogram is nfft.
+	 */
+	public static Spectrogram scipySpectrogram(AudioData wave, int winLen, int hop, int nfft, int windowType) {
+		if (nfft < winLen) {
+			throw new IllegalArgumentException("Spectrogram: the FFT length " + nfft + " must be at least the window length " + winLen);
+		}
+
+		double[] amplitudes = wave.getScaledSampleAmplitudes();
+		double[] win = periodicWindow(winLen, windowType);
+
+		int numFrames = amplitudes.length < winLen ? 0 : (amplitudes.length - winLen) / hop + 1;
+
+		ComplexArray[] complexSpectrogram = new ComplexArray[numFrames];
+		FastFFT fastFFT = new FastFFT();
+		double[] frame = new double[winLen];
+		for (int f = 0; f < numFrames; f++) {
+			int startSample = f * hop;
+			for (int n = 0; n < winLen; n++) {
+				frame[n] = amplitudes[startSample + n] * win[n];
+			}
+			complexSpectrogram[f] = fastFFT.rfftFull(frame, nfft);
+		}
+
+		Spectrogram spectrogram = new Spectrogram(complexSpectrogram, nfft, hop, wave.getSampleRate());
+		spectrogram.numFrames = numFrames;
+		spectrogram.numFrequencyUnit = nfft / 2 + 1;
+		spectrogram.frequencyBinSize = wave.getSampleRate() / (double) nfft;
+		spectrogram.framesPerSecond = (int) (numFrames / wave.getLengthInSeconds());
+		return spectrogram;
+	}
+
+	/**
+	 * Get the magnitude spectrogram in the same way as scipy.signal.spectrogram
+	 * with mode='magnitude' and scaling='density', i.e. the absolute value of
+	 * the one sided FFT (including the Nyquist frequency) multiplied by
+	 * sqrt(1/(fs*sum(window^2))).
+	 *
+	 * @param spectrogram - a spectrogram created by
+	 *                    {@link #scipySpectrogram(AudioData, int, int, int, int)}.
+	 * @param winLen      - the window length in samples.
+	 * @param windowType  - the window type.
+	 * @return the magnitude spectrogram [time][frequency] with nfft/2 + 1
+	 *         frequency bins.
+	 */
+	public static double[][] scipyMagnitude(Spectrogram spectrogram, int winLen, int windowType) {
+		double[] win = periodicWindow(winLen, windowType);
+		double winSumSq = 0;
+		for (double w : win) {
+			winSumSq += w * w;
+		}
+		double scale = Math.sqrt(1.0 / (spectrogram.getSampleRate() * winSumSq));
+
+		ComplexArray[] complexSpectrogram = spectrogram.getComplexSpectrogram();
+		int nBins = spectrogram.getFFTLength() / 2 + 1;
+		double[][] magnitude = new double[complexSpectrogram.length][nBins];
+		for (int i = 0; i < complexSpectrogram.length; i++) {
+			for (int j = 0; j < nBins; j++) {
+				double re = complexSpectrogram[i].getReal(j);
+				double im = complexSpectrogram[i].getImag(j);
+				magnitude[i][j] = Math.sqrt(re * re + im * im) * scale;
+			}
+		}
+		return magnitude;
+	}
+
+	/**
+	 * Create a periodic window, the same as scipy.signal.get_window (i.e. a
+	 * symmetric window of length n+1 with the last point removed).
+	 *
+	 * @param n          - the window length.
+	 * @param windowType - WindowFunction.HANNING or WindowFunction.HAMMING.
+	 * @return the window.
+	 */
+	public static double[] periodicWindow(int n, int windowType) {
+		double a = windowType == WindowFunction.HAMMING ? 0.54 : 0.5;
+		double[] win = new double[n];
+		for (int i = 0; i < n; i++) {
+			win[i] = a - (1 - a) * Math.cos(2 * Math.PI * i / n);
+		}
+		return win;
+	}
+
+	/**
 	 * Builds the absolute spectrogram from the complex array
 	 * 
 	 * @return the absolute spectrogram.

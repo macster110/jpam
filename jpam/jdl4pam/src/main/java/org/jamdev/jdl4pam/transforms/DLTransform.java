@@ -51,6 +51,15 @@ public interface DLTransform {
 		DECIMATE_SCIPY("Decimate wave scipy", "load_audio_scipy"),
 
 		/**
+		 * Resamples the signal using a polyphase filter in exactly the same way as
+		 * scipy.signal.resample_poly (a Kaiser windowed FIR filter with beta 5). The
+		 * ratio of the sample rates is rounded to a ratio of integers.
+		 * <p>
+		 * One associated parameter- the sample-rate in samples per second to resample to.
+		 */
+		DECIMATE_POLY("Decimate wave polyphase", "load_audio_poly"),
+
+		/**
 		 * Decimates the signal to a high or lower amplitude including anti-aliasing
 		 * filters.
 		 * <p>
@@ -139,6 +148,22 @@ public interface DLTransform {
 		SPECTROGRAMKETOS("Spectrogramketos", "spectrogramketos"),
 
 		/**
+		 * Converts a waveform to a magnitude spectrogram in exactly the same way as
+		 * scipy.signal.spectrogram with mode='magnitude', scaling='density' and
+		 * detrend=False. Frames are not padded so the number of frames is
+		 * (nSamples - window length) / hop + 1 and the number of frequency bins is
+		 * nfft/2 + 1, i.e. including the Nyquist frequency.
+		 * <p>
+		 * Three associated parameters and one optional parameter;
+		 * <li>The window length in samples (scipy nperseg)
+		 * <li>The hop size in samples (scipy nperseg - noverlap)
+		 * <li>The FFT length in samples (scipy nfft). Windows are zero padded if this is longer than the window.
+		 * <li>Optional window type (int), WindowFunction.HANNING (default) or WindowFunction.HAMMING. Windows
+		 * are periodic, the same as scipy.signal.get_window.
+		 */
+		SPECTROGRAM_SCIPY("Spectrogram (scipy)", "spectrogram_scipy"),
+
+		/**
 		 * Crops a spectrogram image between two frequency values and interpolates the
 		 * image to be a specified pixel size.
 		 * <p>
@@ -198,6 +223,17 @@ public interface DLTransform {
 		 * <p> No associated paramters. 
 		 */
 		SPECNORMALISE_MINIMAX("Normalise Spectrogram Min. Max.", "normalize_min_max"),
+
+		/**
+		 * Normalises the spectrogram between the minimum value and a percentile, i.e.
+		 * (x - min)/(percentile - min). Values above the percentile are set to 1. The
+		 * percentile is calculated in the same way as numpy.percentile (linear
+		 * interpolation).
+		 * <p>
+		 * One associated parameter;
+		 * <li>The percentile between 0 and 100 (default 98)
+		 */
+		SPECNORMALISE_PERCENTILE("Normalise Spectrogram Percentile", "normalize_percentile"),
 
 		/**
 		 * Normalises the spectrogram by summing squared rows and dividing by the square

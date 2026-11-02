@@ -32,6 +32,9 @@ public class DLTransformsFactory {
 		case DECIMATE_SCIPY:
 			dlTransform = new WaveTransform(dlTransformType, new Number[] {sR}); 
 			break;
+		case DECIMATE_POLY:
+			dlTransform = new WaveTransform(dlTransformType, new Number[] {sR});
+			break;
 		case PREEMPHSIS:
 			dlTransform = new WaveTransform(dlTransformType, new Number[] {0.98}); 
 			break;
@@ -105,6 +108,12 @@ public class DLTransformsFactory {
 		case SPECNORMALISE_MINIMAX:
 			dlTransform = new FreqTransform(dlTransformType, null); 
 			break;
+		case SPECNORMALISE_PERCENTILE:
+			dlTransform = new FreqTransform(dlTransformType, new Number[] {98.0});
+			break;
+		case SPECTROGRAM_SCIPY:
+			dlTransform = new FreqTransform(dlTransformType, new Number[] {256, 20, 512});
+			break;
 		case SPECFLIP:
 			dlTransform = new FreqTransform(dlTransformType, null); 
 			break;
@@ -163,6 +172,7 @@ public class DLTransformsFactory {
 		switch (dlTransfromParams.dltransfromType) {
 		case DECIMATE:
 		case DECIMATE_SCIPY:
+		case DECIMATE_POLY:
 		case PREEMPHSIS:
 		case FILTER:
 		case TRIM:

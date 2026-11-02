@@ -30,6 +30,11 @@ public class SpectrogramTranslator implements Translator<float[][][], float[]> {
 	 */
 	private Integer shapeIndex;
 
+	/**
+	 * True once a warning has been printed that the data are reshaped to a different shape.
+	 */
+	private boolean shapeWarning = false;
+
 
 	/**
 	 * Constructor for the spectrogram translator. The translator is essentially 
@@ -51,19 +56,19 @@ public class SpectrogramTranslator implements Translator<float[][][], float[]> {
 		//this is for right whale tensorflow classiife.r 
 		//this was the shap0e for the right whale classifie.r. 
 		//Shape shape = new Shape(data.length, data[0].length, data[0][0].length, 1L); 
+		float[] specgramFlat = DLUtils.flattenDoubleArrayF(data); 
+
+		long[] dataShape = new long[] {data[0].length, data[0][0].length};
+
 		Shape shape; 
-		
-		
-		
 		if (this.shape!=null) {
-			
-			if (this.shape.dimension()==4) {
-				//need to the first element to be the number of data frames  Input: [(-1, 40, 40, 1)]
-				 shape = new Shape(data.length, this.shape.get(1), this.shape.get(2), this.shape.get(3)); 
-			}
-			else {
-				//might not be a 4 element shape
-				 shape = new Shape(data.length, this.shape.get(1), this.shape.get(2)); 
+			//the batch shape - throws an exception if the data do not fit the model input shape
+			shape = DLUtils.batchShape(this.shape, data.length, dataShape, specgramFlat.length);
+			if (!shapeWarning && !DLUtils.sameNonUnitDims(shape, dataShape)) {
+				//the data have the right number of values but different dimensions to the input
+				System.err.println("SpectrogramTranslator: Warning - the input data of shape " + java.util.Arrays.toString(dataShape)
+				+ " are reshaped to the model input shape " + shape + ". Check this is intended.");
+				shapeWarning = true;
 			}
 		}
 		else {
@@ -71,7 +76,6 @@ public class SpectrogramTranslator implements Translator<float[][][], float[]> {
 			 shape = new Shape(data.length, data[0].length, data[0][0].length, 1L); 
 		}
 		
-		float[] specgramFlat = DLUtils.flattenDoubleArrayF(data); 
 		
 		NDArray array = manager.create(specgramFlat, shape); 
 		

@@ -63,11 +63,12 @@ public class DeepAcousticsTranslator implements Translator<float[][][][], List<D
 		//Shape shape = new Shape(data.length, data[0].length, data[0][0].length, 1L); 
 		Shape shape; 
 
-		shape = new Shape(data.length, this.network.imShape.get(1), this.network.imShape.get(2), this.network.imShape.get(3)); 
-
 		//need to the first element to be the number of data frames  Input: [(-1, 40, 40, 1)]
-
 		float[] specgramFlat = DLUtils.flattenDoubleArrayF(data); 
+
+		//throws an exception if the images are not the size of the model input
+		shape = DLUtils.batchShape(this.network.imShape, data.length,
+				new long[] {data[0].length, data[0][0].length, data[0][0][0].length}, specgramFlat.length);
 		
 		//System.out.println("DeepAcousticsTranslator: expected network shape " + shape);
 

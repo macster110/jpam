@@ -127,7 +127,75 @@ public class DLUtils {
 
 
 
-	/** 
+	/**
+	 * Make the shape of a batch of model input data from the shape declared by the
+	 * model (or its metadata) and check that the data fit that shape. The first
+	 * dimension of the declared shape is the batch size and is replaced by the
+	 * number of input data. One other dimension can be unknown (zero or negative)
+	 * and is calculated from the number of values, like -1 in numpy's reshape.
+	 * <p>
+	 * Without this check data with a different shape to the model input (e.g. a
+	 * spectrogram with 375 x 128 rather than 363 x 129 bins) would be silently
+	 * reshaped into the input i.e. the model would run on a scrambled image.
+	 *
+	 * @param declaredShape - the declared input shape e.g. [-1, 363, 129, 1].
+	 * @param batchSize     - the number of input data e.g. the number of spectrograms.
+	 * @param dataShape     - the shape of one input datum e.g. [time bins, frequency bins]. Only used for the error message.
+	 * @param nValues       - the total number of values in the batch.
+	 * @return the shape of the batch.
+	 * @throws InputShapeException if the data do not fit the declared shape.
+	 */
+	public static Shape batchShape(Shape declaredShape, int batchSize, long[] dataShape, long nValues) {
+		long[] shape = declaredShape.getShape().clone();
+		shape[0] = batchSize;
+
+		int unknown = -1;
+		long known = 1;
+		for (int i = 0; i < shape.length; i++) {
+			if (shape[i] <= 0) {
+				if (unknown >= 0) {
+					throw new InputShapeException("The model input shape " + declaredShape
+							+ " has more than one unknown dimension besides the batch size. Specify the input shape in the model metadata.");
+				}
+				unknown = i;
+			}
+			else {
+				known *= shape[i];
+			}
+		}
+
+		if (unknown >= 0 && known > 0 && nValues % known == 0) {
+			shape[unknown] = nValues / known;
+			known = nValues;
+		}
+
+		if ((unknown >= 0 && shape[unknown] <= 0) || known != nValues) {
+			throw new InputShapeException(String.format("The input data do not match the model input shape. "
+					+ "The model expects %s but there are %d input(s) of shape %s (%d values). "
+					+ "Check the transforms (e.g. the FFT length, hop and segment length) produce data of the model input shape.",
+					declaredShape, batchSize, Arrays.toString(dataShape), nValues));
+		}
+
+		return new Shape(shape);
+	}
+
+	/**
+	 * Check whether a batch shape has the same dimensions as the data, ignoring
+	 * the batch dimension and dimensions of size 1 (e.g. a single channel). For
+	 * example [8, 363, 129, 1] has the same dimensions as data of shape [363, 129]
+	 * but [8, 129, 363, 1] does not.
+	 *
+	 * @param batchShape - the batch shape.
+	 * @param dataShape  - the shape of one input datum.
+	 * @return true if the dimensions are the same.
+	 */
+	public static boolean sameNonUnitDims(Shape batchShape, long[] dataShape) {
+		long[] a = Arrays.stream(batchShape.getShape()).skip(1).filter(d -> d != 1).toArray();
+		long[] b = Arrays.stream(dataShape).filter(d -> d != 1).toArray();
+		return Arrays.equals(a, b);
+	}
+
+	/**
 	 * Convert an arbitrary-dimensional rectangular double array to flat vector.<br>
 	 * Can pass double[], double[][], double[][][], etc.
 	 */

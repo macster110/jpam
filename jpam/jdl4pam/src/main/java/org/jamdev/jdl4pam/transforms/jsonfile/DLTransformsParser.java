@@ -183,6 +183,7 @@ public class DLTransformsParser {
 		switch (dlTransfromParams.dltransfromType) {
 		case DECIMATE:
 		case DECIMATE_SCIPY:
+		case DECIMATE_POLY:
 			paramsObject.put("sr", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue()); 
 			break;
 		case PREEMPHSIS:
@@ -298,6 +299,17 @@ public class DLTransformsParser {
 			paramsObject.put("low_tol", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue());
 			paramsObject.put("high_tol", ((SimpleTransformParams) dlTransfromParams).params[1].doubleValue());
 			break;
+		case SPECNORMALISE_PERCENTILE:
+			paramsObject.put("percentile", ((SimpleTransformParams) dlTransfromParams).params[0].doubleValue());
+			break;
+		case SPECTROGRAM_SCIPY:
+			paramsObject.put("win_len", ((SimpleTransformParams) dlTransfromParams).params[0].intValue());
+			paramsObject.put("hop", ((SimpleTransformParams) dlTransfromParams).params[1].intValue());
+			paramsObject.put("nfft", ((SimpleTransformParams) dlTransfromParams).params[2].intValue());
+			if (((SimpleTransformParams) dlTransfromParams).params.length > 3) {
+				paramsObject.put("window_type", ((SimpleTransformParams) dlTransfromParams).params[3].intValue());
+			}
+			break;
 		case SPECTROGRAMKETOS:
 			paramsObject.put("fft", ((SimpleTransformParams) dlTransfromParams).params[0].intValue());
 			paramsObject.put("hop", ((SimpleTransformParams) dlTransfromParams).params[1].intValue());
@@ -374,6 +386,7 @@ public class DLTransformsParser {
 		switch (dlTransformType) {
 		case DECIMATE:
 		case DECIMATE_SCIPY:
+		case DECIMATE_POLY:
 			number = new Number[1]; 
 			number[0] = jsonObjectParams.getFloat("sr"); 
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number); 
@@ -598,6 +611,22 @@ public class DLTransformsParser {
 			number = new Number[2];
 			number[0] = jsonObjectParams.has("low_tol") ? jsonObjectParams.getDouble("low_tol") : 0.01;
 			number[1] = jsonObjectParams.has("high_tol") ? jsonObjectParams.getDouble("high_tol") : 0.99;
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number);
+			break;
+		case SPECNORMALISE_PERCENTILE:
+			number = new Number[1];
+			number[0] = jsonObjectParams.has("percentile") ? jsonObjectParams.getDouble("percentile") : 98.0;
+			dlTransformParams = new SimpleTransformParams(dlTransformType, number);
+			break;
+		case SPECTROGRAM_SCIPY:
+			//optional fourth parameter is the window type
+			number = new Number[jsonObjectParams.has("window_type") ? 4 : 3];
+			number[0] = jsonObjectParams.getInt("win_len");
+			number[1] = jsonObjectParams.getInt("hop");
+			number[2] = jsonObjectParams.has("nfft") ? jsonObjectParams.getInt("nfft") : number[0].intValue();
+			if (number.length > 3) {
+				number[3] = jsonObjectParams.getInt("window_type");
+			}
 			dlTransformParams = new SimpleTransformParams(dlTransformType, number);
 			break;
 		case SPECFLIP:
